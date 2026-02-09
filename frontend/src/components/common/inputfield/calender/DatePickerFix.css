@@ -1,0 +1,49 @@
+/* This file contains fixes for the date picker to ensure it appears above all other elements */
+ 
+/* Override form container's overflow for the date picker */
+.form_container {
+  position: relative;
+  overflow: visible !important;
+}
+ 
+/* Ensure date picker container is above all other elements */
+.date-picker-container {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 2147483647 !important; /* Max z-index value */
+  pointer-events: none !important;
+  transform: translateZ(0) !important;
+  contain: layout style paint !important;
+}
+ 
+/* The actual calendar container */
+.date-picker-container > div {
+  position: fixed !important;
+  background: white !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
+  pointer-events: auto !important;
+  z-index: 2147483647 !important; 
+  max-height: 90vh !important;
+  overflow: visible !important;
+  transform: translateZ(0) !important;
+  will-change: transform !important;
+  /* These will be set by JavaScript */
+  top: var(--date-picker-top, 0) !important;
+  left: var(--date-picker-left, 0) !important;
+  right: var(--date-picker-right, auto) !important;
+  bottom: var(--date-picker-bottom, auto) !important;
+  min-width: 280px !important;
+  transform-style: preserve-3d !important;
+  backface-visibility: hidden !important;
+  transition: transform 0.1s ease-out !important;
+  contain: layout style paint !important;
+  clip: auto !important;
+  clip-path: none !important;
+  margin: 8px !important;
+  box-sizing: content-box !important;
+}
+ 

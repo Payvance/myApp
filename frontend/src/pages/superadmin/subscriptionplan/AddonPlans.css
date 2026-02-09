@@ -1,0 +1,40 @@
+/* src/pages/superadmin/subscriptionplan/AddonPlans.css */
+
+/* Add-on plan page styles */
+.addon-plan-page {
+  padding: 5px 18px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Add-on plans grid */
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .addon-plan-page {
+    padding: 16px;
+  }
+
+  .addon-plan-title {
+    font-size: 24px;
+  }
+
+  .addon-plans-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .no-addon-plans {
+    padding: 40px 16px;
+  }
+}

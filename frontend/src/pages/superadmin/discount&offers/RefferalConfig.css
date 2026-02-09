@@ -1,0 +1,152 @@
+/* Referral Configuration Page Styles */
+
+/* Main container for referral management */
+.subscription-container {
+  padding: 24px;
+  background-color: var(--bg-secondary);
+  min-height: calc(100vh - 64px);
+}
+
+/* Grid layout for referral cards */
+.plans-grid {
+  display: flex;
+  gap: 24px;
+  max-height: 70vh;
+  overflow-x: auto;
+  padding-right: 8px;
+}
+
+/* Popup form styles */
+.create-plan-form {
+  padding: 20px;
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  box-shadow: var(--shadow-lg);
+}
+
+/* Form table layout */
+.form-table {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Form row layout */
+.form-row {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+/* Form actions section */
+.form-actions {
+  margin-top: 30px;
+  text-align: right;
+}
+
+/* Button styles */
+.btn-full {
+  width: 100%;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: var(--primary-500);
+  color: var(--text-primary);
+}
+
+.btn-full:hover {
+  background-color: var(--primary-600);
+}
+
+.btn-full:disabled {
+  background-color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+/* Create referral button */
+.create-plan-btn {
+  background-color: var(--success-500);
+  color: var(--text-primary);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.create-plan-btn:hover {
+  background-color: var(--success-600);
+}
+
+/* Loading and empty state styles */
+.subscription-container p {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 16px;
+  margin-top: 40px;
+}
+
+/* Responsive design */
+@media (max-width: 1190px) {
+  .plans-grid {
+    flex-wrap: wrap;
+  }
+  
+  .plans-grid .discount-card {
+    min-width: calc(50% - 12px);
+  }
+}
+
+@media (max-width: 768px) {
+  .subscription-container {
+    padding: 16px;
+  }
+  
+  .plans-grid {
+    flex-wrap: wrap;
+    flex-direction: column;
+  }
+  
+  .plans-grid .discount-card {
+    min-width: 100%;
+  }
+  
+  .discount-card {
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+  }
+  
+  .form-row {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .create-plan-form {
+    padding: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .subscription-container {
+    padding: 10px;
+  }
+  
+  .btn-full {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+  
+  .create-plan-btn {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+}

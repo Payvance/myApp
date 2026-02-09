@@ -1,0 +1,495 @@
+
+/* ===============================
+   Page Wrapper
+   Centers the sign-in card both
+   vertically and horizontally
+   =============================== */
+
+  .signin-wrapper {
+  min-height: 100vh;
+  background: #f2f5f9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ===============================
+   Main Card Container
+   =============================== */
+.signin-card {
+  width: 880px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(31, 45, 61, 0.12);
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 50/50 split between left and right panels */
+  overflow: hidden;
+  position: relative; /* enable absolute children for sliding panels */
+}
+
+/* ===============================
+   Left Panel (Sign In Form)
+   =============================== */
+.signin-left {
+  padding: 100px 48px;
+  background: #F8F9FA; /* left panel background */
+  color: #212529; /* left panel text */
+  position: relative;
+  z-index: 1; /* ensure left content stays above base */
+}
+/* Welcome header section */
+.welcome-header {
+  margin-bottom: 12px;
+}
+.welcome-header p {
+  color: #6B7280;
+  margin: 0 0 24px;
+  font-size: 12px;
+}
+
+/* Panel headings with gradient text */
+.signin-left h2,
+.signup-inner h2 {
+  margin: 0 0 8px 0;
+  font-size: 32px;
+  line-height: 1.2;
+  background: linear-gradient(90deg, #7E56E4 0%, #9F52D0 50%, #BF4FBB 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block;
+}
+
+/* Gradient line */
+.welcome-header .gradient-line {
+  height: 2px;
+  width: 80px;
+  background: linear-gradient(90deg, #7E56E4 0%, #9F52D0 50%, #BF4FBB 100%);
+
+}
+
+.signin-left p {
+  color: #6B7280;
+  margin: 0 0 24px;
+  font-size: 12px;
+}
+/* ===============================
+   Remember Me & Forgot Password
+   =============================== */
+.signin-options {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  margin: 10px 0;
+}
+
+/* Form select styling */
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-select {
+  width: 100%;
+  padding: 10px  12px;
+  border: 1.5px solid var(--border-primary);
+  border-radius: 6px;
+  background: var(--bg-primary);
+  color: #8a93a2;
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.form-select:focus {
+  outline: none;
+  border-color: var(--purple-500);
+  box-shadow: 0 0 0 3px rgba(126, 86, 152, 0.1);
+}
+
+/* Select options styling */
+.form-select option {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  padding: 8px 12px;
+}
+
+.form-select option:hover {
+  background: var(--bg-secondary);
+}
+
+/* Forgot password link */
+.forgot {
+  color: #7E56E4; 
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  padding: 0;
+  font: inherit;
+  transition: color 0.2s ease;
+}
+
+/* Hover effect for link */
+.forgot:hover {
+  color: #9F52D0;
+  text-decoration: underline;
+}
+/* focus state */
+.forgot:focus-visible {
+  outline: 2px solid rgba(59, 91, 219, 0.35);
+  outline-offset: 2px;
+}
+
+/* Login button wrapper */
+.signin-submit { margin-top: 14px; }
+
+.signin-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 18px 0 12px;
+  color: #8a93a2;
+  font-size: 12px;
+}
+
+.signin-divider .line {
+  height: 1px;
+  flex: 1;
+  background: #e6eaf0;
+}
+
+.signin-divider .or-text { white-space: nowrap; }
+
+/* ===============================
+   Login Buttons
+   =============================== */
+.signin-socials {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  justify-content: center; /* center horizontally */
+  align-items: center;
+}
+
+.social-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid #e6eaf0;
+  background: #fff;
+  color: #7a869a;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.social-btn:hover { background: #f7f9fb; }
+
+.signin-footer {
+  color: #b0b7c3;
+  font-size: 12px;
+}
+
+/* ===============================
+   Right Panel (Welcome Section)
+   =============================== */
+.signin-right {
+  position: absolute; /* float over the card to allow sliding */
+  top: 0;
+  right: 0;
+  width: 41%;
+  height: 88%;
+  padding: 40px;
+
+background: linear-gradient(
+  135deg,
+  #6F5AE8 0%,     /* strong soft purple (top-left) */
+  #8B63E6 40%,    /* smooth mid purple */
+  #c565c1 100%    /* soft light pink (bottom-right) */
+);
+
+  
+  color: #ffffff; /* right panel text */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 12px;
+  transition: transform 0.5s ease;
+  z-index: 2; /* above left by default */
+}
+
+/* Sign Up panel initially hidden off canvas to the right */
+.signup-panel {
+  /* part of the grid flow (right column); visible by default */
+  position: relative;
+  background: var(--purple-50);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  z-index: 1;
+}
+
+.signup-inner { width: 100%; max-width: 320px; margin-top: 0px;}
+.signup-back { margin-top: 10px; text-align: center; }
+
+/* When register is active: slide gradient left, reveal signup panel */
+.register-active .signin-right { transform: translateX(-100%); }
+
+.signin-right h2 {
+  margin: 8px 0 8px;
+  font-size: 32px;
+}
+
+.signin-right p {
+  margin: 0 0 18px;
+  text-align: center;
+  max-width: 260px;
+}
+
+.signin-right-icon {
+  font-size: 42px;
+  line-height: 1;
+}
+
+.signin-right-action { width: 180px; margin: 8px auto 0; }
+
+/* ===============================
+    Added media queries for responsive design
+    Tablet & Small Desktop View
+   =============================== */
+
+@media (max-width: 900px) {
+  .signin-card {
+    width: min(100%, 680px);
+    grid-template-columns: 1fr 1fr;
+    margin: 20px;
+  }
+
+  .signin-left {
+    padding: 28px 24px;
+  }
+
+  /* On small screens, avoid overlay: stack panels and toggle visibility */
+  .signin-right {
+    position: static;
+    width:50%;
+    height: auto;
+    padding: 28px 24px 36px;
+    text-align: center;
+    transform: none !important;
+    z-index: auto;
+  }
+
+  .signin-right h2 { font-size: 28px; }
+  .signin-left h2 { font-size: 28px; }
+
+  .signin-right-action { width: 100%; }
+
+  .signup-panel {
+    position: static;
+    width: 100%;
+    height: auto;
+    padding: 24px;
+    transform: none;
+    opacity: 1;
+    display: none; /* hidden by default on small screens */
+  }
+
+  .signup-inner { max-width: none; }
+  /* Show signup, hide gradient when active on small screens */
+  .register-active .signin-right { display: none; }
+  .register-active .signup-panel { display: block; }
+}
+
+/* OTP field */
+.otp-field-wrapper {
+  position: relative;
+}
+
+/* OTP row layout */
+.otp-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  margin-bottom: 4px;
+}
+
+/* Mobile input column */
+.otp-input-col {
+  flex: 1;
+}
+
+/* Button column */
+.otp-btn-col {
+  display: flex;
+  align-items: center;
+}
+
+/* Send OTP button */
+.otp-btn {
+  height: 38px;
+  padding: 0 14px;
+  background: linear-gradient(90deg, #7E56E4, #BF4FBB);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  cursor: pointer;
+  margin-bottom: 18px;
+}
+
+.otp-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Verified label */
+.otp-verified {
+  color: #22c55e;
+  font-size: 13px;
+  font-weight: 600;
+  padding-top: 6px;
+  margin-bottom: 28px;
+}
+
+
+/* OTP Modal */
+.otp-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.otp-modal {
+  background: #fff;
+  padding: 28px;
+  border-radius: 16px;
+  width: 360px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.otp-modal h3 {
+  margin-bottom: 8px;
+  background: linear-gradient(90deg, #7E56E4, #BF4FBB);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.otp-input {
+  width: 100%;
+  margin: 16px 0;
+  padding: 12px;
+  font-size: 18px;
+  letter-spacing: 4px;
+  text-align: center;
+  border: 1.5px solid #ddd;
+  border-radius: 8px;
+}
+
+.otp-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* OTP Boxes */
+.otp-box-wrapper {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 18px 0 22px;
+}
+
+.otp-box {
+  width: 42px;
+  height: 48px;
+  border-radius: 8px;
+  border: 1.5px solid #d1d5db;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 600;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.otp-box:focus {
+  border-color: #7E56E4;
+  box-shadow: 0 0 0 3px rgba(126, 86, 228, 0.15);
+}
+
+/* Disabled resend OTP (popup) */
+.disabled-link {
+  color: #9ca3af;           /* grey */
+  cursor: not-allowed;
+  pointer-events: none;
+  text-decoration: none;
+}
+
+/* Mobile friendly */
+@media (max-width: 600px) {
+  .otp-box {
+    width: 38px;
+    height: 44px;
+  }
+}
+
+@media (max-width: 600px) {
+  .signin-card { margin: 12px; }
+  .signin-left { padding: 20px 16px; }
+  .signin-right { padding: 20px 16px 28px; }
+
+  .signin-left h2,
+  .signin-right h2 { font-size: 24px; }
+
+  .signin-divider { gap: 8px; margin: 14px 0 10px; font-size: 11px; }
+  .social-btn { width: 32px; height: 32px; }
+  .signin-right p { max-width: none; font-size: 14px; }
+}
+/* Style for disabled buttons */
+button:disabled,
+.button-disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* 1. HIDE THE BROWSER NATIVE ICON (Edge/Chrome) */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none !important;
+}
+
+/* 2. SHARED POSITIONING FOR ALL THREE EYES */
+.eye-icon-signin, 
+.eye-icon-signup, 
+.eye-icon-confirm {
+  position: absolute;
+  right: 15px;      /* Distance from the right edge */
+  bottom: 27px;     /* Aligns it to the bottom of the container, inside the input */
+  cursor: pointer;
+  color: #6c757d;
+  font-size: 1.2rem;
+  z-index: 10;
+  height: 24px;     /* Fixed height to prevent shifting */
+  display: flex;
+  align-items: center;
+  transition: color 0.2s ease;
+}
+
+/* 3. WRAPPER CONTAINER */
+.position-relative {
+  position: relative !important;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}

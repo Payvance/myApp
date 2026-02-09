@@ -1,0 +1,153 @@
+/* Toggle Button Component */
+
+/* toggle container */
+.toggle-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  /* added margin right */
+  margin-right: 9rem;
+}
+
+/* toggle label */
+.toggle-label {
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.toggle-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+
+/* toggle button */
+.toggle-button {
+  border: none;
+  border-radius: 13px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+  outline: none;
+  background-color: var(--border-primary) !important;
+}
+
+/* toggle button focus */
+.toggle-button:focus {
+  box-shadow: 0 0 0 2px var(--purple-200);
+}
+
+/* toggle thumb */
+.toggle-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: white;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Size Variants */
+.toggle-small .toggle-button {
+  width: 40px;
+  height: 20px;
+  border-radius: 10px;
+}
+
+.toggle-small .toggle-thumb {
+  width: 16px;
+  height: 16px;
+  top: 2px;
+  left: 2px;
+}
+
+.toggle-medium .toggle-button {
+  width: 70px;
+  height: 26px;
+  border-radius: 13px;
+}
+
+.toggle-medium .toggle-thumb {
+  width: 20px;
+  height: 20px;
+  top: 3px;
+  left: 3px;
+}
+
+.toggle-large .toggle-button {
+  width: 60px;
+  height: 32px;
+  border-radius: 16px;
+}
+
+.toggle-large .toggle-thumb {
+  width: 26px;
+  height: 26px;
+  top: 3px;
+  left: 3px;
+}
+
+/* State Variants */
+.toggle-off {
+  background-color: var(--border-primary) !important;
+}
+
+.toggle-on {
+  background-color: var(--purple-500) !important;
+}
+
+.toggle-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Thumb Positions - IMPORTANT: More specific selectors */
+.toggle-container.toggle-small .toggle-off .toggle-thumb {
+  left: 2px !important;
+}
+
+.toggle-container.toggle-small .toggle-on .toggle-thumb {
+  left: 22px !important;
+}
+
+.toggle-container.toggle-medium .toggle-off .toggle-thumb {
+  left: 3px !important;
+}
+
+.toggle-container.toggle-medium .toggle-on .toggle-thumb {
+  left: 27px !important;
+}
+
+.toggle-container.toggle-large .toggle-off .toggle-thumb {
+  left: 3px !important;
+}
+
+.toggle-container.toggle-large .toggle-on .toggle-thumb {
+  left: 31px !important;
+}
+
+/* Hover Effects */
+.toggle-button:not(.toggle-disabled):hover {
+  transform: scale(1.05);
+}
+
+.toggle-on:not(.toggle-disabled):hover {
+  background-color: var(--purple-600) !important;
+}
+
+.toggle-off:not(.toggle-disabled):hover {
+  background-color: var(--border-secondary) !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .toggle-label {
+    font-size: 12px;
+  }
+}

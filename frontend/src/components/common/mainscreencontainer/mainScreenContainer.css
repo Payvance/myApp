@@ -1,0 +1,72 @@
+/* MainScreenContainer component common for layout */
+
+.main-screen-container {
+  /* grid area should be main */
+  grid-area: main;
+  width: 100%;
+  /* width should be 100% of the parent container */
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  min-height: 0;
+  /* Important for grid item content scrolling */
+}
+
+/* Adjustments for children layout */
+.main-screen-container>.main-content {
+  flex: 1;
+
+  min-height: 0;
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .main-screen-container {
+    height: 100vh;
+  }
+
+  .main-screen-container.with-navbar {
+    height: calc(100vh - var(--navbar-height, 60px));
+  }
+}
+
+@media (max-width: 480px) {
+  .main-screen-container {
+    height: 100vh;
+  }
+
+  .main-screen-container.with-navbar {
+    height: calc(100vh - var(--navbar-height, 50px));
+  }
+}
+
+/* Flexbox layout for content distribution  for adjusting the height of the content */
+.main-screen-container>* {
+  flex-shrink: 0;
+}
+
+.main-screen-container>.main-content {
+  flex: 1;
+
+}
+
+/* Scrollbar styling */
+.main-screen-container>.main-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.main-screen-container>.main-content::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+.main-screen-container>.main-content::-webkit-scrollbar-thumb {
+  background: var(--text-tertiary);
+  border-radius: 3px;
+}
+
+.main-screen-container>.main-content::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}

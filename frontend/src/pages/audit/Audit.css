@@ -1,0 +1,245 @@
+/* src/pages/audit/Audit.css */
+
+/* audit container - matching subscription-plan-page styles */
+.audit-container {
+    padding: 2px 18px 10px 18px;
+    /* Reduced from 5px ... 18px */
+    background-color: var(--bg-secondary);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+/* audit filters section */
+.audit-filters {
+    background-color: var(--bg-primary);
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 16px;
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.1));
+}
+
+.filter-row {
+    display: flex;
+    gap: 16px;
+    height: 40px;
+
+}
+
+.filter-row:last-child {
+    margin-bottom: 0;
+}
+
+/* Make filter inputs take equal width */
+.filter-row .input-container {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Make OptionInputBox components same width as InputField */
+.filter-row .option-input-container {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Ensure both InputField and OptionInputBox have consistent styling */
+.filter-row>div {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Filter buttons container */
+.filter-buttons {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+/* Apply Filters button */
+.apply-filters-btn {
+    background-color: var(--button-primary-bg);
+    color: var(--text-inverse);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.apply-filters-btn:hover {
+    background-color: var(--button-primary-hover);
+    transform: translateY(-1px);
+}
+
+
+.audit-details p {
+    margin: 6px 0;
+}
+
+
+
+/* audit table section */
+.audit-table {
+    margin-top: 20px;
+    background-color: var(--bg-primary);
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.1));
+    overflow-x: auto;
+    max-height: calc(100vh - 300px);
+    overflow-y: auto;
+}
+
+/* Ensure table container scrolls properly */
+.audit-table .data-table-container {
+    overflow-x: auto;
+    overflow-y: visible;
+}
+
+/* Table scrollbar styling */
+.audit-table::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.audit-table::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+    border-radius: 4px;
+}
+
+.audit-table::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+}
+
+.audit-table::-webkit-scrollbar-thumb:hover {
+    background: var(--text-secondary);
+}
+
+/* audit header */
+.audit-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2px;
+    /* Reduced from 10px */
+    margin-top: 2px;
+    /* Reduced from 10px */
+}
+
+/* audit title */
+.audit-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+/* audit subtitle */
+.audit-subtitle {
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-top: 4px;
+}
+
+/* create audit button */
+.create-audit-btn {
+    background-color: var(--button-primary-bg);
+    color: var(--text-inverse);
+    border: none;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-sm, 0 2px 4px rgba(126, 86, 228, 0.2));
+    margin-top: 30px;
+    margin-right: 40px;
+}
+
+/* create audit button hover */
+.create-audit-btn:hover {
+    background-color: var(--button-primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md, 0 4px 8px rgba(126, 86, 228, 0.3));
+}
+
+/* audit grid */
+.audit-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    /* Reduced from 12px */
+    margin-top: 4px;
+    /* Reduced from 10px */
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Ensure cards fill grid slots correctly and override fixed widths */
+.audit-grid .audit-card {
+    width: 95% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    flex-shrink: 0;
+}
+
+/* Responsive grid layout */
+@media (max-width: 1200px) {
+    .audit-grid {
+        grid-template-columns: repeat(3, 1fr);
+        /* 3 columns for smaller laptops */
+    }
+}
+
+@media (max-width: 900px) {
+    .audit-grid {
+        grid-template-columns: repeat(2, 1fr);
+        /* 2 columns for tablets */
+    }
+
+    .filter-row {
+        flex-wrap: wrap;
+    }
+
+    .filter-row .input-container {
+        flex: 1 1 200px;
+    }
+}
+
+/* Responsive grid layout */
+@media (max-width: 768px) {
+    .audit-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .audit-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .filter-row {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .filter-buttons {
+        margin-left: 0;
+        justify-content: flex-start;
+    }
+}

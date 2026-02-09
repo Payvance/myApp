@@ -1,0 +1,152 @@
+/* src/components/common/popups/PopUp.css */
+/* ================================
+   Popup Component Global Styles
+   Description: Styles for popup overlay,
+   container, header, content & animations
+================================ */
+
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--overlay-bg, rgba(0, 0, 0, 0.5));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.popup-container {
+    background: var(--bg-primary, white);
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Size Variants */
+
+
+.popup-large {
+    width: 650px;
+    max-width: 95%;
+}
+
+/* Header */
+.popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 32px 32px 16px;
+    border-bottom: none;
+}
+/* title popup component css */
+.popup-title-container {
+    flex: 1;
+}
+
+.popup-title {
+    margin: 0 0 4px 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary, #333);
+    letter-spacing: -0.01em;
+}
+
+/* subtitle popup component css */
+.popup-subtitle {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text-secondary, #6b7280);
+    line-height: 1.5;
+}
+
+.popup-close-btn {
+    background: var(--bg-secondary, #f3f4f6);
+    border: none;
+    font-size: 1.25rem;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 12px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    line-height: 1;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.popup-close-btn:hover {
+    background-color: #e5e7eb;
+    color: #111827;
+}
+
+/* Content */
+.popup-content {
+    padding: 0 32px 32px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .popup-container {
+        width: 95%;
+        margin: 20px;
+        max-height: calc(100vh - 40px);
+    }
+
+    .popup-header {
+        padding: 16px 20px 12px;
+    }
+
+    .popup-content {
+        padding: 16px 20px;
+    }
+
+    .popup-title {
+        font-size: 1.125rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .popup-container {
+        width: 100%;
+        margin: 0;
+        border-radius: 12px 12px 0 0;
+        max-height: 100vh;
+    }
+
+    .popup-overlay {
+        padding: 0;
+    }
+}

@@ -1,0 +1,83 @@
+/* Root navbar */
+.app-navbar {
+  grid-area: navbar;
+  height: 100%;
+  background: var(--navbar-bg);
+  border-bottom: 1px solid var(--navbar-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  z-index: 900;
+}
+
+/* Left */
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.navbar-title {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* Right */
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Theme button container */
+.theme-button-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* New button (SignIn page style) */
+.navbar-btn {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-primary);
+  color: var(--text-primary);
+  padding: 6px 12px;
+  font-size: 13px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.navbar-btn:hover {
+  background: var(--bg-secondary);
+}
+
+/* Avatar */
+.navbar-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.navbar-avatar:hover {
+  background: var(--bg-secondary);
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .app-navbar {
+    left: 0;
+  }
+}

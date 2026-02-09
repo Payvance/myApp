@@ -1,0 +1,256 @@
+/* Subscription Plans Page Styles */
+
+.assigned-clients-content {
+  padding: 5px 18px 18px 18px;
+  background-color: var(--bg-secondary);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.assigned-clients-header {
+  margin-bottom: 32px;
+}
+
+.assigned-clients-title {
+  color: var(--text-primary);
+  font-size: 2rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+}
+
+.assigned-clients-subtitle {
+  color: var(--text-primary);
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* License Keys Table Styles */
+.assigned-clients-table {
+  background: var(--bg-primary, white);
+  border-radius: var(--border-radius-md, 8px);
+  box-shadow: var(--shadow-sm, 0 2px 8px rgba(0, 0, 0, 0.1));
+  overflow: hidden;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border-primary);
+  margin-top: 24px;
+}
+
+/* Issue Key Button Styles */
+.license-keys-table .issue-key-button {
+  background-color: var(--primary-color, #007bff);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.license-keys-table .issue-key-button:hover:not(:disabled) {
+  background-color: var(--primary-hover, #0056b3);
+}
+
+.license-keys-table .issue-key-button:disabled {
+  background-color: var(--bg-disabled, #6c757d);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.license-keys-table .issue-key-button i {
+  font-size: 14px;
+}
+
+/* Status Badge Styles */
+.license-keys-table .status-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.license-keys-table .status-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.license-keys-table .status-unused {
+  background-color: var(--success-light, #d4edda);
+  color: var(--success-dark, #155724);
+}
+
+.license-keys-table .status-issued {
+  background-color: var(--info-light, #d1ecf1);
+  color: var(--info-dark, #0c5460);
+}
+
+.license-keys-table .status-redeemed {
+  background-color: var(--primary-light, #cce5ff);
+  color: var(--primary-dark, #004085);
+}
+
+.license-keys-table .status-expired {
+  background-color: var(--warning-light, #fff3cd);
+  color: var(--warning-dark, #856404);
+}
+
+.license-keys-table .status-revoked {
+  background-color: var(--danger-light, #f8d7da);
+  color: var(--danger-dark, #721c24);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .assigned-clients-content {
+    padding: 1rem;
+  }
+
+  .assigned-clients-title {
+    font-size: 1.5rem;
+  }
+
+  .assigned-clients-subtitle {
+    font-size: 1rem;
+  }
+
+  .assigned-clients-table {
+    height: calc(100vh - var(--navbar-height) - 200px);
+  }
+}
+
+@media (max-width: 480px) {
+  .assigned-clients-page {
+    padding: 12px;
+  }
+
+  .assigned-clients-title {
+    font-size: 20px;
+  }
+
+  .assigned-clients-table {
+    height: calc(100vh - var(--navbar-height) - 220px);
+  }
+}
+
+/* License Success Form Styles */
+.license-success-form {
+  padding-top: 20px;
+  overflow-y: auto;
+}
+
+.success-form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.client-details-box {
+  background-color: var(--bg-secondary, #f8f9fa);
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.client-details-title {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  border-bottom: 2px solid #7b61ff;
+  padding-bottom: 8px;
+}
+
+.client-details-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.client-detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.client-detail-item:last-child {
+  border-bottom: none;
+}
+
+.detail-label {
+  font-weight: 500;
+  color: #6c757d;
+  font-size: 14px;
+}
+
+.detail-value {
+  font-weight: 500;
+  color: var(--text-primary, #333);
+  font-size: 14px;
+}
+
+.activation-key-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field-label {
+  font-weight: 600;
+  color: var(--text-primary, #333);
+  font-size: 14px;
+}
+
+.field-value {
+  padding: 16px 20px;
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  font-size: 15px;
+  color: var(--text-primary, #333);
+  font-weight: 500;
+}
+
+.field-value.activation-key {
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  font-size: 18px;
+  background: linear-gradient(135deg, #e8f5e8 0%, #d4edda 100%);
+  border: 2px solid #28a745;
+  color: #155724;
+  letter-spacing: 1px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.15);
+}
+
+.success-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+}
+
+.success-actions .button {
+  min-width: 120px;
+  padding: 12px 32px;
+  background: linear-gradient(135deg, #7b61ff 0%, #9b7cff 100%);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.success-actions .button:hover {
+  background: linear-gradient(135deg, #684de0 0%, #8467ff 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(123, 97, 255, 0.3);
+}

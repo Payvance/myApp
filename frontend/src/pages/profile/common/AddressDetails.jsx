@@ -1,0 +1,219 @@
+/**
+ * Copyright: © 2025 Payvance Innovation Pvt. Ltd.
+ *
+ * Organization: Payvance Innovation Pvt. Ltd.
+ *
+ * This is unpublished, proprietary, confidential source code of
+ * Payvance Innovation Pvt. Ltd.
+ *
+ **/
+
+/**
+ *
+ * author                version        date        change description
+ * Neha Tembhe           1.0.0         07/01/2026   Address Details component created.
+ *
+ **/
+import InputField from "../../../components/common/inputfield/InputField";
+import { formConfig } from "../../../config/formConfig";
+import { externalServices } from "../../../services/apiService";
+import { useState } from "react";
+import { toast } from "react-toastify";
+const AddressDetails = ({ addressData, setAddressData, disabled }) => {
+const [isFetched, setIsFetched] = useState(false);
+  /* Handled the changed function for the address details form */
+  const handleChange = (name, value) => {
+    // Update the pincode/field value immediately
+    setAddressData(prev => ({ ...prev, [name]: value }));
+
+    if (name === "pincode") {
+      // If user removes a digit (length < 6) or clears it
+      if (value.length < 6) {
+        resetAddressFields();
+      } 
+      // Fetch data only when exactly 6 digits are reached
+      else if (value.length === 6) {
+        fetchPincodeData(value);
+      }
+    }
+  };
+  // Function to fetch address details based on pincode
+  const fetchPincodeData = async (pincode) => {
+    try {
+      const response = await externalServices.getPostalInfoByPincode(pincode);
+      const data = response.data[0];
+      if (data.Status === "Error") {
+        toast.error("Pincode does not exist. Please check and try again.");
+        resetAddressFields(); // Clear fields and unlock them
+        return;
+      }
+      if (data.Status === "Success") {
+        const details = data.PostOffice[0];
+        
+        // Auto-fill the address fields
+        setAddressData(prev => ({
+          ...prev,
+          city: details.Block || details.Division,
+          district: details.District,
+          state: details.State,
+          country: details.Country,
+        }));
+        setIsFetched(true);
+      }
+    } catch (error) {
+      console.error("Pincode API Error:", error);
+    }
+  };
+  const resetAddressFields = () => {
+    setAddressData(prev => ({
+      ...prev,
+      city: "",
+      district: "",
+      state: "",
+    }));
+    setIsFetched(false);
+  };
+  return (
+    <div className="profile-section">
+      <div className="profile-section-title">Address Details</div>
+
+      {/* Row 1 */}
+      <div className="form-row-4">
+        <InputField
+          label={formConfig.address.houseno.label}
+          name="houseNo"
+          value={addressData.houseNo}
+          onChange={(e) => handleChange("houseNo", e.target.value)}
+          validationType="ALPHANUMERIC"
+          max={20}
+          required
+          disabled={disabled}
+        />
+
+        <InputField
+          label={formConfig.address.housename.label}
+          name="buildingName"
+          value={addressData.buildingName}
+          onChange={(e) => handleChange("buildingName", e.target.value)}
+          validationType="ALPHANUMERIC"
+          max={50}
+          disabled={disabled}
+        />
+
+        <InputField
+          label={formConfig.address.roadareaplace.label}
+          name="area"
+          value={addressData.area}
+          onChange={(e) => handleChange("area", e.target.value)}
+          validationType="ALPHANUMERIC"
+          max={50}
+          required
+          disabled={disabled}
+        />
+
+        <InputField
+          label={formConfig.address.landmark.label}
+          name="landmark"
+          value={addressData.landmark}
+          onChange={(e) => handleChange("landmark", e.target.value)}
+          validationType="ALPHANUMERIC"
+          max={50}
+          disabled={disabled}
+        />
+      </div>
+
+      {/* Row 2 */}
+      <div className="form-row-4">
+
+        <InputField
+          label={formConfig.address.pincode.label}
+          name="pincode"
+          value={addressData.pincode}
+          onChange={(e) => handleChange("pincode", e.target.value)}
+          validationType="NUMBER_ONLY"
+          max={6}
+          required
+          disabled={disabled}
+        />
+
+        <InputField
+          label={formConfig.address.city.label}
+          name="city"
+          value={addressData.city}
+          onChange={(e) => handleChange("city", e.target.value)}
+          validationType="ALPHABETS_AND_SPACE"
+          max={30}
+          required
+          disabled={isFetched || disabled}
+        />
+
+        <InputField
+          label={formConfig.address.village.label}
+          name="village"
+          value={addressData.village}
+          onChange={(e) => handleChange("village", e.target.value)}
+          validationType="ALPHABETS_AND_SPACE"
+          max={30}
+          disabled={disabled}
+        />
+        <InputField
+          label={formConfig.address.taluka.label}
+          name="taluka"
+          value={addressData.taluka}
+          onChange={(e) => handleChange("taluka", e.target.value)}
+          validationType="ALPHABETS_AND_SPACE"
+          max={30}
+          disabled={disabled}
+        />
+
+      </div>
+
+      {/* Row 3 */}
+      <div className="form-row-4">
+        <InputField
+          label={formConfig.address.district.label}
+          name="district"
+          value={addressData.district}
+          onChange={(e) => handleChange("district", e.target.value)}
+          validationType="ALPHABETS_AND_SPACE"
+          max={30}
+          required
+          disabled={isFetched || disabled}
+        />
+
+        <InputField
+          label={formConfig.address.state.label}
+          name="state"
+          value={addressData.state}
+          onChange={(e) => handleChange("state", e.target.value)}
+          validationType="ALPHABETS_AND_SPACE"
+          max={30}
+          required
+          disabled={isFetched || disabled}
+        />
+
+        <InputField
+          label={formConfig.address.postoffice.label}
+          name="postOffice"
+          value={addressData.postOffice}
+          onChange={(e) => handleChange("postOffice", e.target.value)}
+          validationType="ALPHABETS_AND_SPACE"
+          max={30}
+          disabled={disabled}
+        />
+        <InputField
+          label={formConfig.address.country.label}
+          name="country"
+          value={addressData.country}
+          onChange={(e) => handleChange("country", e.target.value)}
+          validationType="ALPHABETS_AND_SPACE"
+          max={30}
+          required
+          disabled={disabled}
+        />
+      </div>
+    </div>
+  );
+};
+
+export default AddressDetails;

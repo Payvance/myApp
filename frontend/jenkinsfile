@@ -1,0 +1,136 @@
+@Library('Jenkins-shared-lib') _
+pipeline {
+    agent any
+
+    environment {
+        REGISTRY = "172.16.1.225:5000"
+        IMAGE_NAME = "web_portal_fe"
+        CURRENT_VERSION = "v1.0"
+    }
+
+    options {
+        timestamps()
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Prepare') {
+            steps {
+                script {
+                    BRANCH_NAME = env.BRANCH_NAME
+                    echo "Detected branch: ${BRANCH_NAME}"
+
+                    if (BRANCH_NAME == "dev") {
+                        PORT = 3001
+                        API_URL = "http://172.16.1.225:8090"
+                        BASE_PATH = "/dev/"
+                    } else if (BRANCH_NAME == "test") {
+                        PORT = 3002
+                        API_URL = "http://172.16.1.225:8091"
+                        BASE_PATH = "/test/"
+                    } else if (BRANCH_NAME == "demo") {
+                        PORT = 3003
+                        API_URL = "http://172.16.1.225:8092"
+                        BASE_PATH = "/demo/"
+                    } else {
+                        error("Unsupported branch: ${BRANCH_NAME}")
+                    }
+
+                    echo "FE Port: ${PORT}"
+                    echo "API URL: ${API_URL}"
+                }
+            }
+        }
+
+        stage('Generate Version') {
+            steps {
+                script {
+                    def baseVersion = "1.0"
+                    def phase = (BRANCH_NAME == "dev") ? "dev" :
+                                (BRANCH_NAME == "test") ? "test" : "demo"
+
+                    def commitHash = sh(
+                        script: "git rev-parse --short HEAD",
+                        returnStdout: true
+                    ).trim()
+
+                    VERSION = "${baseVersion}.${phase}.${commitHash}"
+                    env.DEPLOY_URL = "http://172.16.1.225:${PORT}"
+
+                    echo "Generated version: ${VERSION}"
+                }
+            }
+        }
+
+        stage('Create Env File') {
+            steps {
+                script {
+                    sh """
+                        > .env
+                        echo "VITE_BASE_PATH=${BASE_PATH}" >> .env
+                        echo "VITE_API_BASE_URL=${API_URL}" >> .env
+                        echo "VITE_VERSION=${VERSION}" >> .env
+                        echo "PORT=${PORT}" >> .env
+                        echo "REGISTRY=${REGISTRY}" >> .env
+                        echo "IMAGE_NAME=${IMAGE_NAME}" >> .env
+                        echo "VERSION=${VERSION}" >> .env
+
+                        echo "Final .env:"
+                        cat .env
+                    """
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    sh """
+                        echo "Building FE Docker image"
+                        docker build -t ${REGISTRY}/${IMAGE_NAME}:${VERSION} .
+                    """
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    sh """
+                        docker push ${REGISTRY}/${IMAGE_NAME}:${VERSION}
+                    """
+                }
+            }
+        }
+
+        stage('Deploy Container') {
+            steps {
+                script {
+                    def containerName = "${IMAGE_NAME}-${BRANCH_NAME}"
+                    sh """
+                        echo "Stopping old container if exists...."
+                        docker stop ${containerName} || true
+
+                        echo "Removing old container if exists...."
+                        docker rm ${containerName} || true
+
+                        echo "Starting new container..."
+                        docker compose -f docker-compose.${BRANCH_NAME}.yml up -d
+                    """
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "✅ FE deployed successfully at ${env.DEPLOY_URL}"
+        }
+    }
+}

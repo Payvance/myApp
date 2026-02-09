@@ -1,0 +1,64 @@
+.ca-dashboard-content {
+  padding: 24px;
+}
+
+.ca-dashboard-header {
+  margin-bottom: 24px;
+}
+
+.ca-dashboard-title {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.ca-dashboard-subtitle {
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+.ca-dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.ca-dashboard-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  gap: 16px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+}
+
+.card-icon {
+  font-size: 28px;
+  color: #2563eb;
+}
+
+.card-content {
+  flex: 1;
+}
+
+.card-title {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.card-value {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 4px 0;
+}
+
+.card-change {
+  font-size: 12px;
+}
+
+.card-change.positive {
+  color: #16a34a;
+}
+
+.card-change.negative {
+  color: #dc2626;
+}

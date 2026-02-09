@@ -1,0 +1,67 @@
+
+
+/* ===============================
+   Checkbox Component Styling
+   =============================== */
+.checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+/* Disabled state styling */
+.checkbox-disabled { cursor: not-allowed; opacity: 0.6; }
+
+/* Native Checkbox Input
+   accessible for screen readers and keyboard navigation */
+.checkbox-input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+
+.checkbox-box {
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--border-primary);
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-primary);
+  transition: all 0.15s ease-in-out;
+}
+
+/* Checked state background and border */
+.checkbox-input:checked + .checkbox-box {
+  background: var(--purple-500);
+  border-color: var(--purple-500);
+}
+
+/* Checkmark icon shown when checkbox is checked */
+.checkbox-input:checked + .checkbox-box::after {
+  content: "";
+  width: 10px;
+  height: 10px;
+  display: block;
+  /* used only to display an SVG checkmark */
+  mask: url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 16 16\"><path fill=\"%23fff\" d=\"M6.173 12.414L2.464 8.707l1.414-1.414 2.295 2.294 5.657-5.657 1.414 1.414-7.07 7.07z\"/></svg>') center / contain no-repeat;
+  background: var(--bg-primary);
+}
+.checkbox-input:focus + .checkbox-box {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
+}
+/* ===============================
+    Added media queries for responsive design
+    Tablet & Small Desktop View
+   ===============================  */
+@media (max-width: 600px) {
+  .checkbox { font-size: 16px; }
+  .checkbox-box { width: 20px; height: 20px; }
+}

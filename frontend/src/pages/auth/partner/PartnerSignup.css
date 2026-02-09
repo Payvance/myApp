@@ -1,0 +1,217 @@
+/* ===============================
+   Partner Signup Page Wrapper
+   =============================== */
+
+.partner-wrapper {
+  min-height: 100vh;
+  background: #F8F9FA;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ===============================
+   Main Card Container
+   =============================== */
+
+.partner-card {
+  width: 420px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(31, 45, 61, 0.12);
+  padding: 40px 36px;
+}
+
+/* ===============================
+   Header Section
+   =============================== */
+
+.partner-header {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.partner-header h2 {
+  margin: 0 0 6px;
+  font-size: 30px;
+  background: linear-gradient(
+    90deg,
+    #7E56E4 0%,
+    #9F52D0 50%,
+    #BF4FBB 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.partner-header p {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Gradient divider */
+.partner-divider {
+  width: 80px;
+  height: 2px;
+  margin: 10px auto 0;
+  background: linear-gradient(
+    90deg,
+    #7E56E4 0%,
+    #9F52D0 50%,
+    #BF4FBB 100%
+  );
+}
+
+/* ===============================
+   Form Styling
+   =============================== */
+
+.partner-form {
+  margin-top: 28px;
+}
+
+.partner-form .form-group {
+  margin-bottom: 16px;
+}
+
+/* ===============================
+   Submit Button
+   =============================== */
+
+.partner-submit {
+  margin-top: 18px;
+}
+
+/* ===============================
+   Footer & Back Link
+   =============================== */
+
+.partner-footer {
+  margin-top: 18px;
+  text-align: center;
+}
+
+.partner-footer .back-link {
+  display: inline-block;
+  font-size: 13px;
+  color: #7E56E4;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin-bottom: 10px;
+}
+
+.partner-footer .back-link:hover {
+  color: #9F52D0;
+  text-decoration: underline;
+}
+/* ============================= */
+/* Partner OTP Layout ONLY       */
+/* ============================= */
+
+.partner-otp-row {
+  display: grid;
+  grid-template-columns: 1fr 120px;
+  gap: 12px;
+  margin-top: -2px;
+  margin-bottom: -2px;
+}
+
+.partner-otp-input {
+  width: 110%;
+}
+
+.partner-otp-btn-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 32px;
+  margin-top: -17px;
+}
+
+.partner-otp-btn {
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #7E56E4, #BF4FBB);
+  color: #fff;
+  border: none;
+  font-size: 12px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.partner-otp-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.partner-otp-verified {
+  color: #22c55e;
+  font-size: 13px;
+  font-weight: 600;
+}
+/* Cancel button inside OTP modal */
+.partner-otp-cancel {
+  margin-top: 10px;
+  background: none;
+  border: none;
+  color: #7E56E4;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.partner-otp-cancel:hover {
+  text-decoration: underline;
+}
+
+.disabled-link {
+  color: #9ca3af;
+  cursor: not-allowed;
+  pointer-events: none;
+  text-decoration: none;
+}
+.input-container {
+    width: 127%;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .partner-otp-row {
+    grid-template-columns: 1fr;
+  }
+
+  .partner-otp-btn-wrapper {
+    padding-top: 0;
+  }
+
+  .partner-otp-btn {
+    width: 100%;
+  }
+}
+
+/* ===============================
+   Responsive
+   =============================== */
+
+@media (max-width: 480px) {
+  .partner-card {
+    width: 100%;
+    margin: 16px;
+    padding: 28px 22px;
+  }
+
+  .partner-header h2 {
+    font-size: 24px;
+  }
+}
+/* Style for disabled buttons */
+button:disabled,
+.button-disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+

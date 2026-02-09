@@ -1,0 +1,444 @@
+/* DataTable Styles - Using CSS Variables for Dynamic Theming */
+.data-table-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+  background: var(--bg-primary, white);
+  border-radius: var(--border-radius-md, 8px);
+  box-shadow: var(--shadow-sm, 0 2px 8px rgba(0, 0, 0, 0.1));
+  overflow: hidden;
+}
+
+/* Table Controls */
+.table-controls {
+  padding: var(--spacing-md, 16px);
+  border-bottom: 1px solid var(--border-color, #e0e0e0);
+  display: flex;
+  justify-content: flex-start;  /* Changed from space-between */
+  align-items: center;
+  gap: var(--spacing-sm, 8px);  /* Reduced gap */
+}
+
+.search-container {
+  display: flex;
+  gap: var(--spacing-xs, 4px);
+  align-items: center;
+}
+
+.table-search-input {
+  padding: var(--spacing-sm, 8px) var(--spacing-md, 12px);
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: var(--border-radius-sm, 4px);
+  font-size: var(--font-size-sm, 14px);
+  width: 250px;
+  max-width: 250px;
+  flex: none;
+  transition: border-color 0.2s;
+  background: var(--bg-input, white);
+  color: var(--text-primary, #333);
+}
+
+.table-search-input:focus {
+  outline: none;
+  border-color: var(--primary-color, #1976d2);
+  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.1);
+}
+
+.table-search-button {
+  padding: var(--spacing-sm, 8px) var(--spacing-md, 12px);
+  background: var(--primary-color, #1976d2);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-sm, 4px);
+  font-size: var(--font-size-sm, 14px);
+  font-weight: var(--font-weight-medium, 500);
+  cursor: pointer;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+}
+
+.table-search-button:hover {
+  background: var(--primary-color-dark, #1565c0);
+}
+
+.table-search-button:active {
+  background: var(--primary-color-light, #2196f3);
+}
+
+/* Table Wrapper */
+.table-wrapper {
+  flex: 1;
+  overflow: auto;
+  position: relative;
+}
+
+/* Main Table */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm, 14px);
+  min-width: 800px;
+}
+
+.data-table th {
+  background-color: var(--bg-secondary, #f5f5f5);
+  padding: var(--spacing-md, 12px) var(--spacing-md, 16px);
+  text-align: left;
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--text-primary, #333);
+  border-bottom: 2px solid var(--border-color, #e0e0e0);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  white-space: nowrap;
+  text-transform: none;
+}
+
+.data-table th.sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s;
+}
+
+.data-table th.sortable:hover {
+  background-color: var(--bg-hover, #eeeeee);
+}
+
+.sort-indicator {
+  margin-left: var(--spacing-sm, 8px);
+  font-size: var(--font-size-xs, 12px);
+  color: var(--text-secondary, #666);
+}
+
+.data-table td {
+  padding: var(--spacing-md, 12px) var(--spacing-md, 16px);
+  border-bottom: 1px solid var(--border-color, #e0e0e0);
+  vertical-align: middle;
+  line-height: 1.4;
+  color: var(--text-primary, #333);
+  background-color: var(--bg-primary, white);
+}
+
+.data-table tr.table-row:hover {
+  background-color: var(--bg-hover, #f5f5f5);
+}
+
+/* Loading State */
+.loading-row {
+  text-align: center;
+  padding: 40px var(--spacing-md, 16px);
+}
+
+.loading-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm, 8px);
+  color: var(--text-secondary, #666);
+}
+
+.loading-spinner::after {
+  content: '';
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border-color, #e0e0e0);
+  border-top: 2px solid var(--primary-color, #1976d2);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* No Data State */
+.no-data-row {
+  text-align: center;
+  padding: 40px var(--spacing-md, 16px);
+  color: var(--text-secondary, #666);
+  font-style: italic;
+}
+
+/* Action Buttons */
+.table-actions {
+  display: flex;
+  gap: var(--spacing-xs, 4px);
+  align-items: center;
+}
+
+.action-button {
+  padding: 0;
+  min-width: auto;
+  height: auto;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary, #333);
+  transition: color 0.2s ease;
+}
+
+.action-button i {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.action-button:hover {
+  color: var(--primary-color, #1976d2);
+  transform: none;
+  background: transparent;
+}
+
+.edit-button {
+  color: var(--primary-color, #1976d2);
+}
+
+.edit-button:hover {
+  color: var(--primary-color-dark, #1565c0);
+}
+
+.view-button {
+  color: var(--success-color, #388e3c);
+}
+
+.view-button:hover {
+  color: var(--success-color-dark, #2e7d32);
+}
+
+.delete-button {
+  color: var(--danger-color, #d32f2f);
+}
+
+.delete-button:hover {
+  color: var(--danger-color-dark, #c62828);
+}
+
+.issue-button {
+  color: var(--warning-color, #f57c00);
+}
+
+.issue-button:hover {
+  color: var(--warning-color-dark, #e65100);
+}
+
+.action-button:disabled {
+  color: var(--text-disabled, #ccc);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.action-button:disabled:hover {
+  background: transparent;
+}
+
+/* Pagination Styles */
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md, 16px);
+  border-top: 1px solid var(--border-color, #e0e0e0);
+  gap: var(--spacing-md, 16px);
+  flex-wrap: wrap;
+  background-color: var(--bg-secondary, #fafafa);
+}
+
+.pagination-info {
+  font-size: var(--font-size-sm, 14px);
+  color: var(--text-secondary, #666);
+}
+
+.pagination-page-size {
+  padding: var(--spacing-xs, 6px) var(--spacing-md, 12px);
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: var(--border-radius-sm, 4px);
+  font-size: var(--font-size-sm, 14px);
+  background: var(--bg-secondary, white);
+  color: var(--text-primary, #333);
+}
+
+.pagination-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs, 4px);
+}
+
+.pagination-button {
+  padding: var(--spacing-xs, 6px) var(--spacing-sm, 10px);
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: var(--border-radius-sm, 4px);
+  background: var(--bg-primary, white);
+  cursor: pointer;
+  font-size: var(--font-size-sm, 14px);
+  min-width: 32px;
+  transition: all 0.2s ease;
+  color: var(--text-primary, #333);
+}
+
+.pagination-button:hover:not(:disabled) {
+  background-color: var(--bg-hover, #f0f0f0);
+}
+
+.pagination-button:disabled {
+  color: var(--text-disabled, #ccc);
+  cursor: not-allowed;
+}
+
+.pagination-current {
+  padding: var(--spacing-xs, 6px) var(--spacing-md, 12px);
+  font-size: var(--font-size-sm, 14px);
+  font-weight: var(--font-weight-medium, 500);
+  min-width: 60px;
+  text-align: center;
+  color: var(--text-primary, #333);
+}
+
+.pagination-jump {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 8px);
+  font-size: var(--font-size-sm, 14px);
+  color: var(--text-primary, #333);
+}
+
+.pagination-input {
+  width: 60px;
+  padding: var(--spacing-xs, 4px) var(--spacing-sm, 8px);
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: var(--border-radius-sm, 4px);
+  font-size: var(--font-size-sm, 14px);
+  text-align: center;
+  background: var(--bg-secondary, white);
+  color: var(--text-primary, #333);
+}
+
+.pagination-input:focus {
+  outline: none;
+  border-color: var(--primary-color, #1976d2);
+  box-shadow: 0 0 0 2px var(--primary-color-light, rgba(25, 118, 210, 0.1));
+}
+
+/* Search Filter Styles */
+.search-filter-container {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md, 12px);
+  padding: var(--spacing-md, 16px);
+  border-bottom: 1px solid var(--border-color, #e0e0e0);
+  background-color: var(--bg-secondary, #fafafa);
+}
+
+.search-field-select {
+  padding: var(--spacing-sm, 8px) var(--spacing-md, 12px);
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: var(--border-radius-sm, 4px);
+  font-size: var(--font-size-sm, 14px);
+  background: var(--bg-input, white);
+  color: var(--text-primary, #333);
+  min-width: 150px;
+}
+
+.search-input-wrapper {
+  position: relative;
+  flex: 1;
+  max-width: 400px;
+}
+
+.search-input {
+  width: 100%;
+  padding: var(--spacing-sm, 8px) 40px var(--spacing-sm, 8px) var(--spacing-md, 12px);
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: var(--border-radius-sm, 4px);
+  font-size: var(--font-size-sm, 14px);
+  transition: border-color 0.2s;
+  background: var(--bg-input, white);
+  color: var(--text-primary, #333);
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--primary-color, #1976d2);
+  box-shadow: 0 0 0 2px var(--primary-color-light, rgba(25, 118, 210, 0.1));
+}
+
+.search-clear-button {
+  position: absolute;
+  right: var(--spacing-sm, 8px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary, #666);
+  font-size: var(--font-size-xs, 12px);
+  padding: var(--spacing-xs, 2px);
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-clear-button:hover {
+  background-color: var(--bg-hover, #f0f0f0);
+}
+
+.search-button {
+  padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
+  border: 1px solid var(--primary-color, #1976d2);
+  border-radius: var(--border-radius-sm, 4px);
+  background: var(--primary-color, #1976d2);
+  color: white;
+  cursor: pointer;
+  font-size: var(--font-size-sm, 14px);
+  transition: all 0.2s ease;
+}
+
+.search-button:hover:not(:disabled) {
+  background: var(--primary-color-dark, #1565c0);
+}
+
+.search-button:disabled {
+  background: var(--text-disabled, #ccc);
+  border-color: var(--text-disabled, #ccc);
+  cursor: not-allowed;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .table-controls,
+  .search-filter-container,
+  .pagination-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .table-search-input,
+  .search-input {
+    min-width: 100%;
+  }
+  
+  .data-table {
+    font-size: var(--font-size-xs, 12px);
+  }
+  
+  .data-table th,
+  .data-table td {
+    padding: var(--spacing-sm, 8px) var(--spacing-md, 12px);
+  }
+  
+  .action-button {
+    min-width: 28px;
+    height: 28px;
+    font-size: var(--font-size-xs, 12px);
+  }
+  
+  .pagination-nav {
+    justify-content: center;
+  }
+}
