@@ -1,0 +1,303 @@
+input[disabled],
+select[disabled] {
+  cursor: not-allowed !important;
+  color: #555 !important;
+}
+
+/* Reusable InputField component CSS */
+.input-field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+/* Wrapper used for floating label positioning */
+.input-field.floating .input-wrapper {
+  position: relative;
+}
+
+/* ===============================
+   Input Control Styling
+   =============================== */
+.input-control {
+  padding: 14px 12px 10px; 
+  border-radius: 6px;
+  border: 1px solid var(--border-primary);
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.input-control:focus {
+  outline: none;
+  border-color: var(--purple-500); /* theme primary */
+}
+
+/* ===============================
+   Floating Label Styles for InputField Component
+   =============================== */
+.input-container {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.input-container label {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+  font-size: 14px;
+  font-weight: 500;
+  pointer-events: none;
+  background-color: #ffffff;
+  padding: 0 4px;
+  transition: all 0.2s ease;
+  z-index: 1;
+}
+
+.input-container input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  background-color: #ffffff;
+  color: #374151;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+}
+
+/* Floating label active state
+   - On input focus
+   - When input has value */
+.input-container input:focus + label,
+.input-container input:not(:placeholder-shown) + label,
+.input-container input[value]:not([value=""]) + label {
+  top: 0;
+  transform: translateY(-50%);
+  font-size: 12px;
+  color: #6366f1;
+  font-weight: 600;
+}
+
+.input-container input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* Error state */
+.input-container .error-message {
+  color: #ef4444;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}
+
+.input-container input.error {
+  border-color: #ef4444;
+}
+
+/* Required field indicator */
+.required {
+  color: #ef4444;
+  margin-left: 2px;
+}
+
+/* Mobile optimizations */
+@media (max-width: 600px) {
+  .input-label { font-size: 13px; }
+  /* Prevent mobile zoom by ensuring font-size >= 16px on iOS */
+  .input-control {
+    font-size: 16px;
+    padding: 16px 14px 12px;
+  }
+}
+
+label.InputField-input-label {
+  display: flex;
+  justify-content: space-between;
+}
+
+.InputField-input-field:focus {
+  outline: none;
+  border: 2px solid var(--primary-color);
+  box-shadow: 0 0 5px var(--primary-color);
+  background-color: var(-- --primary-100);
+}
+
+.InputField-input-field:disabled,
+.select-container select:disabled {
+  background-color: rgb(225 225 225 / 37%) !important;
+  color: #444 !important;
+}
+
+/* Signin page specific styles */
+.signin-left .input-container {
+  width: 100% !important;
+  margin: 0 0 20px 0;
+}
+
+.signin-left .input-container input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  background-color: #ffffff;
+  color: #374151;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.signin-left .input-container input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.signin-left .input-container label {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #ffffff;
+  padding: 0 4px;
+  color: #9ca3af;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  pointer-events: none;
+}
+
+.signin-left .input-container input:focus + label,
+.signin-left .input-container input:not(:placeholder-shown) + label {
+  top: 0;
+  transform: translateY(-50%);
+  font-size: 12px;
+  color: #6366f1;
+  font-weight: 600;
+}
+
+/* Signup panel specific styles */
+.signup-panel .input-container {
+  width: 100% !important;
+  margin: 0 0 16px 0;
+}
+
+.signup-panel .input-container input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  background-color: #ffffff;
+  color: #374151;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.signup-panel .input-container input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.signup-panel .input-container label {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #ffffff;
+  padding: 0 4px;
+  color: #9ca3af;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  pointer-events: none;
+}
+
+.signup-panel .input-container input:focus + label,
+.signup-panel .input-container input:not(:placeholder-shown) + label {
+  top: 0;
+  transform: translateY(-50%);
+  font-size: 12px;
+  color: #6366f1;
+  font-weight: 600;
+}
+
+/* General Styles */
+.password-wrapper {
+  position: relative;
+  width: 300px;
+}
+
+/* For WebKit browsers like Chrome, Safari, Edge */
+input[type="date"]::-webkit-outer-spin-button,
+input[type="date"]::-webkit-inner-spin-button,
+input[type="date"]::-webkit-calendar-picker-indicator {
+  display: none;
+  -webkit-appearance: none;
+}
+ 
+/* For Firefox */
+input[type="date"]::-moz-calendar-picker-indicator {
+  display: none;
+}
+ 
+/* For general appearance cleanup */
+input[type="date"] {
+  -moz-appearance: textfield; 
+  -webkit-appearance: none;   
+  appearance: none;           
+}
+
+table .select-container:has(> select:disabled) {
+  margin: 0;
+}
+
+.input-container {
+  position: relative;
+  width: 22.2%;
+  height: fit-content;
+}
+
+.login-input .input-container {
+  width: inherit !important;
+}
+
+.input-container input {
+  width: -webkit-fill-available;
+  width: -moz-available;
+  width: -webkit-stretch;
+  padding: 11px;
+  border: 2px solid #a1a1a1;
+  border-radius: 5px;
+  font-size: 13px;
+  outline: none;
+  background-color: white;
+  appearance: none;
+  cursor: pointer;
+}
+
+.input-container label {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: white;
+  padding: 0 5px;
+  color: var(--primary-color);
+  font-size: 12px;
+  font-weight: 600;
+  transition: 0.3s;
+  pointer-events: none;
+}
+
+.input-container input:focus,
+.input-container input:not(:placeholder-shown) {
+  border-color: var(--primary-color);
+}
+
+label input {
+  vertical-align: bottom;
+}

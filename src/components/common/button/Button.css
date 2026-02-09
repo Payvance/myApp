@@ -1,0 +1,107 @@
+/* reusable button component */
+.btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  min-height: 44px; 
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Primary button with gradient */
+.btn-primary {
+  background: var(--gradient-primary);
+  border: none;
+  color: var(--text-inverse);
+}
+
+/* Hover effect for primary button */
+.btn-primary:hover {
+  box-shadow: var(--shadow-md);
+  background: var(--gradient-primary);
+}
+
+
+/* Outline Button 
+  Transparent background
+  Visible border (outline)
+  Used for secondary actions */
+.btn-outline {
+  background: transparent;
+  border: 2px solid var(--text-inverse);
+  color: var(--text-inverse);
+}
+
+.btn-outline:hover {
+  background: var(--bg-overlay);
+  border-color: var(--text-inverse);
+  color: var(--text-inverse);
+}
+
+.btn-outline:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+/* Red Button */
+.btn-red {
+  background: var(--error-color, #dc3545);
+  border: none;
+  color: #fff;
+}
+
+.btn-red:hover {
+  background: #c82333;
+  box-shadow: var(--shadow-md);
+}
+
+/* Secondary Button (Gray) */
+.btn-secondary {
+  background: var(--secondary-color, #387a39);
+  border: none;
+  color: #fff;
+}
+
+.btn-secondary:hover {
+  background: #387a39;
+  box-shadow: var(--shadow-md);
+}
+
+/* Back Button (Icon only) */
+.btn-back {
+  background: transparent;
+  border: none;
+  color: var(--text-primary, #934886) !important;
+  width: 30px !important;
+  height: 30px !important;
+  padding: 0;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  box-shadow: none;
+  border-radius: 50%;
+  font-size: 1.5rem !important;
+  cursor: pointer;
+  z-index: 10;
+  flex-shrink: 0;
+  /* Prevent shrinking in flex container */
+}
+
+.btn-back:hover {
+  background-color: var(--bg-secondary, rgba(0, 0, 0, 0.05));
+  box-shadow: none;
+}
+
+/* ===============================
+    Added media queries for responsive design
+    Tablet & Small Desktop View
+   ===============================  */
+@media (max-width: 600px) {
+  .btn {
+    font-size: 16px;
+    /* avoid iOS zoom */
+    padding: 12px 16px;
+    border-radius: 22px;
+  }
+}

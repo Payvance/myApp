@@ -1,0 +1,60 @@
+/* src/components/common/pageheader/PageHeader.css */
+
+
+/* page header content */
+.page-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+/* page header text */
+.page-header-text {
+  flex: 1;
+}
+/* page header title */
+.page-header-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 4px 0 8px 0;
+    letter-spacing: -0.02em;
+}
+/* page header subtitle */
+.page-header-subtitle {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin: -12px;
+    font-weight: 400;
+    margin-top: -24px;
+    padding: 15px;
+}
+
+/* page header action */
+.page-header-action {
+  flex-shrink: 0;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .page-header-content {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .page-header-title {
+    font-size: 24px;
+  }
+
+  .page-header-subtitle {
+    font-size: 14px;
+  }
+
+  .page-header-action {
+    width: 100%;
+  }
+
+  .page-header-action button {
+    width: 100%;
+  }
+}

@@ -1,0 +1,27 @@
+/* Main layout grid for the application common layout */
+.layout-grid {
+    display: grid;
+    grid-template-columns: var(--sidebar-width) 1fr;
+    grid-template-rows: var(--navbar-height) 1fr;
+    grid-template-areas:
+        "sidebar navbar"
+        "sidebar main";
+    height: 100vh;
+    width: 100vw;
+    box-sizing: border-box;
+    overflow: hidden;
+    transition: grid-template-columns 0.3s ease;
+}
+
+/* Ensure children occupy correct grid areas */
+.layout-grid>aside.sidebar {
+    grid-area: sidebar;
+}
+
+.layout-grid>.app-navbar {
+    grid-area: navbar;
+}
+
+.layout-grid>.main-screen-container {
+    grid-area: main;
+}

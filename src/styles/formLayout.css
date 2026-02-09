@@ -1,0 +1,302 @@
+/* ===============================
+   PAGE WRAPPER
+   =============================== */
+
+.form-page {
+  min-height: 100vh;
+  background: #f2f5f9;
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+}
+
+/* ===============================
+   PAGE HEADING
+   =============================== */
+
+.form-heading {
+  font-size: 25px;
+  font-weight: 600;
+  margin: 0 0 2px 0;
+  background: linear-gradient(90deg, #7E56E4 0%, #9F52D0 50%, #BF4FBB 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block;
+}
+
+.form-subtitle {
+  color: #6b7280;
+  font-size: 14px;
+  margin: 0 0 16px 0;
+  display: block;
+}
+
+/* ===============================
+   SINGLE FORM CARD
+   =============================== */
+
+.form-card {
+  width: 100%;
+  max-width: 1200px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(31, 45, 61, 0.12);
+  padding: 12px 40px;
+  height: calc(100vh - 60px);
+  overflow-y: auto;
+  position: relative;
+}
+
+/* ===============================
+   FORM SECTIONS
+   (Single card, compact sections)
+   =============================== */
+
+.form-section {
+  margin-bottom: 24px;
+}
+
+.form-section:last-of-type {
+  margin-bottom: 0;
+}
+
+/* Section Title - Colored like Signup */
+.profile-section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+  padding: 8px 8px;
+  margin: 0 0 16px 0;
+  background: linear-gradient(90deg, #7E56E4 0%, #9F52D0 100%);
+  border-radius: 5px;
+}
+
+/* ===============================
+   INPUT OVERRIDES
+   =============================== */
+
+.form-section .input-container,
+.form-section .select-container {
+  width: 100% !important;
+  margin: 0 0 12px 0;
+  display: block;
+}
+
+/* Ensure inputs are not collapsed */
+.form-section input,
+.form-section select {
+  width: 100% !important;
+  min-height: 44px;
+  padding: 12px;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #374151;
+  background: white;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+/* Focus state (matches Signup) */
+.form-section input:focus,
+.form-section select:focus {
+  outline: none;
+  border-color: #7E56E4;
+  box-shadow: 0 0 0 3px rgba(126, 86, 228, 0.1);
+}
+
+/* ===============================
+   FORM ROWS (4 columns)
+   =============================== */
+
+.form-row-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+/* Make sure inputs fit grid */
+.form-row-4 .input-container,
+.form-row-4 .select-container {
+  width: 100% !important;
+  margin: 0;
+}
+
+/* ===============================
+   CA CHECKBOX CONTAINER
+   =============================== */
+
+.ca-checkbox-box {
+  display: inline-flex;
+  padding: 10px 10px;
+  border-radius: 8px;
+  border: 1.5px solid #e6eaf0;
+  background-color: #d0d6df;
+  margin-top: 2px;
+  margin-bottom: 15px;
+}
+
+.ca-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.ca-checkbox-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #56e498;
+  cursor: pointer;
+}
+
+.ca-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+/* ===============================
+   FOOTER
+   =============================== */
+
+.profile-footer {
+  display: flex;
+  justify-content: flex-end; /* This aligns button to the right */
+  margin-top: 24px;
+  border-top: 1px solid #e6eaf0;
+  width: 15%; /* Remove any fixed width */
+}
+
+/* Button styling to match Signup */
+.profile-footer button {
+  background: linear-gradient(90deg, #7E56E4 0%, #BF4FBB 100%);
+  color: white;
+  border: none;
+  padding: 12px 32px;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+  min-width: 140px;
+  height: 44px;
+  margin-right: -550%;
+}
+
+.profile-footer button:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.profile-footer button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ===============================
+   SCROLLBAR STYLING
+   =============================== */
+
+.form-card::-webkit-scrollbar {
+  width: 6px;
+}
+
+.form-card::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.form-card::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #7E56E4 0%, #BF4FBB 100%);
+  border-radius: 10px;
+}
+
+.btn-logout {
+  position: absolute;
+  top: 20px;    /* Moves it to the very TOP */
+  right: 50px;  /* Moves it to the far RIGHT */
+  width: 120px; 
+  margin: 0;    
+}
+
+/* ===============================
+   RESPONSIVE DESIGN
+   =============================== */
+
+/* Tablet & Small Desktop */
+@media (max-width: 1200px) {
+  .form-row-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Tablet */
+@media (max-width: 900px) {
+  .form-page {
+    padding: 16px;
+  }
+  
+  .form-card {
+    padding: 24px;
+    width: calc(100% - 32px);
+  }
+  
+  .form-heading {
+    font-size: 28px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .form-page {
+    padding: 12px;
+  }
+  
+  .form-card {
+    padding: 20px;
+    width: calc(100% - 24px);
+  }
+  
+  .form-row-4 {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-heading {
+    font-size: 24px;
+  }
+  
+  .profile-section-title {
+    padding: 8px 14px;
+    font-size: 15px;
+    margin-bottom: 14px;
+  }
+  
+  .profile-footer {
+    justify-content: center;
+  }
+  
+  .profile-footer button {
+    width: 100%;
+    min-width: auto;
+  }
+  
+  .ca-checkbox-box {
+    padding: 12px 16px;
+    margin: 16px 0;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 480px) {
+  .form-card {
+    padding: 16px;
+  }
+  
+  .profile-section-title {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+}

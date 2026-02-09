@@ -1,0 +1,230 @@
+/* Dark Theme - Centralized Color System for PayVance Web Portal */
+
+/* CSS Custom Properties (Variables) */
+:root[data-theme="dark"] {
+  /* Primary Brand Colors - Dark Versions */
+  --primary-50: #1f2937;
+  --primary-100: #111827;
+  --primary-200: #374151;
+  --primary-300: #4b5563;
+  --primary-400: #6b7280;
+  --primary-500: #9ca3af;
+  --primary-600: #d1d5db;
+  --primary-700: #e5e7eb;
+  --primary-800: #f3f4f6;
+  --primary-900: #f9fafb;
+
+  /* Purple Gradient Colors - Dark Adjusted */
+  --purple-50: #1f2937;
+  --purple-100: #374151;
+  --purple-200: #4b5563;
+  --purple-300: #6b7280;
+  --purple-400: #9ca3af;
+  --purple-500: #8b5cf6; /* Brighter purple for dark mode */
+  --purple-600: #a78bfa;
+  --purple-700: #c4b5fd;
+  --purple-800: #7c3aed;
+  --purple-900: #6d28d9;
+
+  /* Background Colors - Dark Theme */
+  --bg-primary: #1f2937;
+  --bg-secondary: #111827;
+  --bg-tertiary: #0f172a;
+  --bg-overlay: rgba(0, 0, 0, 0.5);
+
+  /* Text Colors - Dark Theme */
+  --text-primary: #f9fafb;
+  --text-secondary: #d1d5db;
+  --text-tertiary: #9ca3af;
+  --text-quaternary: #6b7280;
+  --text-inverse: #111827;
+
+  /* Border Colors - Dark Theme */
+  --border-primary: #374151;
+  --border-secondary: #4b5563;
+  --border-focus: rgba(139, 92, 246, 0.5);
+
+  /* Interactive Colors - Dark Theme */
+  --link-primary: #8b5cf6;
+  --link-hover: #a78bfa;
+  --link-active: #c4b5fd;
+
+  /* State Colors - Dark Theme */
+  /* added the background color for the success and error */
+  --success-bg: rgba(34, 197, 94, 0.1);
+  --success: #1dc217;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --error-bg: rgba(239, 68, 68, 0.2);
+  --info: #3b82f6;
+
+  /* Shadow Colors - Dark Theme */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.6);
+
+  /* Gradient Definitions - Dark Theme */
+  --gradient-primary: linear-gradient(90deg, #8b5cf6 0%, #a78bfa 50%, #c4b5fd 100%);
+  --gradient-secondary: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 40%, #a78bfa 100%);
+  --gradient-hero: linear-gradient(135deg, #6d28d9 0%, #7c3aed 40%, #8b5cf6 100%);
+
+  /* Component Specific Colors - Dark Theme */
+  --sidebar-bg: #1f2937;
+  --sidebar-border: #374151;
+  --navbar-bg: #1f2937;
+  --navbar-border: #374151;
+  --card-bg: #1f2937;
+  --input-bg: #374151;
+  --button-primary-bg: #8b5cf6;
+  --button-primary-hover: #a78bfa;
+
+  /* Layout Dimensions - Same as Light Theme */
+  --sidebar-width: 260px;
+  --sidebar-collapsed-width: 70px;
+  --navbar-height: 56px;
+  --navbar-height-mobile: 50px;
+}
+
+/* Dark Theme Utility Classes */
+[data-theme="dark"] .bg-primary { background-color: var(--bg-primary); }
+[data-theme="dark"] .bg-secondary { background-color: var(--bg-secondary); }
+[data-theme="dark"] .bg-tertiary { background-color: var(--bg-tertiary); }
+
+[data-theme="dark"] .text-primary { color: var(--text-primary); }
+[data-theme="dark"] .text-secondary { color: var(--text-secondary); }
+[data-theme="dark"] .text-tertiary { color: var(--text-tertiary); }
+[data-theme="dark"] .text-inverse { color: var(--text-inverse); }
+
+[data-theme="dark"] .border-primary { border-color: var(--border-primary); }
+[data-theme="dark"] .border-secondary { border-color: var(--border-secondary); }
+
+[data-theme="dark"] .gradient-primary { background: var(--gradient-primary); }
+[data-theme="dark"] .gradient-secondary { background: var(--gradient-secondary); }
+[data-theme="dark"] .gradient-hero { background: var(--gradient-hero); }
+
+/* Shadow Utilities - Dark Theme */
+[data-theme="dark"] .shadow-sm { box-shadow: var(--shadow-sm); }
+[data-theme="dark"] .shadow-md { box-shadow: var(--shadow-md); }
+[data-theme="dark"] .shadow-lg { box-shadow: var(--shadow-lg); }
+[data-theme="dark"] .shadow-xl { box-shadow: var(--shadow-xl); }
+
+/* State Color Utilities - Dark Theme */
+[data-theme="dark"] .text-success { color: var(--success); }
+[data-theme="dark"] .text-warning { color: var(--warning); }
+[data-theme="dark"] .text-error { color: var(--error); }
+[data-theme="dark"] .text-info { color: var(--info); }
+
+[data-theme="dark"] .bg-success { background-color: var(--success); }
+[data-theme="dark"] .bg-warning { background-color: var(--warning); }
+[data-theme="dark"] .bg-error { background-color: var(--error); }
+[data-theme="dark"] .bg-info { background-color: var(--info); }
+
+/* Dark Theme Transitions */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Scrollbar Styling for Dark Theme */
+[data-theme="dark"] ::-webkit-scrollbar {
+  width: 8px;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: var(--primary-400);
+  border-radius: 4px;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-500);
+}
+
+/* Dark Theme Specific Overrides */
+[data-theme="dark"] .dashboard-card {
+  background-color: var(--card-bg);
+  border-color: var(--border-primary);
+}
+
+[data-theme="dark"] .card-icon {
+  background-color: var(--bg-secondary);
+  color: var(--purple-500);
+}
+
+[data-theme="dark"] .sidebar-nav a:hover {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .sidebar-nav li.active a {
+  background-color: var(--bg-secondary);
+  color: var(--purple-500);
+}
+
+[data-theme="dark"] .navbar {
+  background-color: var(--navbar-bg);
+  border-color: var(--navbar-border);
+}
+
+[data-theme="dark"] .superadmin-sidebar {
+  background-color: var(--sidebar-bg);
+  border-color: var(--sidebar-border);
+}
+
+[data-theme="dark"] .profile-dropdown {
+  background-color: var(--card-bg);
+  border-color: var(--border-primary);
+}
+
+[data-theme="dark"] .dropdown-item {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .dropdown-item:hover {
+  background-color: var(--bg-secondary);
+}
+
+[data-theme="dark"] .dropdown-divider {
+  background-color: var(--border-primary);
+}
+
+[data-theme="dark"] .input-field {
+  background-color: var(--input-bg);
+  border-color: var(--border-primary);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .input-field:focus {
+  border-color: var(--purple-500);
+}
+
+[data-theme="dark"] .button {
+  background-color: var(--button-primary-bg);
+  color: var(--text-inverse);
+}
+
+[data-theme="dark"] .button:hover {
+  background-color: var(--button-primary-hover);
+}
+
+/* Dark Mode - Search Input Only */
+[data-theme="dark"] .table-search-input {
+  background: #374151 !important;
+  color: #f9fafb !important;
+  border-color: #4b5563 !important;
+}
+
+[data-theme="dark"] .table-search-input::placeholder {
+  color: #d1d5db !important;
+  opacity: 1;
+}
+
+[data-theme="dark"] .table-search-input:focus {
+  border-color: #8b5cf6 !important;
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2) !important;
+}
+
+

@@ -1,0 +1,258 @@
+/* Custom Theme - Beautiful Pink, Purple, Yellow, Orange Mix
+   Soft, faint, and smooth gradient-based design */
+
+/* CSS Custom Properties (Variables) */
+:root[data-theme="custom"] {
+  /* Primary Brand Colors - More Vibrant Mix */
+  --primary-50: #fdf4f0;
+  --primary-100: #fce9d6;
+  --primary-200: #fad8b5;
+  --primary-300: #fad8b5;
+  --primary-400: #f3a25d;
+  --primary-500: #f0803c;
+  --primary-600: #e65d2b;
+  --primary-700: #d44220;
+  --primary-800: #b8351a;
+  --primary-900: #9a2e16;
+
+  /* Custom Purple-Pink-Orange Gradient Colors - More Vibrant */
+  --purple-50: #faf0ff;
+  --purple-100: #f5e0ff;
+  --purple-200: #eec8fd;
+  --purple-300: #e6a8fa;
+  --purple-400: #dc87f6;
+  --purple-500: #d064ef;
+  --purple-600: #c026d3;
+  --purple-700: #a21caf;
+  --purple-800: #86198f;
+  --purple-900: #7E56E4;
+
+  /* Background Colors - Warmer and More Defined */
+  --bg-primary: #fffefe;
+  --bg-secondary: #f8f7f6;
+  --bg-tertiary: #f6efe5;
+  --bg-overlay: rgba(240, 128, 60, 0.12);
+
+  /* Text Colors - More Contrast */
+  --text-primary: #3d2817;
+  --text-secondary: #000000;
+  --text-tertiary: #8d6e63;
+  --text-quaternary: #a1887f;
+  --text-inverse: #fdfaf6;
+
+  /* Border Colors - More Defined */
+  --border-primary: #f0e4d8;
+  --border-secondary: #e6d4c0;
+  --border-focus: rgba(208, 100, 239, 0.35);
+
+  /* Interactive Colors - More Vibrant */
+  --link-primary: #d064ef;
+  --link-hover: #c026d3;
+  --link-active: #a21caf;
+
+  /* State Colors - Same as before */
+  /* added the background color for the success and error */
+  --success-bg: rgba(34, 197, 94, 0.1);
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --error-bg: rgba(244, 63, 94, 0.12);
+  --info: #8b5cf6;
+
+  /* Shadow Colors - More Defined */
+  --shadow-sm: 0 1px 2px rgba(240, 128, 60, 0.08);
+  --shadow-md: 0 4px 6px rgba(240, 128, 60, 0.12);
+  --shadow-xl: 0 20px 25px rgba(240, 128, 60, 0.20);
+
+  /* Gradient Definitions - More Vibrant */
+  --gradient-primary: #e179ef;
+  --gradient-secondary: linear-gradient(135deg, #e6a8fa 0%, #f0803c 25%, #fad8b5 50%, #dc87f6 75%, #f7c08c 100%);
+  --gradient-hero: linear-gradient(135deg, #fdf4f0 0%, #eec8fd 30%, #fce9d6 60%, #e6a8fa 100%);
+
+  /* Component Specific Colors - Warmer */
+  --sidebar-bg: linear-gradient(135deg, #9B88FF 0%, #B394FF 40%, #E6A8FA 100%);
+  --sidebar-border: #f0e4d8;
+  --navbar-bg: #fffbfa;
+  --navbar-border: #f0e4d8;
+  --card-bg: white;
+  --input-bg: #ffffff;
+  --button-primary-bg: #d064ef;
+  --button-primary-hover: #c026d3;
+
+  /* Layout Dimensions - Same as other themes */
+  --sidebar-width: 260px;
+  --sidebar-collapsed-width: 70px;
+  --navbar-height: 56px;
+  --navbar-height-mobile: 50px;
+}
+
+/* Custom Theme Utility Classes */
+[data-theme="custom"] .bg-primary { background-color: var(--bg-primary); }
+[data-theme="custom"] .bg-secondary { background-color: var(--bg-secondary); }
+[data-theme="custom"] .bg-tertiary { background-color: var(--bg-tertiary); }
+
+[data-theme="custom"] .text-primary { color: var(--text-primary); }
+[data-theme="custom"] .text-secondary { color: var(--text-secondary); }
+[data-theme="custom"] .text-tertiary { color: var(--text-tertiary); }
+[data-theme="custom"] .text-inverse { color: var(--text-inverse); }
+
+[data-theme="custom"] .border-primary { border-color: var(--border-primary); }
+[data-theme="custom"] .border-secondary { border-color: var(--border-secondary); }
+
+[data-theme="custom"] .gradient-primary { background: var(--gradient-primary); }
+[data-theme="custom"] .gradient-secondary { background: var(--gradient-secondary); }
+[data-theme="custom"] .gradient-hero { background: var(--gradient-hero); }
+
+/* Shadow Utilities - Custom Theme */
+[data-theme="custom"] .shadow-sm { box-shadow: var(--shadow-sm); }
+[data-theme="custom"] .shadow-md { box-shadow: var(--shadow-md); }
+[data-theme="custom"] .shadow-lg { box-shadow: var(--shadow-lg); }
+[data-theme="custom"] .shadow-xl { box-shadow: var(--shadow-xl); }
+
+/* State Color Utilities - Custom Theme */
+[data-theme="custom"] .text-success { color: var(--success); }
+[data-theme="custom"] .text-warning { color: var(--warning); }
+[data-theme="custom"] .text-error { color: var(--error); }
+[data-theme="custom"] .text-info { color: var(--info); }
+
+[data-theme="custom"] .bg-success { background-color: var(--success); }
+[data-theme="custom"] .bg-warning { background-color: var(--warning); }
+[data-theme="custom"] .bg-error { background-color: var(--error); }
+[data-theme="custom"] .bg-info { background-color: var(--info); }
+
+/* Custom Theme Transitions */
+[data-theme="custom"] * {
+  transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+/* Scrollbar Styling for Custom Theme */
+[data-theme="custom"] ::-webkit-scrollbar {
+  width: 8px;
+}
+
+[data-theme="custom"] ::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+[data-theme="custom"] ::-webkit-scrollbar-thumb {
+  background: var(--primary-400);
+  border-radius: 4px;
+}
+
+[data-theme="custom"] ::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-500);
+}
+
+/* Custom Theme Specific Overrides */
+[data-theme="custom"] .dashboard-card {
+  background-color: var(--card-bg);
+  border-color: var(--border-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+[data-theme="custom"] .card-icon {
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--purple-100) 100%);
+  color: var(--purple-500);
+}
+
+
+/* enhanced the colors for the specific menu items  */
+[data-theme="custom"] .sidebar-nav a:hover {
+  background: linear-gradient(135deg, var(--purple-100) 0%, var(--primary-100) 100%);
+  color: var(--purple-600);
+  transform: translateX(4px);
+  box-shadow: var(--shadow-md);
+}
+
+[data-theme="custom"] .sidebar-nav li.active a {
+  background: linear-gradient(135deg, var(--purple-200) 0%, var(--primary-200) 100%);
+  color: var(--purple-700);
+  font-weight: 600;
+
+}
+
+
+
+
+[data-theme="custom"] .navbar {
+  background: var(--navbar-bg);
+  border-color: var(--navbar-border);
+}
+
+[data-theme="custom"] .sidebar {
+  background: var(--sidebar-bg);
+  border-color: var(--sidebar-border);
+}
+
+[data-theme="custom"] .profile-dropdown {
+  background-color: #d1d5db;
+  border-color: var(--border-primary);
+}
+
+/* User profile hover effect */
+[data-theme="custom"] .user-profile {
+  cursor: pointer;
+}
+
+[data-theme="custom"] .user-profile:hover {
+  background: linear-gradient(135deg, var(--purple-50) 0%, var(--primary-50) 100%);
+  border-radius: 8px;
+  padding: 8px;
+  box-shadow: var(--shadow-md);
+}
+
+
+[data-theme="custom"] .user-profile:hover .role {
+  color: var(--primary-600);
+}
+
+[data-theme="custom"] .dropdown-item {
+  color: var(--text-primary);
+}
+
+[data-theme="custom"] .dropdown-item:hover {
+  background-color: var(--bg-secondary);
+}
+
+[data-theme="custom"] .dropdown-divider {
+  background-color: var(--border-primary);
+}
+
+[data-theme="custom"] .input-field {
+  background-color: var(--input-bg);
+  border-color: var(--border-primary);
+  color: var(--text-primary);
+}
+
+[data-theme="custom"] .input-field:focus {
+  border-color: var(--purple-500);
+}
+
+[data-theme="custom"] .button {
+  background-color: var(--button-primary-bg);
+  color: var(--text-inverse);
+}
+
+[data-theme="custom"] .button:hover {
+  background-color: var(--button-primary-hover);
+}
+
+/* Custom Theme Special Effects */
+[data-theme="custom"] .theme-btn {
+  background: linear-gradient(135deg, var(--purple-100) 0%, var(--primary-100) 100%);
+  border: 1px solid var(--border-primary);
+}
+
+[data-theme="custom"] .theme-btn:hover {
+  background: linear-gradient(135deg, var(--purple-200) 0%, var(--primary-200) 100%);
+  transform: translateY(-1px);
+}
+
+/* Custom Theme Accent Elements */
+[data-theme="custom"] .accent-gradient {
+  background: linear-gradient(135deg, #f4b3fc 0%, #f39c63 25%, #fce4d5 50%, #ef8af9 75%, #fad3bc 100%);
+}
+
+[data-theme="custom"] .warm-gradient {
+  background: linear-gradient(135deg, #fef7f0 0%, #fff4e6 25%, #fdf4ff 50%, #fefbf8 75%, #fdf7f2 100%);
+}

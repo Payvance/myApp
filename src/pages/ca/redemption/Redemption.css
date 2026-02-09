@@ -1,0 +1,138 @@
+/* Subscription Plans Page Styles */
+
+.redemption-content {
+  padding: 5px 18px 18px 18px;
+  background-color: var(--bg-secondary);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.redemption-table-header {
+  margin-bottom: 32px;
+}
+
+.redemption-table-title {
+  color: var(--text-primary);
+  font-size: 2rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+}
+
+.redemption-table-subtitle {
+  color: var(--text-primary);
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* License Keys Table Styles */
+.redemption-table {
+  background: var(--bg-primary, white);
+  border-radius: var(--border-radius-md, 8px);
+  box-shadow: var(--shadow-sm, 0 2px 8px rgba(0, 0, 0, 0.1));
+  overflow: hidden;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border-primary);
+}
+
+/* Issue Key Button Styles */
+.redemptiontable .issue-key-button {
+  background-color: var(--primary-color, #007bff);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.redemptiontable .issue-key-button:hover:not(:disabled) {
+  background-color: var(--primary-hover, #0056b3);
+}
+
+.redemption-table .issue-key-button:disabled {
+  background-color: var(--bg-disabled, #6c757d);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.redemption-table .issue-key-button i {
+  font-size: 14px;
+}
+
+/* Status Badge Styles */
+.redemption-table .status-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.redemption-table .status-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.redemption-table .status-unused {
+  background-color: var(--success-light, #d4edda);
+  color: var(--success-dark, #155724);
+}
+
+.redemption-table .status-issued {
+  background-color: var(--info-light, #d1ecf1);
+  color: var(--info-dark, #0c5460);
+}
+
+.lredemption-table .status-redeemed {
+  background-color: var(--primary-light, #cce5ff);
+  color: var(--primary-dark, #004085);
+}
+
+.redemption-table .status-expired {
+  background-color: var(--warning-light, #fff3cd);
+  color: var(--warning-dark, #856404);
+}
+
+.redemption-table .status-revoked {
+  background-color: var(--danger-light, #f8d7da);
+  color: var(--danger-dark, #721c24);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .redemption-table-content {
+    padding: 1rem;
+  }
+
+  .redemption-table-title {
+    font-size: 1.5rem;
+  }
+
+  .redemption-table-subtitle {
+    font-size: 1rem;
+  }
+
+  .redemption-table-table {
+    height: calc(100vh - var(--navbar-height) - 200px);
+  }
+}
+
+@media (max-width: 480px) {
+  .redemption-table-page {
+    padding: 12px;
+  }
+
+  .redemption-table-title {
+    font-size: 20px;
+  }
+
+  .redemption-table-table {
+    height: calc(100vh - var(--navbar-height) - 220px);
+  }
+}

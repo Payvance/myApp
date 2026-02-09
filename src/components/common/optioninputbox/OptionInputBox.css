@@ -1,0 +1,137 @@
+/* =========================================
+   OptionInputBox – matches InputField styles
+   ========================================= */
+
+/* Base container (same as .input-container) */
+.select-container {
+  position: relative;
+  width: 100%;
+  height: fit-content;
+}
+
+/* Select field styling (same as input) */
+.select-container select {
+  width: 100%;
+  padding: 12px 16px;
+  padding-right: 40px; /* space for arrow */
+  border: 2px solid grey;
+  border-radius: 6px;
+  font-size: 12px;
+  outline: none;
+  background-color: #ffffff;
+  color: #374151;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+  appearance: none;
+  cursor: pointer;
+}
+
+/* Focus state (same as InputField) */
+.select-container select:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* Disabled state */
+.select-container select:disabled {
+  background-color: rgb(225 225 225 / 37%) !important;
+  color: #444 !important;
+  cursor: not-allowed;
+}
+
+/* Disabled option */
+select option:disabled {
+  color: #999;
+}
+
+/* Floating label */
+.select-container label {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #ffffff;
+  padding: 0 4px;
+  color: black;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Floating label active state */
+.select-container select:focus + label,
+.select-container.filled label {
+  top: 0;
+  transform: translateY(-50%);
+  font-size: 12px;
+  color: #6366f1;
+  font-weight: 600;
+}
+
+/* Error message */
+.select-container .error-message {
+  color: #ef4444;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}
+
+/* Error border */
+.select-container select.error {
+  border-color: #ef4444;
+}
+
+/* Required star */
+.required {
+  color: #ef4444;
+  margin-left: 2px;
+}
+
+/* Dropdown arrow */
+.select-container::after {
+  content: "";
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  background-image: url("./chevron-down.svg");
+  background-repeat: no-repeat;
+  background-size: contain;
+  pointer-events: none;
+}
+
+/* Table view overrides */
+table .select-container {
+  margin: 0;
+}
+
+table .select-container select:disabled {
+  border: 0;
+  background-color: transparent !important;
+  padding: 0 !important;
+  width: auto;
+}
+
+table .select-container::after {
+  display: none;
+}
+
+/* Mobile optimization */
+@media (max-width: 600px) {
+  .select-container select {
+    font-size: 16px; /* prevent iOS zoom */
+    padding: 14px 16px;
+  }
+}
+.custom-select-arrow {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  cursor: pointer;
+}

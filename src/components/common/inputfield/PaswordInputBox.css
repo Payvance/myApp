@@ -1,0 +1,124 @@
+
+.validation-box {
+  position: fixed;
+  right: 120px;
+  top: 300px;
+  width: 200px;
+  background: linear-gradient(
+    135deg,
+    #7f00ff,
+    #e100ff
+  );
+  color: white;
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+  z-index: 999999;
+}
+
+
+/* List inside validation box */
+.validation-box ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 14px;
+}
+
+.validation-box li {
+  margin: 6px 0;
+  opacity: 0.6;
+  font-weight: normal;
+  transition: opacity 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+.password-wrapper {
+ position: relative;
+ width: 319px;
+} 
+/* ✅ Make valid rules turn green */
+.validation-box li.valid {
+  opacity: 1;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+
+/* Password Input */
+.password-input {
+  display: flex;
+  align-items: center;
+  background: white;
+  border-radius: 6px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  transition: border 0.3s ease-in-out;
+}
+
+.password-input input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 16px;
+}
+
+.password-input .toggle-password {
+  cursor: pointer;
+  font-size: 18px;
+  margin-left: 10px;
+  color: white;
+}
+
+.input-container input:focus, .input-container input:not(:placeholder-shown) {
+    border-color: #e6eaf0;
+}
+
+
+/* INPUT CONTAINER – SAME AS InputField */
+.input-container {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+/* INPUT */
+.input-container input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  background: #fff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* FOCUS */
+.input-container input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* LABEL */
+.input-container label {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #fff;
+  padding: 0 4px;
+  font-size: 14px;
+  color: #9ca3af;
+  pointer-events: none;
+  transition: all 0.2s ease;
+}
+
+/* FLOATING LABEL (SAME LOGIC AS InputField) */
+.input-container input:focus + label,
+.input-container input:not(:placeholder-shown) + label {
+  top: 0;
+  font-size: 12px;
+  color: #6366f1;
+  font-weight: 600;
+}
+
+

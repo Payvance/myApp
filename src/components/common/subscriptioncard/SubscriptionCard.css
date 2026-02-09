@@ -1,0 +1,194 @@
+/* src/components/common/subscriptioncard/SubscriptionCard.css */
+.subscription-card {
+    background: var(--card-bg, #ffffff);
+    border: 1px solid var(--border-primary, #f0f0f0);
+    border-radius: 12px;
+    padding: 10px;
+    /* Reduced from 16px */
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    /* ensured all cards have same width size. */
+    width: 220px;
+    min-width: 220px;
+    max-width: 220px;
+    height: 250px;
+}
+
+/* when hover of mouse cursor */
+.subscription-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-xl, 0 20px 40px rgba(126, 86, 228, 0.12));
+}
+
+/* header section */
+.subscription-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 6px;
+    /* Reduced from 12px */
+}
+
+/* name section */
+.subscription-card-name {
+    font-size: 14px;
+    /* Reduced from 18px */
+    font-weight: 700;
+    /* added color for name */
+    color: var(--text-primary, var(--primary-900));
+    margin: 0;
+    letter-spacing: -0.01em;
+}
+
+.subscription-status-badge {
+    font-size: 9px;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 100px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+/* Active status - Green */
+.subscription-status-badge.status-active {
+    background: var(--success-bg);
+    color: var(--success);
+}
+
+/* Inactive status - Red */
+.subscription-status-badge.status-inactive {
+    background: var(--error-bg);
+    color: var(--error);
+}
+
+/* code section */
+.subscription-card-desc {
+    color: var(--text-secondary);
+    margin: 0.2rem;
+}
+
+.subscription-card-pricing {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    gap: 8px;
+}
+
+.subscription-pricing-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.subscription-card-price {
+    font-size: 18px;
+    /* Reduced from 24px */
+    font-weight: 700;
+    color: var(--purple-500, #7e56e4);
+    margin: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+}
+
+.subscription-card-period {
+    color: var(--text-secondary, #666666);
+    font-size: 10px;
+    /* Reduced from 12px */
+    margin-top: 1px;
+}
+
+.subscription-card-stats {
+    background-color: var(--primary-300, #f8f9ff);
+    border-radius: 8px;
+    padding: 6px;
+    /* Reduced from 8px */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* ensured all cards have same width size. */
+    min-width: 60px;
+    margin-bottom: 0 !important;
+    /* Removed margin bottom since it's now inside pricing */
+    border: 1px solid var(--accent-border, #edf0ff);
+}
+
+.subscription-stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    text-align: center;
+}
+
+.subscription-stat-label {
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--text-muted, #94a3b8);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.subscription-stat-value {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary, #334155);
+}
+
+.subscription-card-features {
+    flex-grow: 1;
+}
+
+.subscription-features-label {
+    display: block;
+    font-size: 9px;
+    /* Reduced from 10px */
+    font-weight: 600;
+    color: var(--text-primary, #1a1a1a);
+    margin-bottom: 4px;
+    /* Reduced from 8px */
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.subscription-features-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.subscription-feature-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    /* Reduced from 12px */
+    color: var(--text-secondary, #4b5563);
+    margin-bottom: 4px;
+    /* Reduced from 6px */
+}
+
+.subscription-feature-item i {
+    color: var(--success-color, #22c55e);
+    font-size: 14px;
+}
+
+.subscription-edit-btn {
+    width: 100%;
+    background-color: var(--purple-500);
+    color: var(--text-primary);
+    border: none;
+    padding: 6px;
+    /* Reduced from 10px */
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 11px;
+    /* Reduced from 12px */
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.subscription-edit-btn:hover {
+    background-color: var(--purple-800);
+    color: var(--text-primary);
+}

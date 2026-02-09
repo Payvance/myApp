@@ -1,0 +1,217 @@
+.buy-plan-content {
+    padding: 2px 18px 10px 18px;
+    overflow-y: auto;
+    max-height: 100%;
+}
+
+/* New Layout Styles */
+.buy-plan-layout {
+    display: flex;
+    gap: 30px;
+}
+
+.addons-section {
+    flex: 1;
+    min-width: 0;
+}
+
+.payment-section {
+    width: 400px;
+    flex-shrink: 0;
+    padding: 0;
+}
+
+.buy-plan-body {
+    margin-top: 20px;
+}
+
+.plans-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+@media (max-width: 1024px) {
+    .buy-plan-layout {
+        flex-direction: column;
+    }
+    
+    .payment-section {
+        width: 100%;
+    }
+    
+    .payment-window {
+        position: static;
+    }
+}
+
+/* Payment Window Styles */
+.payment-window {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 20px;
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.payment-amount {
+    text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.payment-amount h3 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.plan-details {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.plan-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.plan-info h4 {
+    margin: 0 0 10px 0;
+    color: #2c3e50;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.plan-limits {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+.plan-limits span {
+    color: #6c757d;
+    font-size: 14px;
+    font-weight: 500;
+    font-size: 14px;
+    color: #666;
+    font-weight: 500;
+}
+
+.selected-addons {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+    margin-bottom: 20px;
+}
+
+.selected-addons h4 {
+    margin: 0 0 10px 0;
+    color: #2c3e50;
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 15px 0;
+    color: #2c3e50;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.addon-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #dee2e6;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.addon-item:last-child {
+    border-bottom: none;
+}
+
+.addon-name {
+    color: #495057;
+    font-size: 14px;
+    font-weight: 500;
+    flex: 1;
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+}
+
+.addon-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.addon-price {
+    color: #28a745;
+    font-size: 14px;
+    font-weight: 600;
+    font-size: 14px;
+    color: #2c3e50;
+    font-weight: 600;
+    min-width: 80px;
+    text-align: right;
+}
+
+.payment-inputs {
+    margin-bottom: 20px;
+}
+
+.input-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.input-row:last-child {
+    margin-bottom: 0;
+}
+
+.input-row .input-field {
+    flex: 3;
+}
+
+.input-row .btn {
+    flex: 1;
+    min-width: 80px;
+    height: 40px;
+    white-space: nowrap;
+}
+
+.payment-action {
+    text-align: center;
+    padding-top: 15px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.payment-action .btn {
+    min-width: 50px;
+    height: 45px;
+    font-size: 16px;
+    font-weight: 600;
+}

@@ -1,0 +1,147 @@
+.help-wrapper {
+  position: relative;
+}
+
+.support-box {
+  position: absolute;
+  top: 0;
+  z-index: 1000;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+}
+
+.support-right {
+  left: 103%;
+  margin-left: 8px;
+  border-radius: 15px;
+}
+
+.support-left {
+  right: 103%;
+  margin-right: 8px;
+  border-radius: 15px;
+}
+
+/* Avatar circle */
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--purple-500);
+  color: white;
+  font-weight: bold;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+
+
+/* Support item */
+.support-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 5px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Copy icon */
+.copy-icon {
+  font-size: 14px;
+  color: var(--purple-500);
+  cursor: pointer;
+  margin-left: 5px;
+  transition: color 0.2s;
+}
+
+.copy-icon:hover {
+  color: var(--purple-600);
+}
+
+/* Popup buttons */
+.popup-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.support-title{
+  font-weight: 600;
+ font-size: medium;
+  margin: 0;
+}
+
+
+.profile-dropdown .dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 89%;
+  padding: 10px 12px;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  /* Ensure no text overflow when collapsed */
+  text-decoration: none;
+  /* important for Link */
+  text-align: left;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* Sidebar dropdown items text color change on hover */
+.profile-dropdown .dropdown-item:hover {
+  color: var(--purple-600); /* change this to whatever color you like */
+}
+
+.dropdown-item.logout {
+  color: var(--error);
+  width: 100%;
+}
+
+.dropdown-item.logout:hover {
+  background: var(--error-bg);
+}
+
+/* Upgrade plan glowing effect */
+.upgrade-glow {
+  position: relative;
+  color: var(--purple-500) !important;
+  transition: color 0.3s ease;
+  animation: glowPulse 1.5s infinite alternate;
+}
+
+.upgrade-glow:hover {
+  color: var(--purple-600);
+  
+}
+/* Input field focus styles */
+.reset-password-form-container .input-container input:focus {
+  border-color: #6366f1 !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
+  outline: none;
+}
+.reset-password-form-container input:focus {
+  border: 1.5px solid #6366f1 !important; /* Matches your New Password border */
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important; /* Matches the glow */
+  outline: none !important;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Soft glow animation */
+@keyframes glowPulse {
+  0% {
+    text-shadow: 0 0 2px rgba(128, 0, 255, 0.5), 0 0 2px rgba(128, 0, 255, 0.3);
+  }
+  50% {
+    text-shadow: 0 0 2px rgba(138, 43, 226, 0.5), 0 0 4px rgba(138, 43, 226, 0.3);
+  }
+  100% {
+    text-shadow: 0 0 1px rgba(128, 0, 255, 0.5), 0 0 2px rgba(128, 0, 255, 0.3);
+  }
+}

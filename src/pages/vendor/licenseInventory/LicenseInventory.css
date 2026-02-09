@@ -1,0 +1,476 @@
+/* Disable scrolling on popup shell */
+.popup-body,
+.popup-content {
+  overflow: hidden !important;
+}
+
+/* Enable scrolling ONLY on form */
+.create-plan-form {
+  overflow-y: auto;
+  max-height: calc(100vh - 220px);
+  padding-right: 8px;
+}
+
+/* Chrome, Edge, Safari */
+
+
+.create-plan-form::-webkit-scrollbar {
+  width: 6px;
+}
+
+.create-plan-form::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.create-plan-form::-webkit-scrollbar-thumb {
+  background-color: rgba(120, 120, 120, 0.35);
+  border-radius: 10px;
+}
+
+.create-plan-form::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(120, 120, 120, 0.6);
+}
+
+.popup-container {
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.popup-header {
+  flex-shrink: 0;
+}
+
+.create-plan-form {
+  display: flex;
+  flex-direction: column;
+  /* gap: 5px; */
+  /* space between main form & payment */
+
+
+}
+
+
+
+/* Popup header */
+.popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 16px 25px;
+  /* space for close button */
+}
+
+/* Title text */
+.popup-header h2,
+.popup-header .popup-title {
+  margin: 0;
+  font-weight: 600;
+}
+
+/* Close button stays on right */
+.popup-close {
+  position: absolute;
+  right: 50px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+
+
+.license-inventory-content {
+  padding: 5px 18px 18px 18px;
+  background-color: var(--bg-secondary);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.license-inventory-header {
+  margin-bottom: 32px;
+}
+
+.license-inventory-title {
+  color: var(--text-primary);
+  font-size: 2rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+}
+
+.license-inventory-subtitle {
+  color: var(--text-primary);
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* Table Container - Fix Clipping Issue */
+.license-inventory-table {
+  background: var(--bg-primary, white);
+  border-radius: var(--border-radius-md, 8px);
+  box-shadow: var(--shadow-sm, 0 2px 8px rgba(0, 0, 0, 0.1));
+  overflow: hidden;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border-primary);
+  margin-top: 24px;
+}
+
+/* File upload wrapper */
+.file-input {
+  width: 97%;
+  padding: 10px 6px;
+  font-size: 14px;
+  border-radius: 10px;
+  border: 1px solid #e0e0e0;
+  background-color: #fafafa;
+  cursor: pointer;
+}
+
+/* Chrome, Edge, Safari */
+.file-input::-webkit-file-upload-button {
+  background: linear-gradient(135deg, #7b61ff, #9b7cff);
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  margin-right: 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* Hover effect */
+.file-input::-webkit-file-upload-button:hover {
+  background: linear-gradient(135deg, #684de0, #8467ff);
+}
+
+/* Firefox */
+.file-input::file-selector-button {
+  background: linear-gradient(135deg, #7b61ff, #9b7cff);
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  margin-right: 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.file-input::file-selector-button:hover {
+  background: linear-gradient(135deg, #684de0, #8467ff);
+}
+
+.input-label {
+  font-size: 14px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px 24px;
+  margin-top: 4px;
+}
+
+.form-section {
+  margin-bottom: 32px;
+}
+
+.payment-section {
+  margin-top: 8px;
+  margin-bottom: 78px;
+  padding: 24px;
+  border-radius: 16px;
+  background: #fafafa;
+  border: 1px solid #eee;
+}
+
+.payment-grid {
+  display: grid;
+  /* 🔥 MISSING LINE */
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px 24px;
+  /* same spacing as form-grid */
+  margin-top: 8px;
+}
+
+
+
+.payment-section .input-label,
+.payment-section label {
+  font-size: 14px;
+}
+
+
+.payment-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.payment-proof {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+
+.popup-footer {
+  position: static;
+  bottom: 0;
+  z-index: 10;
+  background: #fff;
+  padding: 16px 24px;
+  border-top: 1px solid #eee;
+}
+
+/* .payment-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px 24px;
+}
+
+.payment-grid input,
+.payment-grid select {
+  width: 100%;
+}
+
+/* FORCE OptionInputBox to fill grid column */
+/* =========================
+   FIX OPTIONINPUTBOX WIDTH
+========================= */
+
+/* Grid item must stretch */
+.payment-grid>* {
+  width: 100%;
+}
+
+/* OptionInputBox root */
+.payment-grid .option-input-box {
+  width: 100% !important;
+  max-width: 100% !important;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Wrapper inside OptionInputBox */
+.payment-grid .option-input-box>div,
+.payment-grid .option-input-box .select-wrapper {
+  width: 100% !important;
+}
+
+/* Actual select element */
+.payment-grid select {
+  width: 418% !important;
+  min-width: 100% !important;
+  height: 50px;
+  box-sizing: border-box;
+}
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .license-inventory-content {
+    padding: var(--spacing-md, 16px);
+  }
+
+  .license-inventory-title {
+    font-size: 1.5rem;
+  }
+
+  .license-inventory-subtitle {
+    font-size: 14px;
+  }
+
+  .license-inventory-table {
+    height: calc(100vh - var(--navbar-height) - 200px);
+  }
+}
+
+@media (max-width: 480px) {
+  .license-inventory-content {
+    padding: var(--spacing-sm, 12px);
+  }
+
+  .license-inventory-title {
+    font-size: 1rem;
+  }
+
+  .license-inventory-table {
+    height: calc(100vh - var(--navbar-height) - 220px);
+  }
+}
+
+/* Issue Batch Form */
+.issue-batch-form {
+  padding-top: 20px;
+}
+
+.or-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 16px 0;
+  position: relative;
+}
+
+.or-text {
+  background-color: white;
+  color: #6c757d;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 0 16px;
+  z-index: 1;
+}
+
+.or-divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: #e9ecef;
+  z-index: 0;
+}
+
+/* License Success Form */
+.license-success-form {
+  padding-top: 20px;
+}
+
+.success-form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.client-details-box {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.client-details-title {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary, #333);
+  border-bottom: 2px solid #7b61ff;
+  padding-bottom: 8px;
+}
+
+.client-details-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.client-detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.client-detail-item:last-child {
+  border-bottom: none;
+}
+
+.detail-label {
+  font-weight: 500;
+  color: #6c757d;
+  font-size: 14px;
+}
+
+.detail-value {
+  font-weight: 500;
+  color: var(--text-primary, #333);
+  font-size: 14px;
+}
+
+.activation-key-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field-label {
+  font-weight: 600;
+  color: var(--text-primary, #333);
+  font-size: 14px;
+}
+
+.field-value {
+  padding: 16px 20px;
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  font-size: 15px;
+  color: var(--text-primary, #333);
+  font-weight: 500;
+}
+
+.field-value.activation-key {
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  font-size: 18px;
+  background: linear-gradient(135deg, #e8f5e8 0%, #d4edda 100%);
+  border: 2px solid #28a745;
+  color: #155724;
+  letter-spacing: 1px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.15);
+}
+
+.success-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+}
+
+.success-actions .button {
+  min-width: 120px;
+  padding: 12px 32px;
+  background: linear-gradient(135deg, #7b61ff 0%, #9b7cff 100%);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.success-actions .button:hover {
+  background: linear-gradient(135deg, #684de0 0%, #8467ff 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(123, 97, 255, 0.3);
+}
+
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .payment-grid {
+    grid-template-columns: 1fr;
+  }
+}

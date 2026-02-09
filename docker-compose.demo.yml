@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  demo_webportal_fe:
+    container_name: web_portal_fe-demo
+    env_file:
+      - .env
+    environment:
+      - IMAGE_NAME=web_portal_fe
+      - REGISTRY=172.16.1.225:5000
+      - VITE_TWO_FA_LOGIN_ENABLED=1
+    build:
+      context: .
+      args:
+        VITE_BASE_PATH: /demo/
+        VITE_API_BASE_URL: http://172.16.1.225:8092
+        VITE_VERSION: ${VITE_VERSION}
+    image: 172.16.1.225:5000/web_portal_fe:${VERSION}
+    ports:
+      - "3003:3000"
+    networks:
+      - web_portal_shared
+    restart: unless-stopped
+networks:
+  web_portal_shared:
+    external: true
