@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Trial Started</title>
+</head>
+<body>
+
+<h2>Your Payvance Trial Has Started 🎉</h2>
+
+<p>
+    Your free trial has been successfully activated.
+</p>
+
+<p>
+    <strong>Trial Period:</strong><br/>
+    From <b th:text="${trial_start_at}"></b> to <b th:text="${trial_end_at}"></b> <!-- trial_start_at, trial_end_at added proper columns  -->
+</p>
+
+<p>
+    You can now explore all features available during the trial.
+</p>
+
+<p>
+    <a th:href="${loginUrl}"
+       style="padding:10px 16px;
+              background:#4f46e5;
+              color:#fff;
+              text-decoration:none;
+              border-radius:6px;">
+        Login to Dashboard
+    </a>
+</p>
+
+<br/>
+
+<p>
+    Need help? Our support team is always here for you.
+</p>
+
+<p>
+    — Team Payvance
+</p>
+
+</body>
+</html>

@@ -1,0 +1,138 @@
+@Library('Jenkins-shared-lib') _
+pipeline {
+    agent any
+
+    environment {
+        REGISTRY = "172.16.1.225:5000"
+        IMAGE_NAME = "core_saas"
+        CURRENT_VERSION = "v1.0"
+    }
+
+    options {
+        timestamps()
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Prepare') {
+            steps {
+                script {
+                    BRANCH_NAME = env.BRANCH_NAME
+                    echo "Detected branch: ${BRANCH_NAME}"
+
+                    if (BRANCH_NAME == "dev") {
+                        PORT = 8090
+                        SPRING_PROFILE = "dev"
+
+                    } else if (BRANCH_NAME == "test") {
+                        PORT = 8091
+                        SPRING_PROFILE = "test"
+
+                    } else if (BRANCH_NAME == "demo") {
+                        PORT = 8092
+                        SPRING_PROFILE = "demo"
+
+                    } else {
+                        error("Unsupported branch: ${BRANCH_NAME}")
+                    }
+
+                    echo "Spring profile: ${SPRING_PROFILE}"
+                    echo "Exposed port: ${PORT}"
+                }
+            }
+        }
+
+        stage('Generate Version') {
+            steps {
+                script {
+                    def baseVersion = "1.0"
+                    def phase = (BRANCH_NAME == "dev") ? "dev" :
+                                (BRANCH_NAME == "test") ? "test" : "demo"
+
+                    def commitHash = sh(
+                        script: "git rev-parse --short HEAD",
+                        returnStdout: true
+                    ).trim()
+
+                    VERSION = "${baseVersion}.${phase}.${commitHash}"
+                    echo "Generated version: ${VERSION}"
+                }
+            }
+        }
+
+        stage('Create Env File') {
+            steps {
+                script {
+                    sh """
+                        > .env
+                        echo "SPRING_PROFILES_ACTIVE=${SPRING_PROFILE}" >> .env
+                        echo "PORT=${PORT}" >> .env
+                        echo "REGISTRY=${REGISTRY}" >> .env
+                        echo "IMAGE_NAME=${IMAGE_NAME}" >> .env
+                        echo "VERSION=${VERSION}" >> .env
+
+                        echo "Final .env file:"
+                        cat .env
+                    """
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    sh """
+                        echo "Building Docker image..."
+                        docker compose -f docker-compose.${BRANCH_NAME}.yml build --no-cache
+                    """
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    sh """
+                        echo "Pushing image to ${REGISTRY}"
+                        docker push ${REGISTRY}/${IMAGE_NAME}:${VERSION}
+                    """
+                }
+            }
+        }
+
+        stage('Deploy Container') {
+            steps {
+                script {
+                    def containerName = "${IMAGE_NAME}-${BRANCH_NAME}"
+                    
+                    sh """
+                        echo "Stopping old container if exists..."
+                        docker stop ${containerName} || true
+
+                        echo "Removing old container if exists..."
+                        docker rm ${containerName} || true
+
+                        echo "Starting new container..."
+                        docker compose -f docker-compose.${BRANCH_NAME}.yml up -d
+                    """
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "✅ Deployment successful for ${BRANCH_NAME}"
+        }
+
+        failure {
+            echo "❌ Deployment failed for ${BRANCH_NAME}"
+        }
+    }
+}

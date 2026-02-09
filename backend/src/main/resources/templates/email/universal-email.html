@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${subject}">Notification</title>
+</head>
+
+<body style="margin:0;padding:0;background:#f4f6f8;font-family:Arial,sans-serif;">
+
+<table width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+        <td align="center" style="padding:30px 10px;">
+
+            <!-- Container -->
+            <table width="600" cellpadding="0" cellspacing="0"
+                   style="background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+
+                <!-- Header -->
+                <tr>
+                    <td style="background:#1f4fd8;color:#ffffff;padding:20px 30px;">
+                        <h2 style="margin:0;" th:text="${title}">Notification</h2>
+                    </td>
+                </tr>
+
+                <!-- Body -->
+                <tr>
+                    <td style="padding:25px 30px;color:#333333;">
+
+                        <p style="font-size:15px;">
+                            Hello <b th:text="${name}">User</b>,
+                        </p>
+
+                        <p style="font-size:15px;line-height:1.6;"
+                           th:text="${message}">
+                            Message goes here
+                        </p>
+                        
+                        
+
+                        <!-- STATUS -->
+                        <p th:if="${status}"
+                           style="margin-top:15px;font-size:15px;">
+                            <b>Status:</b>
+                            <span th:text="${status}"
+                                  th:style="${status == 'approved'} ? 'color:green;' : 'color:red;'">
+                                approved
+                            </span>
+                        </p>
+
+
+						<!-- OTP -->
+						<div th:if="${otp}"
+						     style="margin-top:15px;padding:12px;background:#fff3cd;border-radius:5px;">
+						    <b>Your OTP:</b>
+						    <span th:text="${otp}"></span>
+						    <p style="color:#856404;font-size:13px;margin-top:6px;">
+						        Please use this OTP to verify your email. It expires in 5 minutes.
+						    </p>
+						</div>
+
+                        <!-- PASSWORD -->
+                        <div th:if="${password}"
+                             style="margin-top:15px;padding:12px;background:#fff3cd;border-radius:5px;">
+                            <b>Temporary Password:</b>
+                            <span th:text="${password}"></span>
+                            <p style="color:#856404;font-size:13px;margin-top:6px;">
+                                Please change your password after login.
+                            </p>
+                        </div>
+
+                        <!-- REMARK -->
+                        <div th:if="${remark}"
+                             style="margin-top:15px;padding:12px;background:#fdecea;border-radius:5px;">
+                            <b>Remark:</b>
+                            <span th:text="${remark}"></span>
+                        </div>
+
+                        <!-- REFERRAL CODE -->
+                        <div th:if="${referralCode}"
+                             style="margin-top:15px;padding:12px;background:#e6f7ff;border-radius:5px;">
+                            <b>Your Referral Code:</b>
+                            <span th:text="${referralCode}"></span>
+                        </div>
+
+                        <!-- GENERIC INFO -->
+                        <div th:if="${info}"
+                             style="margin-top:15px;padding:12px;background:#eef2f7;border-radius:5px;">
+                            <span th:text="${info}"></span>
+                        </div>
+
+                        <!-- CTA BUTTON -->
+                        <div th:if="${actionUrl}" style="margin-top:25px;">
+                            <a th:href="${actionUrl}"
+                               style="background:#1f4fd8;color:#ffffff;
+                               text-decoration:none;padding:12px 20px;
+                               border-radius:4px;display:inline-block;"
+                               th:text="${actionText != null ? actionText : 'Continue'}">
+                                Continue
+                            </a>
+                        </div>
+
+                    </td>
+                </tr>
+
+                <!-- Footer -->
+                <tr>
+                    <td style="background:#f4f6f8;padding:15px 30px;font-size:12px;color:#666;">
+                        <p style="margin:0;">
+                            This is an automated email from <b>Payvance</b>.  
+                            Please do not reply.
+                        </p>
+                    </td>
+                </tr>
+
+            </table>
+
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>

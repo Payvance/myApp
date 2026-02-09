@@ -1,0 +1,24 @@
+version: "3.8"
+services:
+  dev_core_saas:
+    container_name: core_saas-dev
+    env_file:
+      - .env
+    environment:
+      - IMAGE_NAME=core_saas
+      - REGISTRY=172.16.1.225:5000
+      - SPRING_PROFILES_ACTIVE=dev
+    build:
+      context: .
+      args:
+        SPRING_PROFILES_ACTIVE: dev
+        VERSION: ${VERSION}
+    image: 172.16.1.225:5000/core_saas:${VERSION}
+    ports:
+      - "8090:8080"
+    networks:
+      - core_saas-shared
+    restart: unless-stopped
+networks:
+  core_saas-shared:
+    external: true
