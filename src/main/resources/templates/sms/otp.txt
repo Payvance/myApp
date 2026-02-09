@@ -1,0 +1,1 @@
+Your Login OTP is {otp}. Do not share it with anyone. From: FINZOR, SILTECH.CO.IN

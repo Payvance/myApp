@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title th:text="${status == 'approved' ? 'Profile Approved' : 'Profile Rejected'}">
+        Status Update
+    </title>
+</head>
+
+<body style="
+    margin: 0;
+    padding: 0;
+    background-color: #f4f6f8;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI',
+                 Roboto, Helvetica, Arial, sans-serif;
+">
+
+<table width="100%" cellpadding="0" cellspacing="0" style="padding: 40px 0;">
+    <tr>
+        <td align="center">
+
+            <!-- Card -->
+            <table width="100%" cellpadding="0" cellspacing="0" style="
+                max-width: 520px;
+                background-color: #ffffff;
+                border-radius: 10px;
+                padding: 32px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            ">
+
+                <!-- Header -->
+                <tr>
+                    <td align="center" style="padding-bottom: 24px;">
+                        <h2 style="
+                            margin: 0;
+                            font-size: 24px;
+                            font-weight: 600;
+                        "
+                        th:text="${status == 'approved' ? 'Profile Approved ✅' : 'Profile Rejected ❌'}"
+                        th:style="${status == 'approved' ? 'color:#16a34a' : 'color:#dc2626'}">
+                        </h2>
+                    </td>
+                </tr>
+
+                <!-- Body -->
+                <tr>
+                    <td style="
+                        color: #374151;
+                        font-size: 15px;
+                        line-height: 1.6;
+                        padding-bottom: 24px;
+                    ">
+                        Hi <strong th:text="${name}">User</strong>,
+                        <br /><br />
+
+                        <span th:if="${status == 'approved'}">
+                            We’re happy to inform you that your profile with
+                            <strong>Payvance</strong> has been successfully approved.
+                        </span>
+
+                        <span th:if="${status == 'rejected'}">
+                            After careful review, we regret to inform you that your profile
+                            submission with <strong>Payvance</strong> has been rejected.
+                        </span>
+                    </td>
+                </tr>
+
+                <!-- Info Box -->
+                <tr>
+                    <td th:if="${status == 'approved'}" style="
+                        background-color: #f0fdf4;
+                        border-left: 4px solid #16a34a;
+                        padding: 16px;
+                        color: #065f46;
+                        font-size: 14px;
+                        line-height: 1.6;
+                        border-radius: 6px;
+                    ">
+                        🎉 You can now log in and access your dashboard.
+                        <br />
+                        Start managing your activities right away.
+                    </td>
+
+                    <td th:if="${status == 'rejected'}" style="
+                        background-color: #fef2f2;
+                        border-left: 4px solid #dc2626;
+                        padding: 16px;
+                        color: #7f1d1d;
+                        font-size: 14px;
+                        line-height: 1.6;
+                        border-radius: 6px;
+                    ">
+                        ❗ Reason for Rejection:
+                        <br />
+                        <strong th:text="${remark}">Incomplete details</strong>
+                    </td>
+                </tr>
+
+                <!-- Status -->
+                <tr>
+                    <td style="
+                        color: #6b7280;
+                        font-size: 14px;
+                        padding: 24px 0;
+                    ">
+                        Current Status:
+                        <strong th:text="${status}"
+                                th:style="${status == 'approved' ? 'color:#16a34a' : 'color:#dc2626'}">
+                        </strong>
+                        
+                    </td>
+                </tr>
+                <tr th:if="${referralCode != null and !#strings.isEmpty(referralCode)}">
+    <td style="
+        background-color:#f0fdf4;
+        border-left:4px solid #16a34a;
+        padding:16px;
+        border-radius:6px;
+        font-size:14px;
+        color:#065f46;
+    ">
+        🎁 <strong>Your Referral Code:</strong>
+        <span th:text="${referralCode}"></span>
+        <br />
+        Share this code to earn rewards.
+    </td>
+</tr>
+
+
+                <!-- Divider -->
+                <tr>
+                    <td style="border-top: 1px solid #e5e7eb; padding-top: 20px;"></td>
+                </tr>
+
+                <!-- Footer -->
+                <tr>
+                    <td style="
+                        color: #6b7280;
+                        font-size: 13px;
+                        text-align: center;
+                    ">
+                        <span th:if="${status == 'approved'}">
+                            If you have any questions, feel free to contact us.
+                        </span>
+
+                        <span th:if="${status == 'rejected'}">
+                            You may update your details and resubmit your profile.
+                        </span>
+
+                        <br /><br />
+                        — Payvance Team
+                    </td>
+                </tr>
+
+            </table>
+
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>
