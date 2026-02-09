@@ -3,7 +3,7 @@ services:
     image: mysql:8.0
     restart: always
     env_file:
-      - ../.env
+      - ./.env
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
@@ -16,12 +16,13 @@ services:
   backend:
     image: ghcr.io/${GHCR_OWNER}/core_saas:${APP_VERSION}
     restart: always
-    env_file:
-      - ../.env
     depends_on:
       - mysql
     environment:
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      SPRING_CONFIG_ADDITIONAL_LOCATION: "file:/config/"
+    volumes:
+      - ./config/:/config/:ro
     networks:
       - appnet
 
