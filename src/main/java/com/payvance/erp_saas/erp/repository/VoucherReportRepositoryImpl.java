@@ -1,4 +1,4 @@
-﻿package com.payvance.erp_saas.erp.repository;
+package com.payvance.erp_saas.erp.repository;
 
 import com.payvance.erp_saas.erp.dto.VoucherReportDTO;
 import jakarta.persistence.EntityManager;
