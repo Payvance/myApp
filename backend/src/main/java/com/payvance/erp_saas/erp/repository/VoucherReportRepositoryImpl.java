@@ -1,4 +1,4 @@
-package com.payvance.erp_saas.erp.repository;
+﻿package com.payvance.erp_saas.erp.repository;
 
 import com.payvance.erp_saas.erp.dto.VoucherReportDTO;
 import jakarta.persistence.EntityManager;
@@ -10,7 +10,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 
 @Repository
 public class VoucherReportRepositoryImpl implements VoucherReportRepositoryCustom {

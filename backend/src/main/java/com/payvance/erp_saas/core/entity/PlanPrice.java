@@ -35,6 +35,9 @@ public class PlanPrice {
 
     @Column(name = "amount", nullable = false, precision = 12, scale = 2)
     private BigDecimal amount = BigDecimal.ZERO;
+    
+	@Column(name = "period_value", nullable = false)
+	private Integer duration = 1;
 
     @Column(name = "is_active", nullable = false)
     private Byte isActive = 1;

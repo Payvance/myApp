@@ -17,6 +17,7 @@
 package com.payvance.erp_saas.core.repository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -59,6 +60,33 @@ public interface TenantUserRoleRepository
 		""")
 		List<Long> findTenantIdsByUserId(@Param("userId") Long userId);
 
-
+	/*
+	 * Count users by tenant ID
+	 */
+	@Query("SELECT COUNT(DISTINCT tur.userId) FROM TenantUserRole tur WHERE tur.tenantId = :tenantId")
+	Long countUsersByTenantId(@Param("tenantId") Long tenantId);
 	
+	/*
+	 * Count active and inactive users by tenant ID (single query)
+	 */
+	@Query("SELECT new map(COUNT(DISTINCT CASE WHEN tur.isActive = true THEN tur.userId END) as activeUsers, COUNT(DISTINCT CASE WHEN tur.isActive = false THEN tur.userId END) as inactiveUsers) FROM TenantUserRole tur WHERE tur.tenantId = :tenantId")
+	Map<String, Long> countActiveInactiveUsersByTenantId(@Param("tenantId") Long tenantId);
+    
+    /*
+     * Find 5 most recent users for tenant
+     */
+    @Query("""
+        SELECT new map(
+            tur.userId as userId,
+            u.name as userName,
+            u.email as userEmail,
+            tur.createdAt as createdAt,
+            tur.isActive as isActive
+        )
+        FROM TenantUserRole tur
+        JOIN User u ON tur.userId = u.id
+        WHERE tur.tenantId = :tenantId
+        ORDER BY tur.createdAt DESC
+        """)
+    List<Map<String, Object>> findRecentUsersByTenantId(@Param("tenantId") Long tenantId);
 }

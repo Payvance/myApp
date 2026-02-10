@@ -19,4 +19,12 @@ package com.payvance.erp_saas.core.dto;
 public class LoginRequest {
     public String email;
     public String password;
+
+    // Device Information
+    public String deviceId;
+    public String fcmToken;
+    public String platform; // "android" | "ios" | "web"
+    public String deviceModel; // optional
+    public String osVersion; // optional
+    public String appVersion; // optional
 }

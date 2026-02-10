@@ -59,6 +59,51 @@ public class ReportService {
         dto.setPaymentTerms(voucher.getPaymentTerms());
         dto.setConsigneeName(voucher.getConsigneeName());
         dto.setConsigneeAddress(voucher.getConsigneeAddress());
+        dto.setBuyerAddress(voucher.getBuyerAddress()); // New
+        dto.setInvoiceTotal(voucher.getInvoiceTotal()); // Gross Total for display
+
+        // E-Invoice
+        dto.setIrn(voucher.getIrn());
+        dto.setAckNo(voucher.getAckNo());
+        dto.setIrnAckDate(voucher.getIrnAckDate());
+        dto.setIrnQrCode(voucher.getIrnQrCode());
+
+        // E-Way Bill & Transport
+        dto.setVehicleNo(voucher.getVehicleNo());
+        dto.setTransportMode(voucher.getTransportMode());
+        dto.setTransportDistance(voucher.getTransportDistance());
+        dto.setEwayBillNo(voucher.getEwayBillNo());
+        dto.setEwayBillValidUpto(voucher.getEwayBillValidUpto());
+
+        // Address / Dispatch
+        dto.setDispatchName(voucher.getDispatchName());
+        dto.setDispatchPlace(voucher.getDispatchPlace());
+        dto.setDispatchState(voucher.getDispatchState());
+        dto.setDispatchPin(voucher.getDispatchPin());
+        dto.setShipPlace(voucher.getShipPlace());
+
+        // Party Details
+        dto.setPartyGst(voucher.getPartyGst());
+        dto.setPartyMailingName(voucher.getPartyMailingName());
+        dto.setPartyPinCode(voucher.getPartyPinCode());
+        dto.setGstRegistrationType(voucher.getGstRegistrationType());
+        dto.setPlaceOfSupply(voucher.getPlaceOfSupply());
+        dto.setBasicBuyerName(voucher.getBasicBuyerName());
+
+        // Company Details
+        dto.setCmpGst(voucher.getCmpGst());
+        dto.setCmpState(voucher.getCmpState());
+        dto.setCmpRegType(voucher.getCmpRegType());
+
+        // Additional Addresses
+        dto.setBillPlace(voucher.getBillPlace());
+
+        // Financial Totals
+        dto.setTaxableAmount(voucher.getTaxableAmount());
+        dto.setCgstAmount(voucher.getCgstAmount());
+        dto.setSgstAmount(voucher.getSgstAmount());
+        dto.setIgstAmount(voucher.getIgstAmount());
+        dto.setRoundOffAmount(voucher.getRoundOffAmount());
 
         // Map inventory entries
         if (voucher.getInventoryEntries() != null) {
@@ -87,6 +132,14 @@ public class ReportService {
         dto.setRate(entry.getRate());
         dto.setAmount(entry.getAmount());
 
+        // GST & UOM
+        dto.setHsnCode(entry.getHsnCode());
+        dto.setGstRate(entry.getGstRate());
+        dto.setUom(entry.getUom());
+        dto.setCgstAmount(entry.getCgstAmount());
+        dto.setSgstAmount(entry.getSgstAmount());
+        dto.setIgstAmount(entry.getIgstAmount());
+
         // Map batch allocations
         if (entry.getBatchAllocations() != null) {
             List<BatchAllocationDetailDTO> batchDtos = entry.getBatchAllocations().stream()
@@ -109,9 +162,18 @@ public class ReportService {
     }
 
     private VoucherLedgerDetailDTO mapLedgerEntry(LedgerEntry entry) {
-        return new VoucherLedgerDetailDTO(
-                entry.getLedgerName(),
-                entry.getAmount(), entry.getIsDebit(),
-                entry.getIsPartyLedger());
+        VoucherLedgerDetailDTO dto = new VoucherLedgerDetailDTO();
+        dto.setLedgerName(entry.getLedgerName());
+        dto.setAmount(entry.getAmount());
+        dto.setIsDebit(entry.getIsDebit());
+        dto.setIsPartyLedger(entry.getIsPartyLedger());
+
+        // Classification
+        dto.setLedgerType(entry.getLedgerType());
+        dto.setGstDutyHead(entry.getGstDutyHead());
+        dto.setGstClass(entry.getGstNature()); // Mapping gstNature to gstClass in DTO or use specialized field
+        dto.setCostCenterName(entry.getCostCenterName());
+
+        return dto;
     }
 }

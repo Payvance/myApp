@@ -1,13 +1,22 @@
 package com.payvance.erp_saas.erp.repository;
 
-import com.payvance.erp_saas.erp.entity.TallyStockItem;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import java.util.Optional;
+
+import com.payvance.erp_saas.erp.entity.TallyStockItem;
 
 @Repository
 public interface TallyStockItemRepository extends JpaRepository<TallyStockItem, Long> {
         Optional<TallyStockItem> findByGuidAndTenantId(String guid, Long tenantId);
+        List<TallyStockItem> findByTenantIdAndCompanyId(Long tenantId, String companyId);
+        boolean existsByTenantIdAndCompanyIdAndName(
+                Long tenantId,
+                String companyId,
+                String name
+        );
 
         org.springframework.data.domain.Page<TallyStockItem> findByTenantIdAndStockGroupGuid(Long tenantId,
                         String stockGroupGuid, org.springframework.data.domain.Pageable pageable);

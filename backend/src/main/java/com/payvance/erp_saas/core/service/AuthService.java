@@ -22,6 +22,7 @@ import com.payvance.erp_saas.core.entity.*;
 import com.payvance.erp_saas.core.enums.RoleEnum;
 import com.payvance.erp_saas.core.repository.*;
 import com.payvance.erp_saas.exceptions.*;
+import com.payvance.erp_saas.core.dto.DeviceChangeVerifyRequest;
 import com.payvance.erp_saas.security.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -43,6 +44,7 @@ public class AuthService {
     private final PersonalAccessTokenRepository patRepo;
     private final PasswordEncoder encoder;
     private final JwtUtil jwt;
+    private final EmailOtpService emailOtpService;
 
     // ========================== LOGIN ==========================
     @Transactional
@@ -61,6 +63,64 @@ public class AuthService {
             throw new BadCredentialsException("Invalid email or password");
         }
 
+        // ================= DEVICE VERIFICATION =================
+        if (req.platform != null
+                && (req.platform.equalsIgnoreCase("android") || req.platform.equalsIgnoreCase("ios"))) {
+            if (user.getMobileDeviceId() == null) {
+                // First time login from mobile
+                user.setMobileDeviceId(req.deviceId);
+                user.setMobilePlatform(req.platform);
+                user.setMobileFcmToken(req.fcmToken);
+                user.setMobileDeviceModel(req.deviceModel);
+                user.setMobileOsVersion(req.osVersion);
+                user.setMobileAppVersion(req.appVersion);
+                userRepo.save(user);
+            } else if (!user.getMobileDeviceId().equals(req.deviceId)) {
+                // throw new DeviceMismatchException(
+                // "Login from new device detected (" + req.deviceModel + "). Verify to switch
+                // device.");
+            } else {
+                // Same device, update details
+                user.setMobileFcmToken(req.fcmToken);
+                user.setMobileDeviceModel(req.deviceModel);
+                user.setMobileOsVersion(req.osVersion);
+                user.setMobileAppVersion(req.appVersion);
+                userRepo.save(user);
+            }
+        }
+
+        // ================= DESKTOP CONNECTOR VERIFICATION =================
+        if (req.platform != null && req.platform.equalsIgnoreCase("DESKTOP_CONNECTOR")) {
+                         
+             if (req.deviceId == null || req.deviceId.isBlank()) {
+                 throw new BadCredentialsException("Device ID is missing for Desktop Connector.");
+             }
+
+             // 1. Check if ANY user is already bound to this device
+             Optional<User> existingUserOpt = userRepo.findByDesktopDeviceId(req.deviceId);
+             if (existingUserOpt.isPresent()) {
+                 User existingUser = existingUserOpt.get();
+                 
+                 if (!existingUser.getId().equals(user.getId())) {
+                     // Device is used by SOMEONE ELSE -> Block
+                     throw new DeviceMismatchException(
+                             "This device is already linked to another user (" + existingUser.getEmail() + "). Please ask them to logout first.");
+                 }
+             }
+
+             // 2. Check if THIS user is bound to a DIFFERENT device
+             if (user.getDesktopDeviceId() == null) {
+                 // First time login from desktop -> Bind to this device
+            	 user.setDesktopDeviceId(req.deviceId);
+                 userRepo.save(user);
+                 
+             } else if (!user.getDesktopDeviceId().equals(req.deviceId)) {
+                 // Different device -> Block
+                 throw new DeviceMismatchException(
+                         "This account is linked to another Desktop. Please use the registered device.");
+             }
+        }
+
         if (user.getEmailVerifiedAt() == null) {
             throw new UserNotAllowedException("Go and verify your email");
         }
@@ -69,6 +129,11 @@ public class AuthService {
         // if (patRepo.existsByUserId(user.getId())) {
         // throw new UserNotAllowedException("User already logged in elsewhere");
         // }
+
+        return processUserLogin(user);
+    }
+
+    private LoginResponse processUserLogin(User user) {
 
         // ================= SUPER ADMIN =================
         if (user.isSuperadmin()) {
@@ -234,7 +299,8 @@ public class AuthService {
         user.setEmailVerifiedAt(LocalDateTime.now());
         userRepo.save(user);
     }
- // ================= VERIFY CURRENT PASSWORD =================
+
+    // ================= VERIFY CURRENT PASSWORD =================
     public void verifyCurrentPassword(String token, String currentPassword) {
 
         if (!jwt.validateToken(token)) {
@@ -267,6 +333,37 @@ public class AuthService {
         user.setPasswordHash(encoder.encode(newPassword));
         userRepo.save(user);
 
+    }
+
+    // ================= DEVICE CHANGE =================
+    public void initiateDeviceChange(LoginRequest req) {
+        String email = req.email.trim().toLowerCase();
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        if (!encoder.matches(req.password, user.getPasswordHash())) {
+            throw new BadCredentialsException("Invalid password");
+        }
+
+        emailOtpService.sendOtp(email);
+    }
+
+    public LoginResponse verifyDeviceChange(DeviceChangeVerifyRequest req) {
+        emailOtpService.verifyOtp(req.email, req.otp);
+
+        String email = req.email.trim().toLowerCase();
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        user.setMobileDeviceId(req.deviceId);
+        user.setMobilePlatform(req.platform);
+        user.setMobileFcmToken(req.fcmToken);
+        user.setMobileDeviceModel(req.deviceModel);
+        user.setMobileOsVersion(req.osVersion);
+        user.setMobileAppVersion(req.appVersion);
+        userRepo.save(user);
+
+        return processUserLogin(user);
     }
 
 }

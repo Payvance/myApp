@@ -1,29 +1,39 @@
 package com.payvance.erp_saas.erp.controller;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.payvance.erp_saas.erp.dto.DropdownRequest;
+import com.payvance.erp_saas.erp.dto.MobileCompanyDTO;
+import com.payvance.erp_saas.erp.entity.SyncState;
 import com.payvance.erp_saas.erp.entity.TallyCompany;
+import com.payvance.erp_saas.erp.entity.TallyConfiguration;
 import com.payvance.erp_saas.erp.entity.TallyStockCategory;
 import com.payvance.erp_saas.erp.entity.TallyStockGroup;
 import com.payvance.erp_saas.erp.entity.TallyStockItem;
+import com.payvance.erp_saas.erp.repository.SyncStateRepository;
 import com.payvance.erp_saas.erp.repository.TallyCompanyRepository;
+import com.payvance.erp_saas.erp.repository.TallyConfigurationRepository;
+import com.payvance.erp_saas.erp.repository.TallyGroupRepository;
+import com.payvance.erp_saas.erp.repository.TallyLedgerRepository;
 import com.payvance.erp_saas.erp.repository.TallyStockCategoryRepository;
 import com.payvance.erp_saas.erp.repository.TallyStockGroupRepository;
 import com.payvance.erp_saas.erp.repository.TallyStockItemRepository;
-import com.payvance.erp_saas.erp.repository.TallyGroupRepository;
-import com.payvance.erp_saas.erp.repository.TallyLedgerRepository;
-import com.payvance.erp_saas.erp.repository.TallyConfigurationRepository;
-import com.payvance.erp_saas.erp.repository.SyncStateRepository;
-import com.payvance.erp_saas.erp.dto.MobileCompanyDTO;
-import com.payvance.erp_saas.erp.entity.TallyConfiguration;
-import com.payvance.erp_saas.erp.entity.SyncState;
-import java.util.Map;
-import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import com.payvance.erp_saas.erp.service.DropdownService;
 
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/mobile")
@@ -39,6 +49,7 @@ public class MobileAppController {
     private final TallyConfigurationRepository configurationRepository;
     private final SyncStateRepository syncStateRepository;
     private final com.payvance.erp_saas.erp.service.LedgerService ledgerService;
+    private final DropdownService dropdownService;
 
     @GetMapping("/companies")
     public ResponseEntity<List<MobileCompanyDTO>> getCompanies(@RequestParam Long tenantId) {
@@ -173,5 +184,48 @@ public class MobileAppController {
         java.time.LocalDate to = com.payvance.erp_saas.erp.util.TallyXmlParser.parseDate(toDate);
 
         return ResponseEntity.ok(ledgerService.getLedgerStatement(tenantId, companyId, ledgerName, from, to));
+    }
+    
+    /*
+     * Fetch dropdown names based on type and optional companyId
+     */
+    @PostMapping("/names")
+    public ResponseEntity<List<String>> getDropdownNames(
+            @RequestBody DropdownRequest request) {
+
+        return ResponseEntity.ok(
+                dropdownService.fetchNames(request)
+        );
+    }
+    
+    
+    /*
+     * Check for duplicate name based on type and optional companyId
+     */
+    @PostMapping("/check-duplicate")
+    public ResponseEntity<Map<String, Object>> checkDuplicate(
+            @RequestBody DropdownRequest request) {
+
+        try {
+            dropdownService.validateDuplicate(request);
+
+            return ResponseEntity.ok(
+                    Map.of(
+                            "success", true,
+                            "message", "No duplicate found"
+                    )
+            );
+
+        } catch (RuntimeException ex) {
+
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT) // 409
+                    .body(
+                            Map.of(
+                                    "success", false,
+                                    "message", ex.getMessage()
+                            )
+                    );
+        }
     }
 }

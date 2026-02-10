@@ -8,11 +8,11 @@ public class VoucherBatchAllocationDTO {
     private String batchName;
     private String actualQty;
     private String billedQty;
-    private Double rate;
-    private Double amount;
+    private java.math.BigDecimal rate;
+    private java.math.BigDecimal amount;
     private Long batchId;
     private String indentNo;
     private String orderNo;
     private String trackingNumber;
-    private Double batchDiscount;
+    private java.math.BigDecimal batchDiscount;
 }

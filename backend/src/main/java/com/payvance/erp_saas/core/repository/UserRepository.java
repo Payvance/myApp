@@ -36,6 +36,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByEmail(String email);
     
+    Optional<User> findByDesktopDeviceId(String desktopDeviceId);
+    
     
     /*
      * Fetch paginated list of users with basic details
@@ -224,5 +226,25 @@ public interface UserRepository extends JpaRepository<User, Long> {
               AND u.isSuperadmin = false
             """)
     Long countGuestUsers();
+
+    /*
+     * Find tenantId or vendorId based on role and userId
+     */
+    @Query("""
+            SELECT 
+                CASE 
+                    WHEN :roleId = 2 THEN t.id
+                    WHEN :roleId = 4 THEN v.id
+                    ELSE NULL
+                END
+            FROM User u
+            LEFT JOIN Tenant t ON t.email = u.email
+            LEFT JOIN Vendor v ON v.email = u.email
+            WHERE u.id = :userId
+            """)
+    Optional<Long> findEntityIdByUserAndRole(
+            @Param("userId") Long userId,
+            @Param("roleId") Integer roleId
+    );
 
 }

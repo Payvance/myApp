@@ -17,6 +17,7 @@
 package com.payvance.erp_saas.core.repository;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -56,5 +57,47 @@ public interface VendorActivationBatchRepository
      */
     @Query("SELECT COALESCE(SUM(v.costPrice), 0) FROM VendorActivationBatch v WHERE v.status = :status")
     java.math.BigDecimal sumCostPriceByStatus(@Param("status") String status);
+    
+    /*
+     * Count vendor activation batches by vendor ID and status
+     */
+    @Query("SELECT COUNT(v) FROM VendorActivationBatch v WHERE v.vendorId = :vendorId AND v.status = :status")
+    Long countByVendorIdAndStatus(@Param("vendorId") Long vendorId, @Param("status") String status);
+    
+    /*
+     * Sum of total_activations by vendor ID and status
+     */
+    @Query("SELECT COALESCE(SUM(v.totalActivations), 0) FROM VendorActivationBatch v WHERE v.vendorId = :vendorId AND v.status = :status")
+    Long sumTotalActivationsByVendorIdAndStatus(@Param("vendorId") Long vendorId, @Param("status") String status);
+    
+    /*
+     * Sum of used_activations by vendor ID and status
+     */
+    @Query("SELECT COALESCE(SUM(v.usedActivations), 0) FROM VendorActivationBatch v WHERE v.vendorId = :vendorId AND v.status = :status")
+    Long sumUsedActivationsByVendorIdAndStatus(@Param("vendorId") Long vendorId, @Param("status") String status);
+    
+    /*
+     * Sum of cost_price and resale_price by vendor ID and status (single query)
+     */
+    @Query("SELECT new map(COALESCE(SUM(v.costPrice), 0) as totalCostPrice, COALESCE(SUM(v.resalePrice), 0) as totalResalePrice) FROM VendorActivationBatch v WHERE v.vendorId = :vendorId AND v.status = :status")
+    Map<String, java.math.BigDecimal> sumCostAndResalePriceByVendorIdAndStatus(@Param("vendorId") Long vendorId, @Param("status") String status);
+    
+    /*
+     * Find 5 most recent batches by vendor ID with plan details
+     */
+    @Query("""
+        SELECT new map(
+            v.id as batchId,
+            p.name as planName,
+            v.totalActivations as totalActivations,
+            v.status as status,
+            v.createdAt as createdAt
+        )
+        FROM VendorActivationBatch v
+        JOIN v.plan p
+        WHERE v.vendorId = :vendorId
+        ORDER BY v.createdAt DESC
+        """)
+    List<Map<String, Object>> findRecentBatchesByVendorId(@Param("vendorId") Long vendorId);
     
 }

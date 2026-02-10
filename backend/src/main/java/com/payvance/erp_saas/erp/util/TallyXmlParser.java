@@ -113,10 +113,21 @@ public class TallyXmlParser {
                         InventoryEntry ie = new InventoryEntry();
                         ie.setStockItemName(getTagValue("STOCKITEMNAME", iEl));
                         ie.setBilledQty(getTagValue("BILLEDQTY", iEl));
-                        ie.setRate(getTagValue("RATE", iEl));
+                        String rateStr = getTagValue("RATE", iEl);
+                        if (!rateStr.isEmpty() && !rateStr.equalsIgnoreCase("null") && !rateStr.equals("0")) {
+                            try {
+                                ie.setRate(new java.math.BigDecimal(rateStr));
+                            } catch (NumberFormatException e) {
+                                // Skip invalid numeric values
+                            }
+                        }
                         String amtStr = getTagValue("AMOUNT", iEl);
-                        if (!amtStr.isEmpty()) {
-                            ie.setAmount(new java.math.BigDecimal(amtStr).abs());
+                        if (!amtStr.isEmpty() && !amtStr.equalsIgnoreCase("null")) {
+                            try {
+                                ie.setAmount(new java.math.BigDecimal(amtStr).abs());
+                            } catch (NumberFormatException e) {
+                                // Skip invalid numeric values
+                            }
                         }
                         ie.setVoucher(voucher);
                         items.add(ie);

@@ -21,20 +21,23 @@ public class DashboardController {
     private final CADashboardService caDashboardService;
 
     @PostMapping("/{roleId}")
-    public ResponseEntity<Map<String, Object>> getDashboardData(@PathVariable Long roleId) {
-        Map<String, Object> dashboardData = getDashboardDataByRole(roleId);
+    public ResponseEntity<Map<String, Object>> getDashboardData(
+            @PathVariable Long roleId, 
+            @RequestBody Map<String, Long> payload) {
+        Long userId = payload.get("userId");
+        Map<String, Object> dashboardData = getDashboardDataByRole(roleId, userId);
         return ResponseEntity.ok(dashboardData);
     }
 
-    private Map<String, Object> getDashboardDataByRole(Long roleId) {
+    private Map<String, Object> getDashboardDataByRole(Long roleId, Long userId) {
         int roleIdInt = roleId.intValue();
         switch (roleIdInt) {
             case 1: // Superadmin
                 return superAdminDashboardService.getDashboardData();
             case 4: // Vendor
-                return vendorDashboardService.getDashboardData();
+                return vendorDashboardService.getDashboardData(userId);
             case 2: // Tenant
-                return tenantDashboardService.getDashboardData();
+                return tenantDashboardService.getDashboardData(userId);
             case 5: // CA
                 return caDashboardService.getDashboardData();
             default: // Default response for unknown roles

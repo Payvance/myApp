@@ -24,11 +24,11 @@ public class TallyBatchAllocation {
     @Column(name = "billed_qty")
     private String billedQty;
 
-    @Column(name = "rate")
-    private Double rate;
+    @Column(name = "rate", precision = 19, scale = 4)
+    private java.math.BigDecimal rate;
 
-    @Column(name = "amount")
-    private Double amount;
+    @Column(name = "amount", precision = 19, scale = 4)
+    private java.math.BigDecimal amount;
 
     @Column(name = "batch_id")
     private Long batchId;
@@ -42,8 +42,8 @@ public class TallyBatchAllocation {
     @Column(name = "tracking_number")
     private String trackingNumber;
 
-    @Column(name = "batch_discount")
-    private Double batchDiscount;
+    @Column(name = "batch_discount", precision = 19, scale = 4)
+    private java.math.BigDecimal batchDiscount;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "inventory_entry_id")

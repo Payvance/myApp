@@ -19,6 +19,7 @@ public class PlanPriceDto {
     @NotNull(message = "Billing period is required")
     @JsonProperty("billing_period")
     private String billingPeriod;
+    private Integer duration;
 
     private String currency = "INR";
 
