@@ -59,6 +59,22 @@ services:
          sleep 12h;
        done"
 
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 0
+      UPLOAD_LIMIT: 128M
+    depends_on:
+      - mysql
+    ports:
+      - "8081:80"
+    networks:
+      - appnet
+
 volumes:
   mysql_data:
   certbot_www:
