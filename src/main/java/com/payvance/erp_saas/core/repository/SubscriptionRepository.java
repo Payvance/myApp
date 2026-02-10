@@ -1,6 +1,7 @@
 package com.payvance.erp_saas.core.repository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -27,7 +28,37 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     Optional<Subscription> findActiveSubscription(
             @Param("tenantId") Long tenantId
     );
+    
+    /*
+     * Find active plan name by tenantId
+     */
+    @Query("""
+        SELECT p.name
+        FROM Subscription s
+        JOIN s.plan p
+        WHERE s.tenantId = :tenantId
+          AND s.status = 'ACTIVE'
+    """)
+    Optional<String> findActivePlanNameByTenantId(@Param("tenantId") Long tenantId);
      
+    /*
+     * Find active plan details by tenantId
+     */
+    @Query("""
+        SELECT new map(
+            p.name as planName,
+            pp.amount as planPrice,
+            s.status as status,
+            s.startAt as startAt,
+            s.currentPeriodEnd as currentPeriodEnd
+        )
+        FROM Subscription s
+        JOIN s.plan p
+        JOIN PlanPrice pp ON pp.plan.id = p.id
+        WHERE s.tenantId = :tenantId
+          AND s.status = 'ACTIVE'
+        """)
+    Optional<Map<String, Object>> findActivePlanDetailsByTenantId(@Param("tenantId") Long tenantId);
      
      @Query("""
     	        SELECT new com.payvance.erp_saas.core.dto.TenantPlanUsageResponse(

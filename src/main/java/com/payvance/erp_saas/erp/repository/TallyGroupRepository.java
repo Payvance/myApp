@@ -17,4 +17,12 @@ public interface TallyGroupRepository extends JpaRepository<TallyGroup, Long> {
     List<TallyGroup> findByTenantIdAndCompanyIdAndParentName(Long tenantId, String companyId, String parentName);
 
     List<TallyGroup> findByTenantIdAndCompanyIdAndParentNameIsNull(Long tenantId, String companyId);
+    
+    List<TallyGroup> findByTenantIdAndCompanyId(Long tenantId, String companyId);
+    
+    boolean existsByTenantIdAndCompanyIdAndName(
+            Long tenantId,
+            String companyId,
+            String name
+    );
 }

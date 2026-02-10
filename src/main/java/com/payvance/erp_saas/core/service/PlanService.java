@@ -59,6 +59,7 @@ public class PlanService {
         updatePlanPriceFromDto(planPrice, planDto.getPlanPrice());
         planPrice.setPlan(plan);
         plan.setPlanPrice(planPrice);
+        planPrice.setDuration(planDto.getPlanPrice().getDuration());
 
         Plan savedPlan = planRepository.save(plan);
         return mapToDto(savedPlan);
@@ -124,6 +125,7 @@ public class PlanService {
         price.setCurrency(dto.getCurrency());
         price.setAmount(dto.getAmount());
         price.setIsActive(dto.getIsActive());
+        price.setDuration(dto.getDuration());
     }
 
     private PlanDto mapToDto(Plan plan) {
@@ -154,6 +156,7 @@ public class PlanService {
         priceDto.setCurrency(plan.getPlanPrice().getCurrency());
         priceDto.setAmount(plan.getPlanPrice().getAmount());
         priceDto.setIsActive(plan.getPlanPrice().getIsActive());
+        priceDto.setDuration(plan.getPlanPrice().getDuration());
         dto.setPlanPrice(priceDto);
 
         return dto;

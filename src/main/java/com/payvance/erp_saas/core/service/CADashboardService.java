@@ -71,6 +71,15 @@ public class CADashboardService {
                 )
             )
         ));
+
+        data.put("referralCode", Map.of("code", "CA2024REF"));
+        data.put("transactionHistory", Arrays.asList(
+            Map.of("date", "2024-03-15", "type", "Credit", "amount", 2500, "status", "Completed"),
+            Map.of("date", "2024-03-14", "type", "Credit", "amount", 1800, "status", "Completed"),
+            Map.of("date", "2024-03-13", "type", "Debit", "amount", 500, "status", "Completed"),
+            Map.of("date", "2024-03-12", "type", "Credit", "amount", 3200, "status", "Processing"),
+            Map.of("date", "2024-03-11", "type", "Credit", "amount", 1500, "status", "Completed")
+        ));
         
         return data;
     }

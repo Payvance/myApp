@@ -1,12 +1,15 @@
 package com.payvance.erp_saas.erp.repository;
 
-import com.payvance.erp_saas.erp.entity.TallyLedger;
 import java.math.BigDecimal;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.payvance.erp_saas.erp.entity.TallyLedger;
 
 @Repository
 public interface TallyLedgerRepository extends JpaRepository<TallyLedger, Long> {
@@ -15,6 +18,7 @@ public interface TallyLedgerRepository extends JpaRepository<TallyLedger, Long> 
         Page<TallyLedger> findAllByTenantId(Long tenantId, Pageable pageable);
 
         Page<TallyLedger> findByTenantIdAndCompanyId(Long tenantId, String companyId, Pageable pageable);
+        List<TallyLedger> findByTenantIdAndCompanyId(Long tenantId, String companyId);
 
         Page<TallyLedger> findByTenantIdAndCompanyIdAndGroupName(Long tenantId, String companyId, String groupName,
                         Pageable pageable);
@@ -28,4 +32,10 @@ public interface TallyLedgerRepository extends JpaRepository<TallyLedger, Long> 
         java.util.List<TallyLedger> findByTenantIdAndCompanyIdAndName(Long tenantId, String companyId, String name);
 
         java.util.List<TallyLedger> findByTenantIdAndName(Long tenantId, String name);
+        
+        boolean existsByTenantIdAndCompanyIdAndName(
+                Long tenantId,
+                String companyId,
+                String name
+        );
 }

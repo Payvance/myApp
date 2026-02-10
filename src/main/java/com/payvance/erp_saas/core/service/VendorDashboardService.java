@@ -1,8 +1,11 @@
 package com.payvance.erp_saas.core.service;
 
+import com.payvance.erp_saas.core.repository.VendorActivationBatchRepository;
+import com.payvance.erp_saas.core.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,20 +21,37 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class VendorDashboardService {
     
+    private final VendorActivationBatchRepository vendorActivationBatchRepository;
+    private final UserRepository userRepository;
+    
     /**
      * Get complete dashboard data for Vendor
      * TODO: Implement with actual repository methods
      */
-    public Map<String, Object> getDashboardData() {
+    public Map<String, Object> getDashboardData(Long userId) {
         Map<String, Object> data = new HashMap<>();
+        
+        // Get activation data once to avoid multiple repository calls
+        Long totalActivations = vendorActivationBatchRepository.sumTotalActivationsByVendorIdAndStatus(userId, "approved");
+        Long usedActivations = vendorActivationBatchRepository.sumUsedActivationsByVendorIdAndStatus(userId, "approved");
+        Long remainingActivations = totalActivations - usedActivations;
+        
+        // Calculate total revenue from cost_price and resale_price (single query)
+        Map<String, BigDecimal> revenueData = vendorActivationBatchRepository.sumCostAndResalePriceByVendorIdAndStatus(userId, "approved");
+        BigDecimal totalCostPrice = revenueData.get("totalCostPrice");
+        BigDecimal totalResalePrice = revenueData.get("totalResalePrice");
+        BigDecimal totalRevenue = totalResalePrice.subtract(totalCostPrice); // resale - cost
         
         // TODO: Implement with actual repository methods
         // Cards data - formatted for frontend
         data.put("cards", Arrays.asList(
-            Map.of("id", "batch_approval_requests", "title", "Batch Approval Requests", "value", "0", "icon", "bi-hourglass-split", "color", "primary"),
-            Map.of("id", "active_plans", "title", "Active Plans", "value", "0", "icon", "bi-clock-history", "color", "success"),
-            Map.of("id", "expired_plans", "title", "Expired Plans", "value", "0", "icon", "bi-clock-history", "color", "warning"),
-            Map.of("id", "total_revenue_generated", "title", "Total Revenue Generated", "value", "0", "icon", "bi-currency-dollar", "color", "danger")
+            Map.of("id", "total_activations", "title", "Total License", "value", totalActivations.toString(), "icon", "bi-collection", "color", "success"),
+            Map.of("id", "used_activations", "title", "Used License", "value", usedActivations.toString(), "icon", "bi-check2-square", "color", "warning"),
+            Map.of("id", "remaining_activations", "title", "Remaining License", "value", remainingActivations.toString(), "icon", "bi-clock-history", "color", "danger"),
+            Map.of("id", "batch_approval_requests", "title", "Batch Approval Requests", "value", vendorActivationBatchRepository.countByVendorIdAndStatus(userId, "pending").toString(), "icon", "bi-hourglass-split", "color", "primary"),
+            Map.of("id", "approved_batches", "title", "Approved Batches", "value", vendorActivationBatchRepository.countByVendorIdAndStatus(userId, "approved").toString(), "icon", "bi-check-circle", "color", "success"),
+            Map.of("id", "rejected_batches", "title", "Rejected Batches", "value", vendorActivationBatchRepository.countByVendorIdAndStatus(userId, "rejected").toString(), "icon", "bi-x-circle", "color", "danger"),
+            Map.of("id", "total_profit", "title", "Estimated Profit", "value", totalRevenue.toString(), "icon", "bi-currency-rupee", "color", "success")
         ));
         
         // Pie charts data
@@ -74,11 +94,16 @@ public class VendorDashboardService {
         // Data views
         data.put("dataViews", Arrays.asList(
             Map.of("id", "recent_batches", "title", "Recent Batches",
-                "data", Arrays.asList(
-                    Map.of("name", "Batch 1", "status", "Pending", "createdAt", "2024-01-15"),
-                    Map.of("name", "Batch 2", "status", "Approved", "createdAt", "2024-01-14"),
-                    Map.of("name", "Batch 3", "status", "Rejected", "createdAt", "2024-01-13")
-                )
+                "data", vendorActivationBatchRepository.findRecentBatchesByVendorId(userId)
+                    .stream()
+                    .limit(5)
+                    .map(batch -> Map.of(
+                        "name", batch.get("planName") != null ? batch.get("planName") : "Unknown Plan",
+                        "value", batch.get("totalActivations") != null && batch.get("status") != null 
+                            ? batch.get("totalActivations") + " / " + batch.get("status") 
+                            : "0 / Unknown"
+                    ))
+                    .toList()
             ),
             Map.of("id", "top_tenants", "title", "Top Tenants",
                 "data", Arrays.asList(

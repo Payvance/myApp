@@ -10,4 +10,20 @@ public class VoucherLedgerEntryDTO {
     private Boolean isPartyLedger;
     private Boolean isDeemedPositive;
     private String methodType;
+
+    // New Fields
+    private String gstClass;
+    private String gstNature;
+    private java.math.BigDecimal cgstRate;
+    private java.math.BigDecimal cgstAmount;
+    private java.math.BigDecimal sgstRate;
+    private java.math.BigDecimal sgstAmount;
+    private java.math.BigDecimal igstRate;
+    private java.math.BigDecimal igstAmount;
+
+    // Classification & Cost Centers
+    private String ledgerType;
+    private String gstDutyHead;
+    private String costCenterName;
+    private String costCategoryName;
 }

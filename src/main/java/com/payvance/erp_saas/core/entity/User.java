@@ -54,7 +54,30 @@ public class User {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
-    
+
     @Column(name = "rejection_remark", length = 500)
     private String rejectionRemark;
+
+    // ================= MOBILE DEVICE TRACKING =================
+    @Column(name = "mobile_device_id")
+    private String mobileDeviceId;
+
+    @Column(name = "mobile_fcm_token")
+    private String mobileFcmToken;
+
+    @Column(name = "mobile_platform") // android, ios
+    private String mobilePlatform;
+
+    @Column(name = "mobile_device_model")
+    private String mobileDeviceModel;
+
+    @Column(name = "mobile_os_version")
+    private String mobileOsVersion;
+
+    @Column(name = "mobile_app_version")
+    private String mobileAppVersion;
+
+    // ================= DESKTOP CONNECTOR TRACKING =================
+    @Column(name = "desktop_device_id")
+    private String desktopDeviceId;
 }

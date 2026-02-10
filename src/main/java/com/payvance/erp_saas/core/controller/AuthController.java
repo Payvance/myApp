@@ -25,6 +25,7 @@ import com.payvance.erp_saas.core.dto.LoginRequest;
 import com.payvance.erp_saas.core.dto.LoginResponse;
 import com.payvance.erp_saas.core.dto.NewPassword;
 import com.payvance.erp_saas.core.dto.Password;
+import com.payvance.erp_saas.core.dto.DeviceChangeVerifyRequest;
 import com.payvance.erp_saas.core.service.AuthService;
 
 import java.net.URI;
@@ -63,6 +64,7 @@ public class AuthController {
                 .location(URI.create(redirectUrl))
                 .build();
     }
+
     @PostMapping("/verify-password")
     public ResponseEntity<Integer> verifyPassword(
             @RequestHeader("Authorization") String auth,
@@ -71,9 +73,9 @@ public class AuthController {
         try {
             String token = auth.substring(7);
             authService.verifyCurrentPassword(token, req.getCurrentPassword());
-            return ResponseEntity.ok(1);   
+            return ResponseEntity.ok(1);
         } catch (Exception e) {
-            return ResponseEntity.ok(0);  
+            return ResponseEntity.ok(0);
         }
     }
 
@@ -86,6 +88,17 @@ public class AuthController {
         authService.setNewPassword(token, req.getNewPassword());
 
         return ResponseEntity.ok(Map.of("message", "Password changed successfully"));
+    }
+
+    @PostMapping("/device-change/initiate")
+    public ResponseEntity<?> initiateDeviceChange(@RequestBody LoginRequest req) {
+        authService.initiateDeviceChange(req);
+        return ResponseEntity.ok(Map.of("message", "OTP sent for device verification"));
+    }
+
+    @PostMapping("/device-change/verify")
+    public ResponseEntity<LoginResponse> verifyDeviceChange(@RequestBody DeviceChangeVerifyRequest req) {
+        return ResponseEntity.ok(authService.verifyDeviceChange(req));
     }
 
 }

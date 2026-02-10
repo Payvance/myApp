@@ -14,4 +14,10 @@ public class VoucherLedgerDetailDTO {
     private BigDecimal amount;
     private Boolean isDebit;
     private Boolean isPartyLedger;
+
+    // Classification
+    private String ledgerType;
+    private String gstDutyHead;
+    private String gstClass;
+    private String costCenterName;
 }

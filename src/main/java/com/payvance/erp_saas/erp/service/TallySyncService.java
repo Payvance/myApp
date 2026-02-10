@@ -491,6 +491,68 @@ public class TallySyncService {
             v.setConsigneeName(d.getConsigneeName());
             v.setConsigneeAddress(d.getConsigneeAddress());
 
+            // New Fields Mapping
+            v.setPartyMailingName(d.getPartyMailingName());
+            v.setPartyPinCode(d.getPartyPinCode());
+            v.setPartyGst(d.getPartyGst());
+            v.setGstRegistrationType(d.getGstRegistrationType());
+            v.setPlaceOfSupply(d.getPlaceOfSupply());
+
+            v.setCmpGst(d.getCmpGst());
+            v.setCmpState(d.getCmpState());
+            v.setCmpRegType(d.getCmpRegType());
+
+            v.setDispatchName(d.getDispatchName());
+            v.setDispatchPlace(d.getDispatchPlace());
+            v.setDispatchState(d.getDispatchState());
+            v.setDispatchPin(d.getDispatchPin());
+
+            v.setShipPlace(d.getShipPlace());
+            v.setBillPlace(d.getBillPlace());
+
+            v.setIrn(d.getIrn());
+            // Parse irnAckDate String to LocalDate - handle empty strings
+            if (d.getIrnAckDate() != null && !d.getIrnAckDate().trim().isEmpty()) {
+                try {
+                    v.setIrnAckDate(com.payvance.erp_saas.erp.util.TallyXmlParser.parseDate(d.getIrnAckDate()));
+                } catch (Exception e) {
+                    System.err.println("[WARN] Failed to parse irnAckDate: " + d.getIrnAckDate());
+                    v.setIrnAckDate(null);
+                }
+            } else {
+                v.setIrnAckDate(null); // Set to null for empty strings
+            }
+            v.setIrnQrCode(d.getIrnQrCode());
+
+            v.setBuyerAddress(d.getBuyerAddress());
+            v.setVoucherCategory(d.getVoucherCategory());
+
+            v.setAckNo(d.getAckNo());
+            v.setIrpSource(d.getIrpSource());
+            v.setIsEwayApplicable(d.getIsEwayApplicable());
+            v.setBasicBuyerName(d.getBasicBuyerName());
+
+            // Business Flags
+            v.setIsCancelled(d.getIsCancelled());
+            v.setIsOptional(d.getIsOptional());
+            v.setIsDeletedRetained(d.getIsDeletedRetained());
+            v.setPersistedView(d.getPersistedView());
+
+            // Transport & E-Way Bill
+            v.setVehicleNo(d.getVehicleNo());
+            v.setTransportMode(d.getTransportMode());
+            v.setTransportDistance(d.getTransportDistance());
+            v.setEwayBillNo(d.getEwayBillNo());
+            v.setEwayBillValidUpto(d.getEwayBillValidUpto());
+
+            // Financial Totals
+            v.setTaxableAmount(d.getTaxableAmount());
+            v.setCgstAmount(d.getCgstAmount());
+            v.setSgstAmount(d.getSgstAmount());
+            v.setIgstAmount(d.getIgstAmount());
+            v.setRoundOffAmount(d.getRoundOffAmount());
+            v.setInvoiceTotal(d.getInvoiceTotal());
+
             // Track Max Alter ID
             if (d.getCompanyId() != null && d.getAlterId() != null) {
                 companyMaxAlterIdMap.merge(d.getCompanyId(), d.getAlterId(), Math::max);
@@ -522,6 +584,23 @@ public class TallySyncService {
                     entity.setIsDebit(le.getIsDeemedPositive());
                     entity.setIsPartyLedger(le.getIsPartyLedger());
                     entity.setMethodType(le.getMethodType());
+
+                    // New GST Fields
+                    entity.setGstClass(le.getGstClass());
+                    entity.setGstNature(le.getGstNature());
+                    entity.setCgstRate(le.getCgstRate());
+                    entity.setCgstAmount(le.getCgstAmount());
+                    entity.setSgstRate(le.getSgstRate());
+                    entity.setSgstAmount(le.getSgstAmount());
+                    entity.setIgstRate(le.getIgstRate());
+                    entity.setIgstAmount(le.getIgstAmount());
+
+                    // Classification & Cost Centers
+                    entity.setLedgerType(le.getLedgerType());
+                    entity.setGstDutyHead(le.getGstDutyHead());
+                    entity.setCostCenterName(le.getCostCenterName());
+                    entity.setCostCategoryName(le.getCostCategoryName());
+
                     entity.setVoucher(v);
                     ledgers.add(entity);
                 }
@@ -535,9 +614,20 @@ public class TallySyncService {
                     entity.setStockItemName(ie.getStockItemName());
                     entity.setBilledQty(ie.getBilledQty());
                     entity.setActualQty(ie.getActualQty());
-                    entity.setRate(String.valueOf(ie.getRate()));
+                    entity.setRate(ie.getRate()); // Now BigDecimal
                     entity.setAmount(ie.getAmount());
-                    entity.setLedgerName(""); // TODO: map this if needed
+                    entity.setGstRate(ie.getGstRate()); // Now BigDecimal
+
+                    // Item Classification & Tax
+                    entity.setHsnCode(ie.getHsnCode());
+                    entity.setGstTaxability(ie.getGstTaxability());
+                    entity.setUom(ie.getUom());
+                    entity.setCgstAmount(ie.getCgstAmount());
+                    entity.setSgstAmount(ie.getSgstAmount());
+                    entity.setIgstAmount(ie.getIgstAmount());
+
+                    entity.setActualQtyNum(ie.getActualQtyNum());
+                    entity.setLedgerName(v.getPartyLedgerName()); // Fallback to Party Ledger
                     entity.setVoucher(v);
 
                     // Process Batch Allocations
@@ -549,13 +639,13 @@ public class TallySyncService {
                             batchEntity.setBatchName(ba.getBatchName());
                             batchEntity.setActualQty(ba.getActualQty());
                             batchEntity.setBilledQty(ba.getBilledQty());
-                            batchEntity.setRate(ba.getRate());
-                            batchEntity.setAmount(ba.getAmount());
+                            batchEntity.setRate(ba.getRate()); // Now BigDecimal
+                            batchEntity.setAmount(ba.getAmount()); // Now BigDecimal
                             batchEntity.setBatchId(ba.getBatchId());
                             batchEntity.setIndentNo(ba.getIndentNo());
                             batchEntity.setOrderNo(ba.getOrderNo());
                             batchEntity.setTrackingNumber(ba.getTrackingNumber());
-                            batchEntity.setBatchDiscount(ba.getBatchDiscount());
+                            batchEntity.setBatchDiscount(ba.getBatchDiscount()); // Now BigDecimal
                             batchEntity.setInventoryEntry(entity);
                             batchAllocations.add(batchEntity);
                         }

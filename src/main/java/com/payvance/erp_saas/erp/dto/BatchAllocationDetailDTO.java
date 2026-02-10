@@ -12,6 +12,6 @@ public class BatchAllocationDetailDTO {
     private String batchName;
     private String actualQty;
     private String billedQty;
-    private Double rate;
-    private Double amount;
+    private java.math.BigDecimal rate;
+    private java.math.BigDecimal amount;
 }
