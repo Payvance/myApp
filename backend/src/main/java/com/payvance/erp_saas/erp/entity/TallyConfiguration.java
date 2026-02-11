@@ -22,12 +22,12 @@ public class TallyConfiguration {
     @Column(name = "port")
     private Integer port;
 
-    @Column(name = "license_expiry_date", nullable = false)
+    @Column(name = "license_expiry_date", nullable = true)
     private LocalDate licenseExpiryDate;
 
     @Column(name = "license_serial_number", length = 50, nullable = false)
     private String licenseSerialNumber;
 
-    @Column(name = "license_email", length = 150, nullable = false)
+    @Column(name = "license_email", length = 150, nullable = true)
     private String licenseEmail;
 }

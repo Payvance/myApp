@@ -91,34 +91,36 @@ public class AuthService {
 
         // ================= DESKTOP CONNECTOR VERIFICATION =================
         if (req.platform != null && req.platform.equalsIgnoreCase("DESKTOP_CONNECTOR")) {
-                         
-             if (req.deviceId == null || req.deviceId.isBlank()) {
-                 throw new BadCredentialsException("Device ID is missing for Desktop Connector.");
-             }
 
-             // 1. Check if ANY user is already bound to this device
-             Optional<User> existingUserOpt = userRepo.findByDesktopDeviceId(req.deviceId);
-             if (existingUserOpt.isPresent()) {
-                 User existingUser = existingUserOpt.get();
-                 
-                 if (!existingUser.getId().equals(user.getId())) {
-                     // Device is used by SOMEONE ELSE -> Block
-                     throw new DeviceMismatchException(
-                             "This device is already linked to another user (" + existingUser.getEmail() + "). Please ask them to logout first.");
-                 }
-             }
+            if (req.deviceId == null || req.deviceId.isBlank()) {
+                throw new BadCredentialsException("Device ID is missing for Desktop Connector.");
+            }
 
-             // 2. Check if THIS user is bound to a DIFFERENT device
-             if (user.getDesktopDeviceId() == null) {
-                 // First time login from desktop -> Bind to this device
-            	 user.setDesktopDeviceId(req.deviceId);
-                 userRepo.save(user);
-                 
-             } else if (!user.getDesktopDeviceId().equals(req.deviceId)) {
-                 // Different device -> Block
-                 throw new DeviceMismatchException(
-                         "This account is linked to another Desktop. Please use the registered device.");
-             }
+            // 1. Check if ANY user is already bound to this device
+            Optional<User> existingUserOpt = userRepo.findByDesktopDeviceId(req.deviceId);
+            if (existingUserOpt.isPresent()) {
+                User existingUser = existingUserOpt.get();
+
+                if (!existingUser.getId().equals(user.getId())) {
+                    // Device is used by SOMEONE ELSE -> Block
+                    // throw new DeviceMismatchException(
+                    // "This device is already linked to another user (" + existingUser.getEmail() +
+                    // "). Please ask them to logout first.");
+                }
+            }
+
+            // 2. Check if THIS user is bound to a DIFFERENT device
+            if (user.getDesktopDeviceId() == null) {
+                // First time login from desktop -> Bind to this device
+                user.setDesktopDeviceId(req.deviceId);
+                userRepo.save(user);
+
+            } else if (!user.getDesktopDeviceId().equals(req.deviceId)) {
+                // Different device -> Block
+                // throw new DeviceMismatchException(
+                // "This account is linked to another Desktop. Please use the registered
+                // device.");
+            }
         }
 
         if (user.getEmailVerifiedAt() == null) {

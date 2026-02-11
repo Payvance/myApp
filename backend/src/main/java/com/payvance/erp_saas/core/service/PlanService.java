@@ -141,25 +141,30 @@ public class PlanService {
 
         	dto.setTenantIds(tenantIds);
 
+        	    PlanLimitationDto limDto = new PlanLimitationDto();
+        	    limDto.setId(plan.getPlanLimitation().getId());
+        	    limDto.setAllowedUserCount(plan.getPlanLimitation().getAllowedUserCount());
+        	    limDto.setAllowedCompanyCount(plan.getPlanLimitation().getAllowedCompanyCount());
+        	    limDto.setAllowedUserCountTill(plan.getPlanLimitation().getAllowedUserCountTill());
+        	    limDto.setAllowedCompanyCountTill(plan.getPlanLimitation().getAllowedCompanyCountTill());
+        	    dto.setPlanLimitation(limDto);
+        	
 
-        PlanLimitationDto limDto = new PlanLimitationDto();
-        limDto.setId(plan.getPlanLimitation().getId());
-        limDto.setAllowedUserCount(plan.getPlanLimitation().getAllowedUserCount());
-        limDto.setAllowedCompanyCount(plan.getPlanLimitation().getAllowedCompanyCount());
-        limDto.setAllowedUserCountTill(plan.getPlanLimitation().getAllowedUserCountTill());
-        limDto.setAllowedCompanyCountTill(plan.getPlanLimitation().getAllowedCompanyCountTill());
-        dto.setPlanLimitation(limDto);
+        	// Safe PlanPrice mapping
+        	if (plan.getPlanPrice() != null) {
+        	    PlanPriceDto priceDto = new PlanPriceDto();
+        	    priceDto.setId(plan.getPlanPrice().getId());
+        	    priceDto.setBillingPeriod(plan.getPlanPrice().getBillingPeriod());
+        	    priceDto.setCurrency(plan.getPlanPrice().getCurrency());
+        	    priceDto.setAmount(plan.getPlanPrice().getAmount());
+        	    priceDto.setIsActive(plan.getPlanPrice().getIsActive());
+        	    priceDto.setDuration(plan.getPlanPrice().getDuration());
+        	    dto.setPlanPrice(priceDto);
+        	}
+        	
+        	
+        	return dto;
 
-        PlanPriceDto priceDto = new PlanPriceDto();
-        priceDto.setId(plan.getPlanPrice().getId());
-        priceDto.setBillingPeriod(plan.getPlanPrice().getBillingPeriod());
-        priceDto.setCurrency(plan.getPlanPrice().getCurrency());
-        priceDto.setAmount(plan.getPlanPrice().getAmount());
-        priceDto.setIsActive(plan.getPlanPrice().getIsActive());
-        priceDto.setDuration(plan.getPlanPrice().getDuration());
-        dto.setPlanPrice(priceDto);
-
-        return dto;
     }
     
     
