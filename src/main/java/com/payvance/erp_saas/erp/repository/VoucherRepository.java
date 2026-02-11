@@ -37,4 +37,9 @@ public interface VoucherRepository extends JpaRepository<Voucher, Long> {
                         @org.springframework.data.repository.query.Param("ledgerName") String ledgerName,
                         @org.springframework.data.repository.query.Param("fromDate") java.time.LocalDate fromDate,
                         @org.springframework.data.repository.query.Param("toDate") java.time.LocalDate toDate);
+
+        java.util.List<Voucher> findByTenantIdAndCompanyIdAndMasterIdIn(Long tenantId, String companyId,
+                        java.util.List<Long> masterIds);
+
+        java.util.List<Voucher> findByTenantIdAndGuidIn(Long tenantId, java.util.List<String> guids);
 }

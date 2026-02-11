@@ -459,242 +459,110 @@ public class TallySyncService {
     @Transactional("erpTransactionManager")
     public void syncVouchersBatch(List<VoucherDTO> dtos) {
         Long tenantId = TenantContext.getCurrentTenant();
+        if (dtos == null || dtos.isEmpty())
+            return;
+
+        // Group by Company ID to optimize bulk fetching
+        java.util.Map<String, List<VoucherDTO>> vouchersByCompany = dtos.stream()
+                .filter(d -> d.getCompanyId() != null)
+                .collect(java.util.stream.Collectors.groupingBy(VoucherDTO::getCompanyId));
+
+        java.util.List<Voucher> vouchersToSave = new java.util.ArrayList<>();
+        java.util.List<Voucher> vouchersToDelete = new java.util.ArrayList<>();
         java.util.Map<String, Long> companyMaxAlterIdMap = new java.util.HashMap<>();
 
-        for (VoucherDTO d : dtos) {
-            Voucher v = new Voucher();
-            v.setTenantId(tenantId);
-            v.setGuid(d.getGuid());
-            v.setVoucherNumber(d.getVoucherNumber());
-            v.setVoucherType(d.getVoucherType());
+        for (java.util.Map.Entry<String, List<VoucherDTO>> entry : vouchersByCompany.entrySet()) {
+            String companyId = entry.getKey();
+            List<VoucherDTO> companyDtos = entry.getValue();
 
-            // Parse Date
-            if (d.getVoucherDate() != null && !d.getVoucherDate().isEmpty()) {
-                try {
-                    v.setDate(java.time.LocalDate.parse(d.getVoucherDate(),
-                            java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd")));
-                } catch (Exception e) {
-                    System.err.println("Failed to parse voucher date: " + d.getVoucherDate());
+            // Collect IDs for bulk fetch
+            java.util.List<Long> masterIds = companyDtos.stream()
+                    .map(VoucherDTO::getMasterId)
+                    .filter(java.util.Objects::nonNull)
+                    .collect(java.util.stream.Collectors.toList());
+
+            java.util.List<String> guids = companyDtos.stream()
+                    .map(VoucherDTO::getGuid)
+                    .filter(java.util.Objects::nonNull)
+                    .collect(java.util.stream.Collectors.toList());
+
+            // Bulk fetch existing vouchers
+            java.util.List<Voucher> existingByMasterId = new java.util.ArrayList<>();
+            if (!masterIds.isEmpty()) {
+                existingByMasterId = voucherRepository.findByTenantIdAndCompanyIdAndMasterIdIn(tenantId, companyId,
+                        masterIds);
+            }
+
+            java.util.List<Voucher> existingByGuid = new java.util.ArrayList<>();
+            if (!guids.isEmpty()) {
+                // Note: findByTenantIdAndGuidIn searches across all companies, but GUID should
+                // be unique globally or at least per tenant
+                existingByGuid = voucherRepository.findByTenantIdAndGuidIn(tenantId, guids);
+            }
+
+            // Map for quick lookup: MasterID -> Voucher
+            java.util.Map<Long, Voucher> masterIdMap = existingByMasterId.stream()
+                    .collect(java.util.stream.Collectors.toMap(Voucher::getMasterId, v -> v, (v1, v2) -> v1)); // Merge
+                                                                                                               // duplicates
+                                                                                                               // if any
+
+            // Map for quick lookup: GUID -> Voucher
+            java.util.Map<String, Voucher> guidMap = existingByGuid.stream()
+                    .collect(java.util.stream.Collectors.toMap(Voucher::getGuid, v -> v, (v1, v2) -> v1));
+
+            for (VoucherDTO d : companyDtos) {
+                // Track Max Alter ID
+                if (d.getAlterId() != null) {
+                    companyMaxAlterIdMap.merge(companyId, d.getAlterId(), Math::max);
                 }
-            }
 
-            v.setAmount(d.getTotalAmount());
-            v.setAlterId(d.getAlterId());
-            v.setMasterId(d.getMasterId());
-            v.setIsInvoice(d.getIsInvoice());
-            v.setPartyLedgerName(d.getPartyLedgerName());
-            v.setCompanyId(d.getCompanyId());
-
-            v.setNarration(d.getNarration());
-            v.setDeliveryNotes(d.getDeliveryNotes());
-            v.setPaymentTerms(d.getPaymentTerms());
-            v.setConsigneeName(d.getConsigneeName());
-            v.setConsigneeAddress(d.getConsigneeAddress());
-
-            // New Fields Mapping
-            v.setPartyMailingName(d.getPartyMailingName());
-            v.setPartyPinCode(d.getPartyPinCode());
-            v.setPartyGst(d.getPartyGst());
-            v.setGstRegistrationType(d.getGstRegistrationType());
-            v.setPlaceOfSupply(d.getPlaceOfSupply());
-
-            v.setCmpGst(d.getCmpGst());
-            v.setCmpState(d.getCmpState());
-            v.setCmpRegType(d.getCmpRegType());
-
-            v.setDispatchName(d.getDispatchName());
-            v.setDispatchPlace(d.getDispatchPlace());
-            v.setDispatchState(d.getDispatchState());
-            v.setDispatchPin(d.getDispatchPin());
-
-            v.setShipPlace(d.getShipPlace());
-            v.setBillPlace(d.getBillPlace());
-
-            v.setIrn(d.getIrn());
-            // Parse irnAckDate String to LocalDate - handle empty strings
-            if (d.getIrnAckDate() != null && !d.getIrnAckDate().trim().isEmpty()) {
-                try {
-                    v.setIrnAckDate(com.payvance.erp_saas.erp.util.TallyXmlParser.parseDate(d.getIrnAckDate()));
-                } catch (Exception e) {
-                    System.err.println("[WARN] Failed to parse irnAckDate: " + d.getIrnAckDate());
-                    v.setIrnAckDate(null);
-                }
-            } else {
-                v.setIrnAckDate(null); // Set to null for empty strings
-            }
-            v.setIrnQrCode(d.getIrnQrCode());
-
-            v.setBuyerAddress(d.getBuyerAddress());
-            v.setVoucherCategory(d.getVoucherCategory());
-
-            v.setAckNo(d.getAckNo());
-            v.setIrpSource(d.getIrpSource());
-            v.setIsEwayApplicable(d.getIsEwayApplicable());
-            v.setBasicBuyerName(d.getBasicBuyerName());
-
-            // Business Flags
-            v.setIsCancelled(d.getIsCancelled());
-            v.setIsOptional(d.getIsOptional());
-            v.setIsDeletedRetained(d.getIsDeletedRetained());
-            v.setPersistedView(d.getPersistedView());
-
-            // Transport & E-Way Bill
-            v.setVehicleNo(d.getVehicleNo());
-            v.setTransportMode(d.getTransportMode());
-            v.setTransportDistance(d.getTransportDistance());
-            v.setEwayBillNo(d.getEwayBillNo());
-            v.setEwayBillValidUpto(d.getEwayBillValidUpto());
-
-            // Financial Totals
-            v.setTaxableAmount(d.getTaxableAmount());
-            v.setCgstAmount(d.getCgstAmount());
-            v.setSgstAmount(d.getSgstAmount());
-            v.setIgstAmount(d.getIgstAmount());
-            v.setRoundOffAmount(d.getRoundOffAmount());
-            v.setInvoiceTotal(d.getInvoiceTotal());
-
-            // Track Max Alter ID
-            if (d.getCompanyId() != null && d.getAlterId() != null) {
-                companyMaxAlterIdMap.merge(d.getCompanyId(), d.getAlterId(), Math::max);
-            }
-
-            // Handle deletions
-            if (Boolean.TRUE.equals(d.getIsDeleted())) {
-                voucherRepository.findByMasterIdAndCompanyIdAndTenantId(v.getMasterId(), v.getCompanyId(), tenantId)
-                        .ifPresent(existing -> voucherRepository.delete(existing));
-                continue;
-            }
-
-            // Find existing by MasterID + CompanyID + TenantID
-            if (v.getMasterId() != null && v.getCompanyId() != null) {
-                voucherRepository.findByMasterIdAndCompanyIdAndTenantId(v.getMasterId(), v.getCompanyId(), tenantId)
-                        .ifPresent(existing -> v.setId(existing.getId()));
-            } else {
-                // Fallback to GUID for legacy/safety
-                voucherRepository.findByGuidAndTenantId(v.getGuid(), tenantId)
-                        .ifPresent(existing -> v.setId(existing.getId()));
-            }
-
-            List<LedgerEntry> ledgers = new ArrayList<>();
-            if (d.getLedgerEntries() != null) {
-                for (VoucherLedgerEntryDTO le : d.getLedgerEntries()) {
-                    LedgerEntry entity = new LedgerEntry();
-                    entity.setLedgerName(le.getLedgerName());
-                    entity.setAmount(le.getAmount());
-                    entity.setIsDebit(le.getIsDeemedPositive());
-                    entity.setIsPartyLedger(le.getIsPartyLedger());
-                    entity.setMethodType(le.getMethodType());
-
-                    // New GST Fields
-                    entity.setGstClass(le.getGstClass());
-                    entity.setGstNature(le.getGstNature());
-                    entity.setCgstRate(le.getCgstRate());
-                    entity.setCgstAmount(le.getCgstAmount());
-                    entity.setSgstRate(le.getSgstRate());
-                    entity.setSgstAmount(le.getSgstAmount());
-                    entity.setIgstRate(le.getIgstRate());
-                    entity.setIgstAmount(le.getIgstAmount());
-
-                    // Classification & Cost Centers
-                    entity.setLedgerType(le.getLedgerType());
-                    entity.setGstDutyHead(le.getGstDutyHead());
-                    entity.setCostCenterName(le.getCostCenterName());
-                    entity.setCostCategoryName(le.getCostCategoryName());
-
-                    entity.setVoucher(v);
-                    ledgers.add(entity);
-                }
-            }
-            v.setLedgerEntries(ledgers);
-
-            List<InventoryEntry> inventory = new ArrayList<>();
-            if (d.getInventoryEntries() != null) {
-                for (VoucherInventoryDTO ie : d.getInventoryEntries()) {
-                    InventoryEntry entity = new InventoryEntry();
-                    entity.setStockItemName(ie.getStockItemName());
-                    entity.setBilledQty(ie.getBilledQty());
-                    entity.setActualQty(ie.getActualQty());
-                    entity.setRate(ie.getRate()); // Now BigDecimal
-                    entity.setAmount(ie.getAmount());
-                    entity.setGstRate(ie.getGstRate()); // Now BigDecimal
-
-                    // Item Classification & Tax
-                    entity.setHsnCode(ie.getHsnCode());
-                    entity.setGstTaxability(ie.getGstTaxability());
-                    entity.setUom(ie.getUom());
-                    entity.setCgstAmount(ie.getCgstAmount());
-                    entity.setSgstAmount(ie.getSgstAmount());
-                    entity.setIgstAmount(ie.getIgstAmount());
-
-                    entity.setActualQtyNum(ie.getActualQtyNum());
-                    entity.setLedgerName(v.getPartyLedgerName()); // Fallback to Party Ledger
-                    entity.setVoucher(v);
-
-                    // Process Batch Allocations
-                    if (ie.getBatchAllocations() != null && !ie.getBatchAllocations().isEmpty()) {
-                        java.util.List<TallyBatchAllocation> batchAllocations = new java.util.ArrayList<>();
-                        for (VoucherBatchAllocationDTO ba : ie.getBatchAllocations()) {
-                            TallyBatchAllocation batchEntity = new TallyBatchAllocation();
-                            batchEntity.setGodownName(ba.getGodownName());
-                            batchEntity.setBatchName(ba.getBatchName());
-                            batchEntity.setActualQty(ba.getActualQty());
-                            batchEntity.setBilledQty(ba.getBilledQty());
-                            batchEntity.setRate(ba.getRate()); // Now BigDecimal
-                            batchEntity.setAmount(ba.getAmount()); // Now BigDecimal
-                            batchEntity.setBatchId(ba.getBatchId());
-                            batchEntity.setIndentNo(ba.getIndentNo());
-                            batchEntity.setOrderNo(ba.getOrderNo());
-                            batchEntity.setTrackingNumber(ba.getTrackingNumber());
-                            batchEntity.setBatchDiscount(ba.getBatchDiscount()); // Now BigDecimal
-                            batchEntity.setInventoryEntry(entity);
-                            batchAllocations.add(batchEntity);
-                        }
-                        entity.setBatchAllocations(batchAllocations);
+                // Handle Deletion
+                if (Boolean.TRUE.equals(d.getIsDeleted())) {
+                    Voucher existing = null;
+                    if (d.getMasterId() != null && masterIdMap.containsKey(d.getMasterId())) {
+                        existing = masterIdMap.get(d.getMasterId());
+                    } else if (d.getGuid() != null && guidMap.containsKey(d.getGuid())) {
+                        existing = guidMap.get(d.getGuid());
                     }
 
-                    inventory.add(entity);
-                }
-            }
-            v.setInventoryEntries(inventory);
-
-            voucherRepository.save(v);
-        }
-
-        System.out.println("[API] Processed " + dtos.size() + " vouchers. Map entries: " + companyMaxAlterIdMap.size());
-
-        // Update Sync State (Force update time, conditional update AlterID)
-        for (java.util.Map.Entry<String, Long> entry : companyMaxAlterIdMap.entrySet()) {
-            String compId = entry.getKey();
-            Long newMaxId = entry.getValue();
-            System.out.println("[API] Processing SyncState for " + compId + " with AlterID: " + newMaxId);
-
-            try {
-                SyncState state = syncStateRepository.findByTenantIdAndCompanyId(tenantId, compId)
-                        .orElse(new SyncState());
-
-                if (state.getId() == null) {
-                    state.setTenantId(tenantId);
-                    state.setCompanyId(compId);
-                    state.setLastAlterId(0L);
+                    if (existing != null) {
+                        vouchersToDelete.add(existing);
+                    }
+                    continue;
                 }
 
-                boolean updated = false;
-                if (state.getLastAlterId() == null || newMaxId > state.getLastAlterId()) {
-                    state.setLastAlterId(newMaxId);
-                    updated = true;
+                // Create or Update
+                Voucher v = new Voucher();
+                // Check if exists
+                Voucher existing = null;
+                if (d.getMasterId() != null && masterIdMap.containsKey(d.getMasterId())) {
+                    existing = masterIdMap.get(d.getMasterId());
+                } else if (d.getGuid() != null && guidMap.containsKey(d.getGuid())) {
+                    existing = guidMap.get(d.getGuid());
                 }
 
-                // Always update time if we are processing a batch
-                state.setLastSyncTime(java.time.LocalDateTime.now());
-                syncStateRepository.save(state);
-
-                if (updated) {
-                    System.out.println("[API] Updated SyncState AlterID for " + compId + " to: " + newMaxId);
+                if (existing != null) {
+                    v.setId(existing.getId());
                 }
-            } catch (Exception e) {
-                System.err.println("Failed to update SyncState for company " + compId + ": " + e.getMessage());
+
+                mapVoucherDtoToEntity(v, d, tenantId);
+                vouchersToSave.add(v);
             }
         }
+
+        // Perform Bulk Operations
+        if (!vouchersToDelete.isEmpty()) {
+            voucherRepository.deleteAll(vouchersToDelete);
+            System.out.println("[API] Deleted " + vouchersToDelete.size() + " vouchers.");
+        }
+
+        if (!vouchersToSave.isEmpty()) {
+            voucherRepository.saveAll(vouchersToSave);
+            System.out.println("[API] Synced (Saved/Updated) " + vouchersToSave.size() + " vouchers.");
+        }
+
+        // Update Sync State
+        updateSyncStates(tenantId, companyMaxAlterIdMap);
     }
 
     private void updateLastSyncTime(Long tenantId, String companyId) {
@@ -823,5 +691,214 @@ public class TallySyncService {
         if (tenantId == null)
             throw new RuntimeException("Tenant ID not found in context");
         return syncStateRepository.findByTenantIdAndCompanyId(tenantId, companyGuid).orElse(null);
+    }
+
+    private void mapVoucherDtoToEntity(Voucher v, VoucherDTO d, Long tenantId) {
+        v.setTenantId(tenantId);
+        v.setGuid(d.getGuid());
+        v.setVoucherNumber(d.getVoucherNumber());
+        v.setVoucherType(d.getVoucherType());
+
+        // Parse Date
+        if (d.getVoucherDate() != null && !d.getVoucherDate().isEmpty()) {
+            try {
+                v.setDate(java.time.LocalDate.parse(d.getVoucherDate(),
+                        java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd")));
+            } catch (Exception e) {
+                System.err.println("Failed to parse voucher date: " + d.getVoucherDate());
+            }
+        }
+
+        v.setAmount(d.getTotalAmount());
+        v.setAlterId(d.getAlterId());
+        v.setMasterId(d.getMasterId());
+        v.setIsInvoice(d.getIsInvoice());
+        v.setPartyLedgerName(d.getPartyLedgerName());
+        v.setCompanyId(d.getCompanyId());
+
+        v.setNarration(d.getNarration());
+        v.setDeliveryNotes(d.getDeliveryNotes());
+        v.setPaymentTerms(d.getPaymentTerms());
+        v.setConsigneeName(d.getConsigneeName());
+        v.setConsigneeAddress(d.getConsigneeAddress());
+
+        // New Fields Mapping
+        v.setPartyMailingName(d.getPartyMailingName());
+        v.setPartyPinCode(d.getPartyPinCode());
+        v.setPartyGst(d.getPartyGst());
+        v.setGstRegistrationType(d.getGstRegistrationType());
+        v.setPlaceOfSupply(d.getPlaceOfSupply());
+
+        v.setCmpGst(d.getCmpGst());
+        v.setCmpState(d.getCmpState());
+        v.setCmpRegType(d.getCmpRegType());
+
+        v.setDispatchName(d.getDispatchName());
+        v.setDispatchPlace(d.getDispatchPlace());
+        v.setDispatchState(d.getDispatchState());
+        v.setDispatchPin(d.getDispatchPin());
+
+        v.setShipPlace(d.getShipPlace());
+        v.setBillPlace(d.getBillPlace());
+
+        v.setIrn(d.getIrn());
+        // Parse irnAckDate String to LocalDate - handle empty strings
+        if (d.getIrnAckDate() != null && !d.getIrnAckDate().trim().isEmpty()) {
+            try {
+                v.setIrnAckDate(com.payvance.erp_saas.erp.util.TallyXmlParser.parseDate(d.getIrnAckDate()));
+            } catch (Exception e) {
+                System.err.println("[WARN] Failed to parse irnAckDate: " + d.getIrnAckDate());
+                v.setIrnAckDate(null);
+            }
+        } else {
+            v.setIrnAckDate(null); // Set to null for empty strings
+        }
+        v.setIrnQrCode(d.getIrnQrCode());
+
+        v.setBuyerAddress(d.getBuyerAddress());
+        v.setVoucherCategory(d.getVoucherCategory());
+
+        v.setAckNo(d.getAckNo());
+        v.setIrpSource(d.getIrpSource());
+        v.setIsEwayApplicable(d.getIsEwayApplicable());
+        v.setBasicBuyerName(d.getBasicBuyerName());
+
+        // Business Flags
+        v.setIsCancelled(d.getIsCancelled());
+        v.setIsOptional(d.getIsOptional());
+        v.setIsDeletedRetained(d.getIsDeletedRetained());
+        v.setPersistedView(d.getPersistedView());
+
+        // Transport & E-Way Bill
+        v.setVehicleNo(d.getVehicleNo());
+        v.setTransportMode(d.getTransportMode());
+        v.setTransportDistance(d.getTransportDistance());
+        v.setEwayBillNo(d.getEwayBillNo());
+        v.setEwayBillValidUpto(d.getEwayBillValidUpto());
+
+        // Financial Totals
+        v.setTaxableAmount(d.getTaxableAmount());
+        v.setCgstAmount(d.getCgstAmount());
+        v.setSgstAmount(d.getSgstAmount());
+        v.setIgstAmount(d.getIgstAmount());
+        v.setRoundOffAmount(d.getRoundOffAmount());
+        v.setInvoiceTotal(d.getInvoiceTotal());
+
+        List<LedgerEntry> ledgers = new java.util.ArrayList<>();
+        if (d.getLedgerEntries() != null) {
+            for (VoucherLedgerEntryDTO le : d.getLedgerEntries()) {
+                LedgerEntry entity = new LedgerEntry();
+                entity.setLedgerName(le.getLedgerName());
+                entity.setAmount(le.getAmount());
+                entity.setIsDebit(le.getIsDeemedPositive());
+                entity.setIsPartyLedger(le.getIsPartyLedger());
+                entity.setMethodType(le.getMethodType());
+
+                // New GST Fields
+                entity.setGstClass(le.getGstClass());
+                entity.setGstNature(le.getGstNature());
+                entity.setCgstRate(le.getCgstRate());
+                entity.setCgstAmount(le.getCgstAmount());
+                entity.setSgstRate(le.getSgstRate());
+                entity.setSgstAmount(le.getSgstAmount());
+                entity.setIgstRate(le.getIgstRate());
+                entity.setIgstAmount(le.getIgstAmount());
+
+                // Classification & Cost Centers
+                entity.setLedgerType(le.getLedgerType());
+                entity.setGstDutyHead(le.getGstDutyHead());
+                entity.setCostCenterName(le.getCostCenterName());
+                entity.setCostCategoryName(le.getCostCategoryName());
+
+                entity.setVoucher(v);
+                ledgers.add(entity);
+            }
+        }
+        v.setLedgerEntries(ledgers);
+
+        List<InventoryEntry> inventory = new java.util.ArrayList<>();
+        if (d.getInventoryEntries() != null) {
+            for (VoucherInventoryDTO ie : d.getInventoryEntries()) {
+                InventoryEntry entity = new InventoryEntry();
+                entity.setStockItemName(ie.getStockItemName());
+                entity.setBilledQty(ie.getBilledQty());
+                entity.setActualQty(ie.getActualQty());
+                entity.setRate(ie.getRate()); // Now BigDecimal
+                entity.setAmount(ie.getAmount());
+                entity.setGstRate(ie.getGstRate()); // Now BigDecimal
+
+                // Item Classification & Tax
+                entity.setHsnCode(ie.getHsnCode());
+                entity.setGstTaxability(ie.getGstTaxability());
+                entity.setUom(ie.getUom());
+                entity.setCgstAmount(ie.getCgstAmount());
+                entity.setSgstAmount(ie.getSgstAmount());
+                entity.setIgstAmount(ie.getIgstAmount());
+
+                entity.setActualQtyNum(ie.getActualQtyNum());
+                entity.setLedgerName(v.getPartyLedgerName()); // Fallback to Party Ledger
+                entity.setVoucher(v);
+
+                // Process Batch Allocations
+                if (ie.getBatchAllocations() != null && !ie.getBatchAllocations().isEmpty()) {
+                    java.util.List<TallyBatchAllocation> batchAllocations = new java.util.ArrayList<>();
+                    for (VoucherBatchAllocationDTO ba : ie.getBatchAllocations()) {
+                        TallyBatchAllocation batchEntity = new TallyBatchAllocation();
+                        batchEntity.setGodownName(ba.getGodownName());
+                        batchEntity.setBatchName(ba.getBatchName());
+                        batchEntity.setActualQty(ba.getActualQty());
+                        batchEntity.setBilledQty(ba.getBilledQty());
+                        batchEntity.setRate(ba.getRate()); // Now BigDecimal
+                        batchEntity.setAmount(ba.getAmount()); // Now BigDecimal
+                        batchEntity.setBatchId(ba.getBatchId());
+                        batchEntity.setIndentNo(ba.getIndentNo());
+                        batchEntity.setOrderNo(ba.getOrderNo());
+                        batchEntity.setTrackingNumber(ba.getTrackingNumber());
+                        batchEntity.setBatchDiscount(ba.getBatchDiscount()); // Now BigDecimal
+                        batchEntity.setInventoryEntry(entity);
+                        batchAllocations.add(batchEntity);
+                    }
+                    entity.setBatchAllocations(batchAllocations);
+                }
+
+                inventory.add(entity);
+            }
+        }
+        v.setInventoryEntries(inventory);
+    }
+
+    private void updateSyncStates(Long tenantId, java.util.Map<String, Long> companyMaxAlterIdMap) {
+        for (java.util.Map.Entry<String, Long> entry : companyMaxAlterIdMap.entrySet()) {
+            String compId = entry.getKey();
+            Long newMaxId = entry.getValue();
+            System.out.println("[API] Processing SyncState for " + compId + " with AlterID: " + newMaxId);
+
+            try {
+                SyncState state = syncStateRepository.findByTenantIdAndCompanyId(tenantId, compId)
+                        .orElse(new SyncState());
+
+                if (state.getId() == null) {
+                    state.setTenantId(tenantId);
+                    state.setCompanyId(compId);
+                    state.setLastAlterId(0L);
+                }
+
+                boolean updated = false;
+                if (state.getLastAlterId() == null || newMaxId > state.getLastAlterId()) {
+                    state.setLastAlterId(newMaxId);
+                    updated = true;
+                }
+
+                // Always update time if we are processing a batch
+                state.setLastSyncTime(java.time.LocalDateTime.now());
+                syncStateRepository.save(state);
+
+                if (updated) {
+                    System.out.println("[API] Updated SyncState AlterID for " + compId + " to: " + newMaxId);
+                }
+            } catch (Exception e) {
+                System.err.println("Failed to update SyncState for company " + compId + ": " + e.getMessage());
+            }
+        }
     }
 }
