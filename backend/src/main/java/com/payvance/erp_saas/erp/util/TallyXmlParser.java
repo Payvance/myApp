@@ -150,26 +150,67 @@ public class TallyXmlParser {
             TallyConfiguration config = new TallyConfiguration();
             config.setTenantId(tenantId);
 
-            NodeList companyNodes = doc.getElementsByTagName("COMPANY");
+            // 1. Look for COLLECTION -> COMPANY pattern (Robust for Tally 6.1)
+            NodeList collectionNodes = doc.getElementsByTagName("COLLECTION");
+            for (int c = 0; c < collectionNodes.getLength(); c++) {
+                Node colNode = collectionNodes.item(c);
+                if (colNode.getNodeType() == Node.ELEMENT_NODE) {
+                    Element colElement = (Element) colNode;
+                    NodeList companyNodes = colElement.getElementsByTagName("COMPANY");
 
+                    for (int i = 0; i < companyNodes.getLength(); i++) {
+                        Element el = (Element) companyNodes.item(i);
+                        String serial = getTagValue("SERIAL", el);
+                        if (serial.isEmpty()) {
+                            serial = getTagValue("SERIALNUMBER", el);
+                        }
+
+                        if (!serial.isEmpty() && !serial.equals("0")) {
+                            String email = getTagValue("LICEMAIL", el);
+                            if (email.isEmpty()) {
+                                email = getTagValue("ADMINEMAILID", el);
+                            }
+                            String expiryStr = getTagValue("EXPIRYDATE", el);
+                            if (expiryStr.isEmpty()) {
+                                expiryStr = getTagValue("LICENSEEXPIRYDATE", el);
+                            }
+
+                            config.setLicenseSerialNumber(serial);
+                            // Handle null/empty email
+                            config.setLicenseEmail(email != null ? email : "");
+                            // Handle null/empty expiry date using helper
+                            config.setLicenseExpiryDate(parseDate(expiryStr));
+
+                            System.out.println(
+                                    "[PARSER] Extracted - Serial: " + serial +
+                                            ", Email: " + email +
+                                            ", Expiry: " + expiryStr);
+                            return config; // Return first valid found
+                        }
+                    }
+                }
+            }
+
+            // Fallback to old loop if COLLECTION structure not found or no valid serial
+            // found
+            NodeList companyNodes = doc.getElementsByTagName("COMPANY");
             for (int i = 0; i < companyNodes.getLength(); i++) {
                 Element el = (Element) companyNodes.item(i);
 
-                // Real company node has NAME attribute
                 if (el.hasAttribute("NAME")) {
                     String serial = getTagValue("SERIAL", el);
                     String email = getTagValue("LICEMAIL", el);
                     String expiryStr = getTagValue("EXPIRYDATE", el);
 
                     config.setLicenseSerialNumber(serial);
-                    config.setLicenseEmail(email);
-                    config.setLicenseExpiryDate(LocalDate.parse(expiryStr, TALLY_DATE_FORMAT));
+                    config.setLicenseEmail(email != null ? email : "");
+                    config.setLicenseExpiryDate(parseDate(expiryStr));
+
                     System.out.println(
                             "[PARSER] Extracted - Serial: " + serial +
                                     ", Email: " + email +
                                     ", Expiry: " + expiryStr);
                     break;
-
                 }
             }
 
@@ -177,7 +218,6 @@ public class TallyXmlParser {
         } catch (Exception e) {
             e.printStackTrace();
             return null;
-
         }
     }
 
