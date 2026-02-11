@@ -37,7 +37,8 @@ const PieChartComponent = ({ title, data, size = 'medium', loading }) => {
         backgroundColor: data.map((_, index) => COLOR_PALETTE[index % COLOR_PALETTE.length]),
         borderColor: '#ffffff',
         borderWidth: 2,
-        hoverOffset: 4
+        hoverOffset: 4,
+        cutout: '40%'  // Creates donut chart with 60% hollow center
       }
     ]
   };
@@ -47,13 +48,13 @@ const PieChartComponent = ({ title, data, size = 'medium', loading }) => {
     maintainAspectRatio: true,
     plugins: {
       legend: {
-        position: 'bottom',
+        position: 'right',
         labels: {
-          padding: 8,
+          padding: 5,
           usePointStyle: true,
           pointStyle: 'circle',
           font: {
-            size: 10
+            size: 8
           },
           generateLabels: function(chart) {
             const data = chart.data;

@@ -153,8 +153,16 @@ export const vendorDiscountServices = {
   upsertDiscount: (data) =>
     api.post(API_ENDPOINTS.VENDOR_DISCOUNT.UPSERT, data),
 
-  getAllDiscounts: () =>
-    api.get(API_ENDPOINTS.VENDOR_DISCOUNT.LIST),
+  getAllDiscounts: (params = {}) => {
+    const queryParams = new URLSearchParams();
+    if (params.page !== undefined) queryParams.append('page', params.page);
+    if (params.size !== undefined) queryParams.append('size', params.size);
+    if (params.sortBy && params.sortDir) {
+      queryParams.append('sort', `${params.sortBy},${params.sortDir}`);
+    } 
+    const url = `${API_ENDPOINTS.VENDOR_DISCOUNT.LIST}?${queryParams.toString()}`;
+    return api.get(url);
+  },
 
   getById: (id) =>
     api.post(API_ENDPOINTS.VENDOR_DISCOUNT.GETBYID, id),
@@ -170,8 +178,16 @@ export const referralProgramServices = {
   upsertReferral: (data) =>
     api.post(API_ENDPOINTS.REFERRAL_PROGRAM.UPSERT, data),
 
-  getAllReferrals: () =>
-    api.get(API_ENDPOINTS.REFERRAL_PROGRAM.LIST)
+  getAllReferrals: (params = {}) => {
+    const queryParams = new URLSearchParams();
+    if (params.page !== undefined) queryParams.append('page', params.page);
+    if (params.size !== undefined) queryParams.append('size', params.size); 
+    if (params.sortBy && params.sortDir) {
+      queryParams.append('sort', `${params.sortBy},${params.sortDir}`);
+    }
+    const url = `${API_ENDPOINTS.REFERRAL_PROGRAM.LIST}?${queryParams.toString()}`;
+    return api.get(url);
+  },
 };
 
 // ======================================
@@ -181,15 +197,14 @@ export const couponServices = {
   upsertCoupon: (data) =>
     api.post(API_ENDPOINTS.COUPONS.UPSERT, data),
 
-  getAllCoupons: () =>
-    api.get(API_ENDPOINTS.COUPONS.LIST),
   getCouponsPagination: (params = {}) => {
   const queryParams = new URLSearchParams();
 
   if (params.page !== undefined) queryParams.append('page', params.page);
   if (params.size !== undefined) queryParams.append('size', params.size);
-  if (params.sortBy) queryParams.append('sortBy', params.sortBy);
-  if (params.sortDir) queryParams.append('sortDir', params.sortDir);
+  if (params.sortBy && params.sortDir) {
+    queryParams.append('sort', `${params.sortBy},${params.sortDir}`);
+  }
   if (params.search) queryParams.append('search', params.search);
 
   const url = `${API_ENDPOINTS.COUPONS.LIST}?${queryParams.toString()}`;
@@ -426,6 +441,34 @@ export const caServices = {
 
 };
 
+export const tenantCaManagementServices = {
+  createCA: (payload) => {
+    return api.post(API_ENDPOINTS.TENANT_CA_MANAGEMENT.MANAGEMENT_PROCESS, payload);
+  },
+};
+
+export const caTenantServices = {
+  getTenantsForCa: (params = {}) => {
+    const queryParams = new URLSearchParams();
+    
+    if (params.page !== undefined) queryParams.append('page', params.page);
+    if (params.size !== undefined) queryParams.append('size', params.size);
+    if (params.sortBy && params.sortDir) {
+      queryParams.append('sort', `${params.sortBy},${params.sortDir}`);
+    }
+    
+    // Add caUserId parameter
+    if (params.caUserId) queryParams.append('caUserId', params.caUserId);
+
+    const url = `${API_ENDPOINTS.CA.TENANTS_PAGINATION}?${queryParams.toString()}`;
+    return api.get(url);
+  },
+
+  updateTenantStatus: (payload) => {
+    return api.post(API_ENDPOINTS.CA.UPDATE_STATUS, payload);
+  },
+};
+
 
 // ======================================
 // TENANT SERVICES
@@ -539,9 +582,10 @@ export const resetPasswordServices = {
 // ======================================
 
 export const dashboardServices = {
-  // Get dashboard data by role ID
-  getDashboardData: (roleId) =>
-    api.post(API_ENDPOINTS.DASHBOARD.BASE(roleId)),
+  // Get dashboard data by role ID and user data
+  getDashboardData: (roleId, payload) => {
+    return api.post(API_ENDPOINTS.DASHBOARD.BASE(roleId), payload);
+  },
 };
 
 // ======================================

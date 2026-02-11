@@ -21,11 +21,11 @@ const BarChartComponent = ({ title, data, xAxis, yAxis, size = 'medium', loading
       {
         label: title,
         data: data.map(item => item[yAxis]),
-        backgroundColor: 'rgba(102, 126, 234, 0.8)',
-        borderColor: 'rgba(102, 126, 234, 1)',
+        backgroundColor: 'rgba(0, 145, 255, 0.8)',
+        borderColor: 'rgba(232, 251, 255, 1)',
         borderWidth: 2,
         borderRadius: 8,
-        hoverBackgroundColor: 'rgba(102, 126, 234, 1)',
+        hoverBackgroundColor: 'rgba(251, 255, 220, 1)',
       }
     ]
   };

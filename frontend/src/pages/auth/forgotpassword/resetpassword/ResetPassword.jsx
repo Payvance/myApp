@@ -93,6 +93,7 @@ const ResetPassword = () => {
                             type={showNewPassword ? "text" : "password"}
                             onChange={setNewPassword}
                             onValidationChange={setIsPasswordValid}
+                            showCaseInfo={true}
                         />
                         <i
                             className={`bi ${showNewPassword ? "bi-eye" : "bi-eye-slash"} eye-icon-signup`}
@@ -106,6 +107,7 @@ const ResetPassword = () => {
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             max={16}
+                            onPaste={(e) => e.preventDefault()}
                         />
                         <i
                             className={`bi ${showConfirmPassword ? "bi-eye" : "bi-eye-slash"} eye-icon-signup`}

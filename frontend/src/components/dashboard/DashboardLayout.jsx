@@ -4,7 +4,6 @@ import './DashboardLayout.css';
 const DashboardLayout = ({ children, loading }) => {
   return (
     <div className="dashboard-layout">
-      <div className="dashboard-container">
         {loading ? (
           <div className="dashboard__loading">
             <div className="dashboard__loading-spinner"></div>
@@ -15,7 +14,6 @@ const DashboardLayout = ({ children, loading }) => {
             {children}
           </div>
         )}
-      </div>
     </div>
   );
 };

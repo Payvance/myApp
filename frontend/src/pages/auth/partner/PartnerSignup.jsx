@@ -179,6 +179,7 @@ const PartnerWithUs = () => {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               type={showConfirmPassword ? "text" : "password"}
+              onPaste={(e) => e.preventDefault()}
             />
             <i
               className={`bi ${showConfirmPassword ? "bi-eye" : "bi-eye-slash"} eye-icon-signup`}

@@ -63,8 +63,14 @@ const OfferManagement = () => {
       setLoading(true);
  
       // Since getAllCoupons doesn't support pagination yet, we'll fetch all and paginate locally
-      const response = await couponServices.getAllCoupons();
-      const allOffers = response.data || [];
+      const response = await couponServices.getCouponsPagination({
+        page,
+        size,
+        sortBy: sortField,
+        sortDir: sortOrder,
+        search: filters?.search,
+      });
+      const allOffers = response.data.content || [];
  
       // Apply search filter if exists
       let filteredOffers = allOffers;

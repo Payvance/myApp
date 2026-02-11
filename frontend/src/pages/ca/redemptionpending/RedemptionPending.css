@@ -2,19 +2,46 @@
   padding: 24px;
 }
 
-.redemption-table-card,
-.redemption-summary-card {
-  background: #fff;
+
+.redemption-table-card {
+  background: var(--bg-secondary);
   border-radius: 12px;
   padding: 20px;
   margin-bottom: 18px;
   margin-top: 1%;
 }
 
+
+.redemption-summary-card {
+  /* background: #fff;
+     */
+  background: var(--bg-primary);
+  /* color: var(--bg-primary); */
+  border-radius: 12px;
+  padding-top: 35px;
+  padding-left: 20px;
+  padding-right: 20px;
+  margin-bottom: 5px;
+  margin-top: 1%;
+}
+
+/* Dark mode overrides */
+[data-theme="dark"] .redemption-summary-card,
+[data-theme="dark"] .redemption-table-card {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .section-subtitle,
+[data-theme="dark"] .summary-label,
+[data-theme="dark"] .approval-note {
+  color: #e5e7eb;
+  /* soft white */
+}
+
 .section-title {
   font-size: 24px;
   font-weight: 700;
- margin-top: -1.7%;
+  margin-top: -1.7%;
 }
 
 .section-subtitle {

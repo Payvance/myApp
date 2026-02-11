@@ -38,9 +38,9 @@ const UserProfile = () => {
   const navigate = useNavigate();
   // Get current location to check for "View" mode
   const location = useLocation();
-  const isViewMode = location.pathname.includes('/view');
-  const isPendingMode = location.pathname.includes('/pending/');
-
+  const isDisabled = true;
+  const isViewMode = location.pathname.includes("/view");
+  const isPendingMode = location.pathname.includes("/pending");
   // State for Reject Popup
   const [showRejectPopup, setShowRejectPopup] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
@@ -347,7 +347,7 @@ const UserProfile = () => {
             <PersonalDetails
               personalData={personalData}
               setPersonalData={setPersonalData}
-              disabled={isViewMode || isPendingMode}
+              disabled={isDisabled}
             />
 
             {/* 2. Role Specific Personal Info */}
@@ -355,7 +355,7 @@ const UserProfile = () => {
               <VendorPersonalInfo
                 vendorData={vendorData}
                 setVendorData={setVendorData}
-                disabled={isViewMode || isPendingMode}
+                disabled={isDisabled}
                 role={role}
               />
             )}
@@ -365,12 +365,12 @@ const UserProfile = () => {
                 <AddressDetails
                   addressData={addressData}
                   setAddressData={setAddressData}
-                  disabled={isViewMode || isPendingMode}
+                  disabled={isDisabled}
                 />
                 <BankDetails
                   bankData={bankData}
                   setBankData={setBankData}
-                  disabled={isViewMode || isPendingMode}
+                  disabled={isDisabled}
                 />
               </>
             )}
@@ -378,7 +378,7 @@ const UserProfile = () => {
               <CAPersonalInfo
                 caData={caData}
                 setCaData={setCaData}
-                disabled={isViewMode || isPendingMode}
+                disabled={isDisabled}
               />
             )}
 

@@ -97,10 +97,16 @@ const TenantPlans = () => {
       const response = await planServices.getAllPlans();
       const apiPlans = response.data;
 
-      const mappedPlans = apiPlans.map((plan) => {
-        // 2. Check if the current tenant ID is in the plan's tenantIds array
+       // ✅ 1. Filter only active plans
+        const activePlans = apiPlans.filter(
+          (plan) => plan.is_active === "1"
+        );
+
+        // ✅ 2. Map only active plans
+        const mappedPlans = activePlans.map((plan) => {
         const isAlreadyLinked = plan.tenantIds?.includes(currentTenantId);
 
+        
         return {
           id: plan.id,
           name: plan.name,

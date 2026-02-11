@@ -7,7 +7,7 @@
  * Payvance Innovation Pvt. Ltd. retains all title to and intellectual property rights in these materials.
  *
  **/
-
+ 
 /**
  *
  * author                version        date        change description
@@ -33,7 +33,7 @@ import useOtp from "../../../../hooks/useOtp.js";
 import PaswordInputBox from "../../../../components/common/inputfield/PaswordInputBox.jsx"
 import PopUp from "../../../../components/common/popups/PopUp.jsx";
 import { COMPANY_INFO } from "../../../../config/Config.js";
-
+ 
 const SignIn = () => {
   const {
   otp,
@@ -50,13 +50,13 @@ const SignIn = () => {
   handleOtpKeyDown,
 } = useOtp();
   const { setTheme } = useTheme();
-
+ 
   /* Set theme to light on component mount */
   useEffect(() => {
     setTheme("light");
   }, []);
-
-  
+ 
+ 
 /* State variables for form fields and UI control */
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -88,34 +88,34 @@ const [signinPassword, setSigninPassword] = useState("");
       const tenantAdmin = roles.find(
         (role) => role.value === "Tenant Admin"
       );
-      setTenantAdminRole(tenantAdmin); 
+      setTenantAdminRole(tenantAdmin);
     } catch {
       toast.error("Failed to fetch roles");
     }
   };
-  
+ 
   fetchRoles();
   }, []);
-
+ 
   // Set cookie
 const setCookie = (name, value, days) => {
   const expires = new Date();
   expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
   document.cookie = `${name}=${encodeURIComponent(value)};expires=${expires.toUTCString()};path=/`;
 };
-
+ 
 // Get cookie
 const getCookie = (name) => {
   const cookies = document.cookie.split("; ");
   const cookie = cookies.find((c) => c.startsWith(name + "="));
   return cookie ? decodeURIComponent(cookie.split("=")[1]) : "";
 };
-
+ 
 // Delete cookie
 const deleteCookie = (name) => {
   setCookie(name, "", -1);
 };
-
+ 
 useEffect(() => {
   const savedEmail = getCookie("rememberedEmail");
   const savedPassword = getCookie("rememberedPassword");
@@ -125,8 +125,8 @@ useEffect(() => {
     setRemember(true);
   }
 }, []);
-
-
+ 
+ 
 /* Handle login button click for the sign in form
    if role=2 (tenent admin) then it redirect to the dashboard otherwise profile page
 */
@@ -139,7 +139,7 @@ const handleLogin = async () => {
      const result = await dispatch(
       login({ username: signinEmail, password: signinPassword })
     ).unwrap();
-
+ 
     // ----- REMEMBER ME -----
     if (remember) {
       setCookie("rememberedEmail", signinEmail, 30);     // store for 30 days
@@ -148,7 +148,7 @@ const handleLogin = async () => {
       deleteCookie("rememberedEmail");
       deleteCookie("rememberedPassword");
     }
-
+ 
     const roleId = result.roleId;
     if ( roleId === 1) {
       localStorage.setItem("user_id", result.userId);
@@ -205,7 +205,7 @@ const handleLogin = async () => {
   }
 };
  
-
+ 
 /* Handle signup button click for the sign up form  */
 const handleSignup = async () => {
   // Check OTP verification first
@@ -236,11 +236,11 @@ const handleSignup = async () => {
     email: email,
     password: password,
     phone: mobileNumber,
-    role: tenantAdminRole.code, 
+    role: tenantAdminRole.code,
   };
   try {
     const response = await authServices.signup(payload);
-    toast.success(response.data || "Registered successfully. Verify email.");
+    toast.success(response.data || "Registration successful! Please verify your email address to activate your account.");
     setShowRegister(false);
   } catch (error) {
     toast.error(
@@ -248,19 +248,19 @@ const handleSignup = async () => {
     );
   }
 };
-
+ 
 /* State to control display of sign up panel */
   const [showRegister, setShowRegister] = useState(false);
-
+ 
   /* handle create account button click */
   const handleRegister = () => {
     setShowRegister(true);
   };
-
+ 
   /* handle back to sign in button click */
   const handleBackToSignIn = () => setShowRegister(false);
-
-
+ 
+ 
   return (
     <div className="signin-wrapper">
       {/* main container for sign in form */}
@@ -272,7 +272,7 @@ const handleSignup = async () => {
             <div className="gradient-line"></div>
           </div>
           <p>Sign in to continue to your account</p>
-
+ 
           {/* email input field */}
           <InputField
             label={formConfig.signin.email.label}
@@ -283,7 +283,7 @@ const handleSignup = async () => {
             validationType="EMAIL"
             max={50}
           />
-
+ 
           {/* password input field */}
           <div className="position-relative signin-pass-container">
           <InputField
@@ -296,7 +296,7 @@ const handleSignup = async () => {
             min={8}
             max={16}
           />
-          <i className={`bi ${showSignInPassword ? "bi-eye" : "bi-eye-slash"} eye-icon-signin`} 
+          <i className={`bi ${showSignInPassword ? "bi-eye" : "bi-eye-slash"} eye-icon-signin`}
            onClick={() => setShowSignInPassword(!showSignInPassword)}> </i>
           </div>
           {/* remember me and forgot password */}
@@ -308,16 +308,16 @@ const handleSignup = async () => {
             />
             <button className="forgot" type="button" onClick={() => navigate("/forgotpassword")}>Forgot password?</button>
           </div>
-
+ 
           {/* login button */}
           <div className="signin-submit">
             <Button text="Sign In" onClick={handleLogin} />
           </div>
-
+ 
           {/* footer */}
           <Footer>{COMPANY_INFO.name} © 2025</Footer>
         </div>
-
+ 
         {/* right side - welcome (slides left on register) */}
         <div className="signin-right">
           <div className="signin-right-icon" aria-hidden="true"></div>
@@ -342,7 +342,7 @@ const handleSignup = async () => {
             </>
           )}
         </div> {/* signin-right end */}
-
+ 
         {/* Sign Up panel (appears on the right when register is active) */}
         <div className="signup-panel">
           {/* signup inner container */}
@@ -392,39 +392,39 @@ const handleSignup = async () => {
             )}
           </div>
           </div>
-            <InputField 
-              label={formConfig.signin.email.label} 
-              type="email" 
-              value={email} 
-              onChange={(e) => setEmail(e.target.value)} 
+            <InputField
+              label={formConfig.signin.email.label}
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               name="signupEmail"
               validationType="EMAIL"
               max={50}
             />
             <div className="position-relative signup-pass-container">
-            <PaswordInputBox 
-              label={formConfig.signin.password.label} 
+            <PaswordInputBox
+              label={formConfig.signin.password.label}
               type={showSignupPassword ? "text" : "password"}
-              value={password} 
+              value={password}
               onChange={setPassword}
               name="signupPassword"
               validationType="PASSWORD"
               onValidationChange={setIsPasswordValid}
             />
-            <i className={`bi ${showSignupPassword ? "bi-eye" : "bi-eye-slash"} eye-icon-signup`} 
+            <i className={`bi ${showSignupPassword ? "bi-eye" : "bi-eye-slash"} eye-icon-signup`}
             onClick={() => setShowSignupPassword(!showSignupPassword)}></i>
             </div>
              <div className="position-relative confirm-pass-container">
-            <InputField 
+            <InputField
               label={formConfig.signin.confirmPassword.label}
               type={showConfirmPassword ? "text" : "password"}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               name="confirmPassword"
               max={16}
-            
-            />   
-            <i className={`bi ${showConfirmPassword ? "bi-eye" : "bi-eye-slash"} eye-icon-confirm`} 
+           
+            />  
+            <i className={`bi ${showConfirmPassword ? "bi-eye" : "bi-eye-slash"} eye-icon-confirm`}
             onClick={() => setShowConfirmPassword(!showConfirmPassword)}></i>
             </div>
            <div className="signin-divider">
@@ -432,19 +432,19 @@ const handleSignup = async () => {
             <span className="or-text">Create Account and Start Your Journey</span>
             <span className="line"></span>
           </div>
-            
+           
             <div className="signin-submit">
               <Button text="Create Account" onClick={handleSignup} disabled={!otpVerified} />
-
+ 
             </div>
             <div className="signup-back">
               <button type="button" className="forgot" onClick={handleBackToSignIn}>Back to Sign In</button>
-              <Footer>{COMPANY_INFO.name} © 2025</Footer> 
+              <Footer>{COMPANY_INFO.name} © 2025</Footer>
               <div className="partner-link">
               <Link to="/partnerwithus" className="forgot">
                 Partner with us
               </Link>
-            </div>           
+            </div>          
             </div>
           </div>
           {/* signup inner container end */}
@@ -456,7 +456,7 @@ const handleSignup = async () => {
       <h3>Verify OTP</h3>
       <p>Enter the 6-digit OTP sent to</p>
       <strong>+91 {mobileNumber}</strong>
-
+ 
      <div className="otp-box-wrapper">
       {otp.map((digit, index) => (
         <input
@@ -471,7 +471,7 @@ const handleSignup = async () => {
         />
       ))}
     </div>
-
+ 
     <div className="otp-actions">
       <Button
         text="Verify OTP"
@@ -494,10 +494,10 @@ const handleSignup = async () => {
             </div>
           </div>
         )}
-
+ 
       </div> {/* signin card end */}
-
-
+ 
+ 
         <PopUp
         isOpen={isPopupOpen}
         onClose={() => setIsPopupOpen(false)}
@@ -507,9 +507,12 @@ const handleSignup = async () => {
       >
         <p>{popupMessage}</p>
       </PopUp>
-
+ 
     </div>
   );
 };
-
+ 
 export default SignIn;
+ 
+ 
+ 

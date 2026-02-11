@@ -41,6 +41,7 @@ const SubscriptionPlan = () => {
   allowedUsers: '',
   allowedCompany: '',
   periodType: 'monthly',
+  duration: 1,
   planPrice: '',
   status: 'active',
   databaseShared: true
@@ -54,6 +55,7 @@ const SubscriptionPlan = () => {
   // handle edit plan
   const handleEditPlan = async (plan) => {
     try{
+      setEditingPlanId(plan.id);
       // Fetch plan details from API
       const response = await planServices.getPlanById(plan.id);
       const data = response.data;
@@ -65,6 +67,7 @@ const SubscriptionPlan = () => {
         allowedUsers: data.plan_limitation?.allowed_user_count ?? 0,
         allowedCompany: data.plan_limitation?.allowed_company_count ?? 0,
         periodType: data.plan_price?.billing_period ?? "monthly",
+        duration: data.plan_price?.duration ?? 1, 
         planPrice: data.plan_price?.amount ?? 0,
         status: data.is_active === "1" ? "active" : "inactive",
         databaseShared: data.is_separate_db === "0" ? true : false,
@@ -123,6 +126,9 @@ const SubscriptionPlan = () => {
         billing_period: formData.periodType,
         currency: 'INR',
         amount: Number(formData.planPrice),
+      ...(formData.periodType === 'monthly' && {
+      duration: Number(formData.duration),
+    }),
       },
     };
 
@@ -166,29 +172,36 @@ const SubscriptionPlan = () => {
       const response = await planServices.getAllPlans();
       // backend usually sends array directly or inside data
       const apiPlans = response.data;
-
       // Map backend response → UI card format
-      const mappedPlans = apiPlans.map((plan) => ({
-        id: plan.id,
-        name: plan.name,
-        subtitle: plan.code,
-        status: plan.is_active === "1" ? "ACTIVE" : "INACTIVE",
-        price: plan.plan_price?.amount ?? 0,
-        period:
-          plan.plan_price?.billing_period === "yearly"
-            ? "per 12 months"
-            : "per 1 month",
-        stats: {
-          code: plan.code,
-          subscribers: "-",
-          revenue: "-"
-        },
-        features: [
-          `Users: ${plan.plan_limitation?.allowed_user_count}`,
-          `Companies: ${plan.plan_limitation?.allowed_company_count}`,
-          plan.is_separate_db === "1" ? "Separate DB" : "Shared DB"
-        ]
-      }));
+  const mappedPlans = apiPlans.map((plan) => {
+        const duration = plan.plan_price?.duration ?? 1;
+        const billingPeriod = plan.plan_price?.billing_period;
+
+        return {
+          id: plan.id,
+          name: plan.name,
+          subtitle: plan.code,
+          status: plan.is_active === "1" ? "ACTIVE" : "INACTIVE",
+          price: plan.plan_price?.amount ?? 0,
+
+          //  USE BACKEND DURATION HERE
+          period:
+            billingPeriod === "yearly"
+              ? `per ${duration} year${duration > 1 ? "s" : ""}`
+              : `per ${duration} month${duration > 1 ? "s" : ""}`,
+
+          stats: {
+            code: plan.code,
+            subscribers: "-",
+            revenue: "-"
+          },
+          features: [
+            `Users: ${plan.plan_limitation?.allowed_user_count}`,
+            `Companies: ${plan.plan_limitation?.allowed_company_count}`,
+            plan.is_separate_db === "1" ? "Separate DB" : "Shared DB"
+          ]
+        };
+      });
 
       setPlans(mappedPlans);
     } finally {
@@ -197,7 +210,7 @@ const SubscriptionPlan = () => {
   };
 
 
-  const handleSubmitUpdatePlan = async (plan) => {
+  const handleSubmitUpdatePlan = async () => {
   
   setIsSubmitting(true);
   const payload = {
@@ -213,11 +226,14 @@ const SubscriptionPlan = () => {
       billing_period: formData.periodType,
       currency: 'INR',
       amount: Number(formData.planPrice),
+      ...(formData.periodType === 'monthly' && {
+        duration: Number(formData.duration),
+      }),
     },
   };
 
   try {
-    await planServices.updatePlan(plan.id, payload);
+    await planServices.updatePlan(editingPlanId, payload);
     toast.success('Plan updated succesfully.', {
     onClose: () => {
       // close popup & reset
@@ -247,11 +263,17 @@ const isFormValid = () => {
     Number(formData.allowedUsers) > 0 &&
     Number(formData.allowedCompany) > 0 &&
     formData.periodType !== '' &&
+    (Number(formData.duration) >= 1 && Number(formData.duration) <= 12) &&
     Number(formData.planPrice) > 0 &&
     formData.status !== ''
   );
 };
 
+useEffect(() => {
+  if (formData.periodType === 'yearly') {
+    setFormData(prev => ({ ...prev, duration: 1 }));
+  }
+}, [formData.periodType]);
 
 
 
@@ -352,20 +374,36 @@ const isFormValid = () => {
           </div>
 
           <div className="form-row">
-            {/* period type */}
-            <OptionInputBox
-              label={formConfig.subscriptionPlan.periodType.label}
-              name="periodType"
-              value={formData.periodType}
-              onChange={handleInputChange}
-              options={[
-                { code: 'monthly', value: 'Monthly' },
-                { code: 'yearly', value: 'Yearly' }
-              ]}
-              required
-              classN="large"
-               disabled={isEditMode? true : false}
-            />
+            {/* period type and duration group */}
+            <div className="period-duration-group">
+              <OptionInputBox
+                label={formConfig.subscriptionPlan.periodType.label}
+                name="periodType"
+                value={formData.periodType}
+                onChange={handleInputChange}
+                options={[
+                  { code: 'monthly', value: 'Monthly' },
+                  { code: 'yearly', value: 'Yearly' }
+                ]}
+                required
+                classN="large"
+                disabled={isEditMode ? true : false}
+              />
+              {/* period duration */}
+              <InputField
+                label={formConfig.subscriptionPlan.periodDuration.label}
+                name="duration"
+                value={formData.duration}
+                onChange={handleInputChange}
+                validationType="NUMBER_ONLY"
+                type="number"
+                min={1}
+                max={12}
+                required
+                classN="large"
+                disabled={isEditMode ? true : false}
+              />
+            </div>
             {/* plan price */}
             <InputField
               label={formConfig.subscriptionPlan.planPrice.label}
@@ -374,7 +412,6 @@ const isFormValid = () => {
               onChange={handleInputChange}
               validationType="AMOUNT"
               required
-              max={12}
               classN="large"
                disabled={isEditMode? true : false}
             />

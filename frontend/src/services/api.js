@@ -113,6 +113,12 @@ VENDOR_DISCOUNT: (userId) =>
    CA: {
     REDEMPTION: "/api/ca/referrals/redemptions",
     REDEMPTION_PENDING: "/api/ca/referrals/redemptions",
+    TENANTS_PAGINATION: "/api/ca-tenants/pagination",
+    UPDATE_STATUS: "/api/ca-tenants/update-status",
+  },
+
+  TENANT_CA_MANAGEMENT: {
+    MANAGEMENT_PROCESS: "/api/tenantca-management/process",
   },
 
 AUDIT: {	 

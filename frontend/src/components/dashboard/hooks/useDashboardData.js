@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { dashboardServices } from '../../../services/apiService';
-import { getRoleId } from '../../../services/authService';
+import { getRoleId, getUserId } from '../../../services/authService';
 
 // Single API call hook to fetch all dashboard data
 export const useDashboardData = () => {
@@ -13,12 +13,17 @@ export const useDashboardData = () => {
       setLoading(true);
       try {
         const roleId = getRoleId();
+        const userId = localStorage.getItem('user_id');
         
         if (!roleId) {
           throw new Error('No role ID found');
         }
 
-        const response = await dashboardServices.getDashboardData(roleId);
+        const payload = { 
+          userId
+        };
+
+        const response = await dashboardServices.getDashboardData(roleId, payload);
         setData(response.data);
         setError(null);
       } catch (err) {

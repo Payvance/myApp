@@ -16,14 +16,14 @@ import './PopUp.css';
  * - closeOnBackdropClick (boolean): Enables closing when clicking outside popup
  * - size (string): Size variant - 'small' | 'medium' | 'large'
  */
-const PopUp = ({ 
-  isOpen, 
-  onClose, 
+const PopUp = ({
+  isOpen,
+  onClose,
   children,
   title,
   subtitle,
   showCloseButton = true,
-  closeOnBackdropClick = true,
+  closeOnBackdropClick = false,
   size = 'medium' // default size
 }) => {
 

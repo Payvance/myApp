@@ -46,11 +46,11 @@ select[disabled] {
   left: 12px;
   top: 50%;
   transform: translateY(-50%);
-  color: #9ca3af;
+  background-color: var(--primary-50) !important;
+  color: var(--text-secondary);
   font-size: 14px;
   font-weight: 500;
   pointer-events: none;
-  background-color: #ffffff;
   padding: 0 4px;
   transition: all 0.2s ease;
   z-index: 1;
@@ -63,8 +63,8 @@ select[disabled] {
   border-radius: 8px;
   font-size: 14px;
   outline: none;
-  background-color: #ffffff;
-  color: #374151;
+  background-color: var(--primary-50) !important;
+  color: var(--text-secondary);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   box-sizing: border-box;
 }
@@ -146,8 +146,8 @@ label.InputField-input-label {
   border-radius: 8px;
   font-size: 14px;
   outline: none;
-  background-color: #ffffff;
-  color: #374151;
+  background-color: var(--primary-50) !important;
+  color: var(--text-secondary);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -192,8 +192,8 @@ label.InputField-input-label {
   border-radius: 8px;
   font-size: 14px;
   outline: none;
-  background-color: #ffffff;
-  color: #374151;
+  background-color: var(--primary-50) !important;
+  color: var(--text-secondary);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -207,7 +207,8 @@ label.InputField-input-label {
   left: 16px;
   top: 50%;
   transform: translateY(-50%);
-  background-color: #ffffff;
+  background-color: var(--primary-50) !important;
+  color: var(--text-secondary);
   padding: 0 4px;
   color: #9ca3af;
   font-size: 14px;
@@ -295,7 +296,7 @@ table .select-container:has(> select:disabled) {
 
 .input-container input:focus,
 .input-container input:not(:placeholder-shown) {
-  border-color: var(--primary-color);
+  border-color: var(--purple-600);
 }
 
 label input {
