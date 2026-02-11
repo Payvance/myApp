@@ -495,9 +495,8 @@ public class TallySyncService {
 
             java.util.List<Voucher> existingByGuid = new java.util.ArrayList<>();
             if (!guids.isEmpty()) {
-                // Note: findByTenantIdAndGuidIn searches across all companies, but GUID should
-                // be unique globally or at least per tenant
-                existingByGuid = voucherRepository.findByTenantIdAndGuidIn(tenantId, guids);
+                // Note: findByTenantIdAndCompanyIdAndGuidIn searches within the specific company to ensure uniqueness
+                existingByGuid = voucherRepository.findByTenantIdAndCompanyIdAndGuidIn(tenantId, companyId, guids);
             }
 
             // Map for quick lookup: MasterID -> Voucher

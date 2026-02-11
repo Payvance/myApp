@@ -22,7 +22,7 @@ public interface ReferralCodeRepository extends JpaRepository<ReferralCode, Long
             String status
     );
 
-	
+    Optional<ReferralCode> findByCode(String code);
 	
 	Optional<ReferralCode> findByOwnerIdAndStatus(Long ownerId, String status);
 

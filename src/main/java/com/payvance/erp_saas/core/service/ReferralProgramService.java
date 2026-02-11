@@ -3,6 +3,8 @@ package com.payvance.erp_saas.core.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,11 +53,10 @@ public class ReferralProgramService {
     /**
      * Get all Referral Programs
      */
-    public List<ReferralProgramResponse> getAllReferralPrograms() {
-        return referralProgramRepository.findAll()
-                .stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+    public Page<ReferralProgramResponse> getAllReferralPrograms(Pageable pageable) {
+        return referralProgramRepository.findAll(pageable)
+                .map(this::mapToResponse);
+
     }
 
     private ReferralProgramResponse mapToResponse(ReferralProgram entity) {

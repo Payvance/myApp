@@ -27,6 +27,7 @@ import java.util.Optional;
 public interface CaRepository extends JpaRepository<Ca, Long> {
     Optional<Ca> findByUserId(Long userId);
     Optional<Ca> findByUserIdAndStatus(Long userId, String status);
+    Optional<Ca> findByIcaiMemberNo(String icaiMemberNo);
     
     /**
      * Count CAs by status

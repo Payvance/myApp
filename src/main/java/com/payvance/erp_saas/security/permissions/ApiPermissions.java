@@ -61,7 +61,8 @@ public final class ApiPermissions {
                         "/api/tenants/trial",
                         "/api/tenants/{id}",
                         "/api/users/**",
-                        "/api/tenant-users/**"
+                        "/api/tenant-users/**",
+                        "/api/tenant-ca-management/**"
 
         };
 
@@ -80,6 +81,7 @@ public final class ApiPermissions {
 
         /* ===================== CA ===================== */
         public static final String[] CA_APIS = {
-                        "/api/ca/**"
+            "/api/ca/**",
+            "/api/ca-tenants/**"
         };
 }

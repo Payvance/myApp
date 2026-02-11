@@ -5,6 +5,9 @@ import com.payvance.erp_saas.core.dto.ReferralProgramResponse;
 import com.payvance.erp_saas.core.dto.ReferralStatusUpdateRequest;
 import com.payvance.erp_saas.core.service.ReferralProgramService;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
@@ -34,10 +37,10 @@ public class ReferralProgramController {
      * Get all Referral Programs
      */
     @GetMapping
-    public ResponseEntity<List<ReferralProgramResponse>> getAllReferralPrograms() {
+    public ResponseEntity<Page<ReferralProgramResponse>> getAllReferralPrograms(Pageable pageable) {
 
         return ResponseEntity.ok(
-                referralProgramService.getAllReferralPrograms()
+                referralProgramService.getAllReferralPrograms(pageable)
         );
     }
 
