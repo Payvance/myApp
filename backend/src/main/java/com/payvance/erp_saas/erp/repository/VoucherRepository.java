@@ -41,5 +41,5 @@ public interface VoucherRepository extends JpaRepository<Voucher, Long> {
         java.util.List<Voucher> findByTenantIdAndCompanyIdAndMasterIdIn(Long tenantId, String companyId,
                         java.util.List<Long> masterIds);
 
-        java.util.List<Voucher> findByTenantIdAndGuidIn(Long tenantId, java.util.List<String> guids);
+        java.util.List<Voucher> findByTenantIdAndCompanyIdAndGuidIn(Long tenantId, String companyId, java.util.List<String> guids);
 }

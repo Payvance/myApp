@@ -84,6 +84,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     	        u.name as name,
     	        u.email as email,
     	        u.phone as phone,
+    	        u.isActive as active,
 
     	        CASE
     	            WHEN EXISTS (

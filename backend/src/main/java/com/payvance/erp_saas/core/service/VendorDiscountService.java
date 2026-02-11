@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,12 +51,11 @@ public class VendorDiscountService {
     /**
      * Fetch all vendor discounts
      */
-    public List<VendorDiscountResponse> getAllDiscounts() {
-        return vendorDiscountRepository.findAll()
-                .stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+    public Page<VendorDiscountResponse> getAllDiscounts(Pageable pageable) {
+        Page<VendorDiscount> page = vendorDiscountRepository.findAll(pageable);
+        return page.map(this::mapToResponse);
     }
+
 
     private VendorDiscountResponse mapToResponse(VendorDiscount discount) {
         VendorDiscountResponse response = new VendorDiscountResponse();

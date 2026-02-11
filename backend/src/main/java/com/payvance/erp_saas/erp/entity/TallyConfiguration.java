@@ -25,7 +25,7 @@ public class TallyConfiguration {
     @Column(name = "license_expiry_date", nullable = true)
     private LocalDate licenseExpiryDate;
 
-    @Column(name = "license_serial_number", length = 50, nullable = false)
+    @Column(name = "license_serial_number", length = 50, nullable = true)
     private String licenseSerialNumber;
 
     @Column(name = "license_email", length = 150, nullable = true)

@@ -2,6 +2,8 @@ package com.payvance.erp_saas.core.controller;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,8 +39,8 @@ public class VendorDiscountController {
      * Get all vendor discounts
      */
     @GetMapping("/all")
-    public ResponseEntity<List<VendorDiscountResponse>> getAllDiscounts() {
-        List<VendorDiscountResponse> discounts = vendorDiscountService.getAllDiscounts();
+    public ResponseEntity<Page<VendorDiscountResponse>> getAllDiscounts(Pageable pageable) {
+        Page<VendorDiscountResponse> discounts = vendorDiscountService.getAllDiscounts(pageable);
         return ResponseEntity.ok(discounts);
     }
     
