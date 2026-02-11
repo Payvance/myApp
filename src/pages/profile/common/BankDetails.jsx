@@ -35,7 +35,8 @@ const BankDetails = ({ bankData, setBankData, disabled }) => {
           name="bankName"
           value={bankData.bankName}
           onChange={(e) => handleChange("bankName", e.target.value)}
-          validationType="ALPHABETS_AND_SPACE"
+          validationType="BANK"
+          min={2}
           max={50}
           required
           disabled={disabled}
@@ -45,7 +46,7 @@ const BankDetails = ({ bankData, setBankData, disabled }) => {
           name="branchName"
           value={bankData.branchName}
           onChange={(e) => handleChange("branchName", e.target.value)}
-          validationType="ALPHABETS_AND_SPACE"
+          validationType="ALPHANUMERIC"
           max={50}
           required
           disabled={disabled}
@@ -64,7 +65,9 @@ const BankDetails = ({ bankData, setBankData, disabled }) => {
           label={formConfig.bankdetails.ifsccode.label}
           name="ifscCode"
           value={bankData.ifscCode}
-          onChange={(e) => handleChange("ifscCode", e.target.value)}
+          onChange={(e) =>
+            handleChange("ifscCode", e.target.value.toUpperCase())
+          }
           validationType="IFSC_CODE"
           max={11}
           required

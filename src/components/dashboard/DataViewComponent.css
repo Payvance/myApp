@@ -1,5 +1,5 @@
 .data-view-card {
-  background: var(--card-bg, #ffffff);
+  background: #faffe2;
   border: 1px solid var(--border-color, #e0e0e0);
   border-radius: 6px;
   padding: 12px;

@@ -18,8 +18,8 @@ const DataTable = ({
   loading = false,
   primaryKeys = ['id'],
   showActions = true,
-  showEditButton = true,
-  showViewButton = true,
+  showEditButton = false,
+  showViewButton = false,
   showApproveButton = false,
   showDeleteButton = false,
   showRejectButton = false,
@@ -97,7 +97,15 @@ const DataTable = ({
         const value = getValue();
 
         // Formatting logic based on column type
-        if (['date', 'datetime'].includes(col.type)) {
+        if (col.accessorKey === 'isView') {
+          // Handle isView status: 0 = Pending, 1 = Approved, 2 = Rejected
+          const statusConfig = {
+            0: 'Pending',
+            1: 'Approved',
+            2: 'Rejected'
+          };
+          return <div style={{ textAlign: 'left' }}>{statusConfig[value] || 'Unknown'}</div>;
+        } else if (['date', 'datetime'].includes(col.type)) {
           return <DateTimeFormatter value={value} showTime={col.type === 'datetime'} />;
         } else if (['integer', 'float', 'double'].includes(col.type)) {
           return <div style={{ textAlign: 'left' }}>{formatNumber(value, col.type)}</div>;

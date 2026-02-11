@@ -4,21 +4,38 @@
   background: var(--background-color, #f8f9fa);
   padding: 12px;
   box-sizing: border-box;
-  overflow: hidden;
+  overflow: auto;
 }
 
 .dashboard-container {
+  min-height: 100%;
   max-width: 100%;
   margin: 0 auto;
-  min-height: 100%;
 }
 
 .dashboard__content {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  min-height: 100%;
   gap: 12px;
 }
+
+/* 3 rows in order */
+.dashboard__content > :nth-child(1) {
+  flex: 1;
+  min-height: 0;
+}
+
+.dashboard__content > :nth-child(2) {
+  flex: 4.5;
+  min-height: 0;
+}
+
+.dashboard__content > :nth-child(3) {
+  flex: 4.5;
+  min-height: 0;
+}
+
 
 .dashboard__loading {
   display: flex;

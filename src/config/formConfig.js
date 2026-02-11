@@ -30,6 +30,12 @@ export const formConfig = {
     caRegNo: {
       label: "CA Registration Number",
     }, 
+    caNo: {
+      label: "CA No.",
+    },
+    referenceCode: {
+      label: "CA Reference Code",
+    },
     yearsofenrollment: {
       label: "Years of Enrollment",
     },
@@ -188,7 +194,10 @@ export const formConfig = {
     },   
     periodType : {
       label : "Period Type"
-    },    
+    },   
+    periodDuration: {
+      label: "Duration "
+    }, 
     status : {
       label : "Status"
     }

@@ -18,7 +18,7 @@ import { useRef, useState } from "react";
 import "./PaswordInputBox.css";
 import { formConfig } from "../../../config/formConfig.js";
 
-const PaswordInputBox = ({ label, value, onChange, onValidationChange, type = "password", classN = "" }) => {
+const PaswordInputBox = ({ label, value, onChange, onValidationChange, type = "password", classN = "" ,showCaseInfo}) => {
   const inputRef = useRef(null);
   const [showBox, setShowBox] = useState(false);
   const [boxStyle, setBoxStyle] = useState({});
@@ -105,9 +105,25 @@ const PaswordInputBox = ({ label, value, onChange, onValidationChange, type = "p
           onFocus={handleFocus}
           onBlur={() => setTimeout(() => setShowBox(false), 200)}
           autoComplete="new-password"
+          onKeyDown={(e) => {
+    if (e.key === " ") {
+      e.preventDefault();
+    }
+  }}
         />
         <label>
           {label || formConfig.signin.password.label}
+          {showCaseInfo && (
+            <span className="info-wrapper">
+            <i
+              className="bi bi-info-circle ms-2"
+              style={{ marginLeft: "5px"}}
+            ></i>
+            <span className="info-tooltip">
+             Password is case sensitive
+            </span>
+            </span>
+          )}
         </label>
       </div>
     </div>

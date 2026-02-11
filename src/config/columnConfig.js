@@ -151,6 +151,18 @@ export const CA_REDEMPTION_APPROVALS_COLUMNS = [
   { accessorKey: 'createdAt', header: 'Date', type: 'datetime', sortable: true, filterable: true, width: 150 },
 ];
 
+// ======================================
+// CA TENANT REQUESTS COLUMNS
+// ======================================
+export const CA_TENANT_REQUESTS_COLUMNS = [
+  { accessorKey: 'name', header: 'Name', type: 'text', sortable: true, filterable: true, width: 200 },
+  { accessorKey: 'email', header: 'Email', type: 'email', sortable: true, filterable: true, width: 220 },
+  { accessorKey: 'phone', header: 'Phone', type: 'phone', sortable: true, filterable: true, width: 150 },
+  { accessorKey: 'isView', header: 'Status', type: 'integer', sortable: true, filterable: true, width: 120 },
+  { accessorKey: 'requestedAt', header: 'Requested At', type: 'datetime', sortable: true, filterable: true, width: 180 },
+];
+
+// ======================================
 // USERS COLUMNS
 // ======================================
 export const USERS_COLUMNS = [
@@ -159,6 +171,7 @@ export const USERS_COLUMNS = [
   { accessorKey: 'email', header: 'Email', type: 'email', sortable: true, filterable: true, width: 220 },
   { accessorKey: 'phone', header: 'Phone', type: 'phone', sortable: true, filterable: true, width: 140 },
   { accessorKey: 'roleName', header: 'Role', type: 'text', sortable: true, filterable: true, width: 150 }, // Add roleName column
+  { accessorKey: 'active', header: 'Active', type: 'boolean', sortable: true, filterable: true, width: 100 },
 ];
 
 // ======================================

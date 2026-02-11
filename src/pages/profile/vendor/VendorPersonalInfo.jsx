@@ -30,6 +30,11 @@ const VendorPersonalInfo = ({ vendorData, setVendorData, disabled, role  }) => {
   const [discountOptions, setDiscountOptions] = useState([]);
   
   const handleChange = (name, value) => {
+    if (name === "tanNo") {
+    // Allow typing, but cap at 10 characters
+    if (value.length > 10) return;
+  }
+
     if (name === "vendorType" && value && value.target) {
       setVendorData((prev) => ({ ...prev, [name]: value.target.value }));
     } else {
@@ -123,6 +128,7 @@ setDiscountOptions(mappedOptions);
           onChange={(e) => handleChange("panNo", e.target.value)}
           validationType="PAN"
           required
+          max={10}
           disabled={disabled}
         />
       </div>
@@ -137,6 +143,8 @@ setDiscountOptions(mappedOptions);
           onChange={(e) => handleChange("tanNo", e.target.value)}
           validationType="TAN"
           required
+          max={10}
+          min={10}
           disabled={disabled}
         />
         {role === "VENDOR" && (

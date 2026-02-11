@@ -21,6 +21,9 @@ import formConfig from "../../../config/formConfig";
 
 const CAPersonalInfo = ({ caData, setCaData, disabled }) => {
   const handleChange = (field, value) => {
+    if(field === "icaiMemberStatus"){
+      if (value.length < 7) return;
+    }
     // Handle OptionInputBox differently since it returns an object
     if ((field === "icaiMemberStatus" || field === "practiceType") && value && value.target) {
       setCaData((prev) => ({ ...prev, [field]: value.target.value }));
@@ -50,6 +53,7 @@ const CAPersonalInfo = ({ caData, setCaData, disabled }) => {
           value={caData.caRegNo || ""}
           onChange={(e) => handleChange("caRegNo", e.target.value)}
           max={30}
+          validationType="CA_REG_NO"
           required
           disabled={disabled}
         />
@@ -83,6 +87,7 @@ const CAPersonalInfo = ({ caData, setCaData, disabled }) => {
           label={formConfig.caprofile.firmName.label}
           name="firmName"
           value={caData.firmName || ""}
+          validationType="BANK"
           onChange={(e) => handleChange("firmName", e.target.value)}
           max={100}
           disabled={disabled}
@@ -96,7 +101,9 @@ const CAPersonalInfo = ({ caData, setCaData, disabled }) => {
           name="icaiMemberNo"
           value={caData.icaiMemberNo || ""}
           onChange={(e) => handleChange("icaiMemberNo", e.target.value)}
-          max={50}
+          validationType="NUMBER_ONLY"
+          min={5}
+          max={6}
           required
           disabled={disabled}
         />

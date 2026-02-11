@@ -281,7 +281,12 @@ const REQUIRED_FIELDS = [
           ...prev,
           name: data.tenantName || ''
         }));
-        toast.success('Tenant found and eligible for license generation!');
+
+        setTimeout(() => {
+          toast.success('Tenant eligible for license generation');
+        }, 100); // disappear after 3 seconds
+
+
       } else {
         // Clear name field if not eligible
         setIssueFormData(prev => ({
@@ -644,11 +649,13 @@ const REQUIRED_FIELDS = [
       setLoading(true);
       const response = await vendorLicenseServices.updateBatchStatus(selectedBatchId, decision);
       await fetchData({ page: 0, size: 10 });
-      
-      // Show actual response message
-      const message = response?.data?.message || response?.message;
+    
       if (decision === 'APPROVED') {
-        toast.success(message);
+        toast.success("Batch Approved successfully", {
+          autoClose: 1000,
+          onClose: () => {
+            handleClosePopup();}
+        });
       } else if (decision === 'REJECTED') {
         toast.error('Batch Rejected');
       }

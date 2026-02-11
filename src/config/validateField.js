@@ -111,11 +111,11 @@ export const VALIDATION_PATTERNS = {
   },
   GST: {
     pattern: /^\d{2}[A-Z]{5}\d{4}[A-Z][A-Z0-9]Z[A-Z0-9]$/,
-    message: "Please enter a valid GST number",
+    message: "Please enter a valid GST number (e.g., 22ABCDE1234F1Z5)",
   },
   CIN: {
     pattern: /^[LU]\d{5}[A-Z]{2}\d{4}[A-Z]{3}\d{6}$/,
-    message: "Please enter a valid CIN number",
+    message: "Please enter a valid CIN number (e.g., L12345MH2020PLC123456)",
   },
   UTR: {
     pattern: /^[A-Z0-9]*$/,
@@ -125,6 +125,36 @@ export const VALIDATION_PATTERNS = {
     pattern: /^[A-Z0-9]*$/,
     message: "Only capital alphabets and numbers are allowed",
   },
+  CA_REG_NO: {
+  pattern: /^[A-Z0-9/]+$/,
+  message: "CA Registration No can contain only capital letters, numbers, and /",
+},
+
+ICAI_MEMBER_NO: {
+  pattern: /^\d{6}$/,
+  message: "ICAI Member Number must be exactly 6 digits",
+},
+
+FIRM_NAME: {
+  pattern: /^[A-Z ]*$/,
+  message: "Firm name can contain only capital letters and spaces",
+},
+  LANDMARK: {
+    pattern: /^[a-zA-Z0-9\s,\-/]*$/,
+    message: "Only letters, numbers, spaces, commas, hyphens, and slashes allowed",
+  },
+  ALPHABETS_AND_SPACE_HYPHEN: {
+    pattern:  /^[A-Za-z\s\-]*$/,
+    message: "Only alphabets, spaces, and hyphens allowed",
+  },
+  HOUSE :{
+    pattern: /^(?=.*[A-Za-z0-9])[A-Za-z0-9\/\-,.() ]+$/,
+    message: "Only letters, numbers, spaces, slashes, hyphens, commas, and parentheses allowed",
+  },
+  BANK :{
+    pattern: /^(?=.*[A-Za-z])[A-Za-z0-9 .&()'-]+$/,
+    message: "Bank name must contain at least one letter and can include numbers, spaces, dots, ampersands, parentheses, apostrophes, and hyphens",   
+  }
 };
 
 export const validateField = (fieldName, value, required = false) => {

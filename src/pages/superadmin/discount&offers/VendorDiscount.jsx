@@ -58,8 +58,14 @@ const VendorDiscount = () => {
       setLoading(true);
  
       // Since getAllDiscounts doesn't support pagination yet, we'll fetch all and paginate locally
-      const response = await vendorDiscountServices.getAllDiscounts();
-      const allDiscounts = response.data || [];
+      const response = await vendorDiscountServices.getAllDiscounts({
+        page,
+        size,
+        sortBy: sortField,
+        sortDir: sortOrder,
+        search: filters?.search,
+      });
+      const allDiscounts = response.data.content || [];
  
       // Apply search filter if exists
       let filteredDiscounts = allDiscounts;

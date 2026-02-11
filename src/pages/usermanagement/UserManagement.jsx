@@ -119,7 +119,7 @@ const columns = USERS_COLUMNS.map(col => {
             basePath="/users"
             primaryKeys={['id']}
             showActions={true}
-            showEditButton={true}
+            showEditButton={false}
             showViewButton={true}
             className="user-data-table"
           />

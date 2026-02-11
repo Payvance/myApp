@@ -256,3 +256,8 @@
 [data-theme="custom"] .warm-gradient {
   background: linear-gradient(135deg, #fef7f0 0%, #fff4e6 25%, #fdf4ff 50%, #fefbf8 75%, #fdf7f2 100%);
 }
+
+/* Override Upgrade Plan Color to match Light Theme */
+[data-theme="custom"] .upgrade-glow {
+  color: #3d2817 !important;
+}

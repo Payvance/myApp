@@ -23,17 +23,29 @@ const AddressDetails = ({ addressData, setAddressData, disabled }) => {
 const [isFetched, setIsFetched] = useState(false);
   /* Handled the changed function for the address details form */
   const handleChange = (name, value) => {
+    const trimmedValue =
+    typeof value === "string" ? value.trimStart() : value;
     // Update the pincode/field value immediately
-    setAddressData(prev => ({ ...prev, [name]: value }));
+    setAddressData(prev => ({ ...prev, [name]: trimmedValue }));
 
     if (name === "pincode") {
-      // If user removes a digit (length < 6) or clears it
-      if (value.length < 6) {
-        resetAddressFields();
-      } 
       // Fetch data only when exactly 6 digits are reached
-      else if (value.length === 6) {
+      if (value.length === 6) {
         fetchPincodeData(value);
+      }
+      // If cleared completely
+      else if (value.length < 6) {
+        resetAddressFields();
+      }
+    }
+  };
+
+  const handleBlur = (name, value) => {
+    if (name === "pincode") {
+      // If user leaves field with less than 6 digits (and not empty)
+      if (value.length > 0 && value.length < 6) {
+        toast.error("Pincode must be 6 digits");
+        resetAddressFields();
       }
     }
   };
@@ -43,7 +55,9 @@ const [isFetched, setIsFetched] = useState(false);
       const response = await externalServices.getPostalInfoByPincode(pincode);
       const data = response.data[0];
       if (data.Status === "Error") {
-        toast.error("Pincode does not exist. Please check and try again.");
+        setTimeout(() => {
+          toast.error("Pincode does not exist. Please check and try again.");
+        }, 2000);
         resetAddressFields(); // Clear fields and unlock them
         return;
       }
@@ -70,6 +84,7 @@ const [isFetched, setIsFetched] = useState(false);
       city: "",
       district: "",
       state: "",
+      country: "",
     }));
     setIsFetched(false);
   };
@@ -84,7 +99,7 @@ const [isFetched, setIsFetched] = useState(false);
           name="houseNo"
           value={addressData.houseNo}
           onChange={(e) => handleChange("houseNo", e.target.value)}
-          validationType="ALPHANUMERIC"
+          validationType="HOUSE"
           max={20}
           required
           disabled={disabled}
@@ -95,7 +110,7 @@ const [isFetched, setIsFetched] = useState(false);
           name="buildingName"
           value={addressData.buildingName}
           onChange={(e) => handleChange("buildingName", e.target.value)}
-          validationType="ALPHANUMERIC"
+          validationType="HOUSE"
           max={50}
           disabled={disabled}
         />
@@ -105,7 +120,7 @@ const [isFetched, setIsFetched] = useState(false);
           name="area"
           value={addressData.area}
           onChange={(e) => handleChange("area", e.target.value)}
-          validationType="ALPHANUMERIC"
+          validationType="HOUSE"
           max={50}
           required
           disabled={disabled}
@@ -116,7 +131,7 @@ const [isFetched, setIsFetched] = useState(false);
           name="landmark"
           value={addressData.landmark}
           onChange={(e) => handleChange("landmark", e.target.value)}
-          validationType="ALPHANUMERIC"
+          validationType="LANDMARK"
           max={50}
           disabled={disabled}
         />
@@ -130,6 +145,7 @@ const [isFetched, setIsFetched] = useState(false);
           name="pincode"
           value={addressData.pincode}
           onChange={(e) => handleChange("pincode", e.target.value)}
+          onBlur={(e) => handleBlur("pincode", e.target.value)}
           validationType="NUMBER_ONLY"
           max={6}
           required
@@ -144,7 +160,7 @@ const [isFetched, setIsFetched] = useState(false);
           validationType="ALPHABETS_AND_SPACE"
           max={30}
           required
-          disabled={isFetched || disabled}
+          disabled={disabled}
         />
 
         <InputField
@@ -152,7 +168,7 @@ const [isFetched, setIsFetched] = useState(false);
           name="village"
           value={addressData.village}
           onChange={(e) => handleChange("village", e.target.value)}
-          validationType="ALPHABETS_AND_SPACE"
+          validationType="ALPHABETS_AND_SPACE_HYPHEN"
           max={30}
           disabled={disabled}
         />
@@ -161,7 +177,7 @@ const [isFetched, setIsFetched] = useState(false);
           name="taluka"
           value={addressData.taluka}
           onChange={(e) => handleChange("taluka", e.target.value)}
-          validationType="ALPHABETS_AND_SPACE"
+          validationType="ALPHABETS_AND_SPACE_HYPHEN"
           max={30}
           disabled={disabled}
         />
@@ -178,7 +194,7 @@ const [isFetched, setIsFetched] = useState(false);
           validationType="ALPHABETS_AND_SPACE"
           max={30}
           required
-          disabled={isFetched || disabled}
+          disabled={disabled}
         />
 
         <InputField
@@ -189,7 +205,7 @@ const [isFetched, setIsFetched] = useState(false);
           validationType="ALPHABETS_AND_SPACE"
           max={30}
           required
-          disabled={isFetched || disabled}
+          disabled={disabled}
         />
 
         <InputField

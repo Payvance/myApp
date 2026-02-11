@@ -51,6 +51,31 @@
   color: #fff;
 }
 
+.btn-red-line {
+  background-color: #db4d5b;
+  border: 1px solid #db4d5b;
+  color: white; /* optional: makes text match border */
+}
+
+.btn-red-line:hover {
+  background-color: #dd3b4b;
+  border: 1px solid #dd3b4b;
+  color: white; /* optional: makes text match border */
+}
+
+.btn-green-line {
+  background-color: #559856;
+  border: 1px solid #559856;
+  color: white; /* optional: makes text match border */
+}
+
+.btn-green-line:hover {
+  background-color: #49994a;
+  border: 1px solid #49994a;
+  color: white; /* optional: makes text match border */
+}
+
+
 .btn-red:hover {
   background: #c82333;
   box-shadow: var(--shadow-md);

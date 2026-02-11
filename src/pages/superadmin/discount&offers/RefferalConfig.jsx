@@ -32,8 +32,14 @@ const RefferalConfig = () => {
       setLoading(true);
  
       // Since getAllReferrals doesn't support pagination yet, we'll fetch all and paginate locally
-      const response = await referralProgramServices.getAllReferrals();
-      const allReferrals = response.data || [];
+      const response = await referralProgramServices.getAllReferrals({
+        page,
+        size,
+        sortBy: sortField,
+        sortDir: sortOrder,
+        search: filters?.search,
+      });
+      const allReferrals = response.data.content || [];
  
       // Apply search filter if exists
       let filteredReferrals = allReferrals;

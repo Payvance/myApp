@@ -53,6 +53,11 @@ const CASidebar = ({ isCollapsed, setIsCollapsed }) => {
       icon: <i className="bi bi-cash-stack"></i>,
       label: "Settlement",
     },
+    {
+      path: "/tenantrequests",
+      icon: <i className="bi bi-card-checklist"></i>,
+      label: "Tenant Requests",
+    },
   ];
 
   return (

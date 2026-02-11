@@ -312,13 +312,13 @@ const UserProfileMenu = ({
 <PopUp
   isOpen={showResetPopup}
   onClose={() => setShowResetPopup(false)}
-  title="Change Password"
-  subtitle="Enter your current and new password"
-  size="medium"
+  title="Change Your Password"
+  subtitle="Enter your current password and choose a new one."
+  size="large"
 >
   <div className="reset-password-form-container" style={{marginTop : "10px"}}>
     {/* CURRENT PASSWORD */}
-    <div className="position-relative signup-pass-container">
+    <div className="position-relative signup-pass-container" style={{width: "49%"}}>
       <InputField
         label={formConfig.signin.currentPassword.label}
         value={oldPassword}
@@ -332,6 +332,7 @@ const UserProfileMenu = ({
     </div>
 
     {/* NEW PASSWORD (Validation box will now float to the right) */}
+    <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
     <div className="position-relative signup-pass-container">
       <PaswordInputBox
         label="New Password"
@@ -341,6 +342,7 @@ const UserProfileMenu = ({
         onValidationChange={setIsPasswordValid}
         validationType="PASSWORD"
         classN="large"
+        showCaseInfo={true}
       />
       <i className={`bi ${showNewPass ? "bi-eye" : "bi-eye-slash"} eye-icon-signup`} 
          onClick={() => setShowNewPass(!showNewPass)}></i>    
@@ -355,16 +357,26 @@ const UserProfileMenu = ({
         type={showConfirmPass ? "text" : "password"}
         classN="large"
         max={16}
+        onPaste={(e) => e.preventDefault()} // Disable paste for confirm password
       />
       <i className={`bi ${showConfirmPass ? "bi-eye" : "bi-eye-slash"} eye-icon-signup`} 
          onClick={() => setShowConfirmPass(!showConfirmPass)}></i>
+    </div>
+    </div>
+
+    <div className="password-note-section">
+      <strong>Note:</strong>
+      <ul style={{ marginTop: "5px", paddingLeft: "18px" }}>
+        <li>To keep your account safe, change your password every 180 days.</li>
+        <li>Once your password is changed, you will be automatically logged out.</li>
+      </ul>
     </div>
 
     <div className="popup-buttons">
       <Button
         text={loading ? "Processing..." : "Update Password"}
         onClick={handleUnifiedReset}
-        disabled={loading || !oldPassword || !isPasswordValid}
+        disabled={loading || !oldPassword || !newPassword || !confirmPassword || !isPasswordValid || newPassword !== confirmPassword }
       />
     </div>
   </div>
@@ -374,17 +386,17 @@ const UserProfileMenu = ({
       <PopUp
         isOpen={showLogoutPopup}
         onClose={() => setShowLogoutPopup(false)}
-        title="Confirm Logout"
-        subtitle="Are you sure you want to log out?"
+        title="Log Out"
+        subtitle="Are you sure you want to log out of your account?"
         size="small"
       >
         <div className="popup-buttons" style={{marginTop : "10px"}}>
-          <Button text="Logout" onClick={handleLogout} />
           <Button
             text="Cancel"
-            variant="secondary"
+            variant="green-line"
             onClick={() => setShowLogoutPopup(false)}
           />
+          <Button text="Logout" variant="red-line" onClick={handleLogout} />
         </div>
       </PopUp>
       {/* ================= LOGOUT POPUP END ================= */}

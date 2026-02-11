@@ -226,5 +226,62 @@
   border-color: #8b5cf6 !important;
   box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2) !important;
 }
+/* --- Page Header Styling --- */
+[data-theme="dark"] .page-header-title {
+    color: var(--text-primary); 
+    font-weight: 700;
+}
 
+[data-theme="dark"] .page-header-subtitle {
+    color: var(--text-tertiary); 
+}
 
+/* --- Payment Section Dark Theme --- */
+[data-theme="dark"] .payment-window {
+    background: var(--card-bg); 
+    border: 1px solid var(--border-primary);
+    box-shadow: var(--shadow-lg);
+}
+
+[data-theme="dark"] .payment-amount {
+    border-bottom: 1px solid var(--border-primary);
+}
+
+[data-theme="dark"] .payment-amount h3 {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .plan-details,
+[data-theme="dark"] .selected-addons {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
+}
+
+[data-theme="dark"] .plan-info h4,
+[data-theme="dark"] .selected-addons h4 {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .plan-limits span,
+[data-theme="dark"] .addon-name {
+    color: var(--text-secondary); 
+}
+
+[data-theme="dark"] .addon-item {
+    border-bottom: 1px solid var(--border-primary);
+}
+
+[data-theme="dark"] .addon-price {
+    color: var(--purple-500); 
+}
+
+[data-theme="dark"] .payment-action {
+    border-top: 1px solid var(--border-primary);
+}
+
+[data-theme="dark"] .payment-inputs .input-field::placeholder {
+    color: var(--text-quaternary);
+}
+[data-theme="dark"] .payment-section {
+    background: var(--bg-primary);
+}

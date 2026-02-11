@@ -1,6 +1,6 @@
 .bar-chart-card {
-  background: var(--card-bg, #ffffff);
-  border: 1px solid var(--border-color, #e0e0e0);
+  background: #c8ffbe;
+  border: 2px solid rgba(63, 63, 63, 0.947);
   border-radius: 6px;
   padding: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
@@ -10,9 +10,9 @@
 }
 
 .bar-chart__title {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
-  color: var(--text-primary, #2c3e50);
+  color: rgb(29, 29, 29);
   margin: 0 0 12px 0;
   text-align: center;
 }

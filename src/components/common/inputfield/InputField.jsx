@@ -34,6 +34,7 @@ const InputField = ({
   inputValue,
   onFocus,
   customValidation,
+  onPaste,
   classN, // ✅ NEW added for adjusting medium type inputfield
   validationErrors = {},
   setValidationErrors = () => {},
@@ -446,6 +447,10 @@ const formatWithCommas = (value) => {
 };
 
   const handleKeyDown = (e) => {
+    if (e.key === " " && (type === "password" || validationType === "PASSWORD")) {
+    e.preventDefault();
+    return; 
+  }
     if (e.key === "Tab" && error) {
       e.preventDefault(); // Prevent moving to the next field
       if (!toast.isActive("errorToast")) {
@@ -490,6 +495,7 @@ const formatWithCommas = (value) => {
             onClick={handleInputClick}
             value={validationType === "AMOUNT" ? displayValue : (type?.toLowerCase() === "date" ? normalizeDate(value) : value)} // checks whether the type is date if the type is date then the coverter will be applied otherwise it will show the normal value 
             name={name}
+            onPaste={onPaste}
             onFocus={onFocus}
             required={required}
             disabled={disabled}

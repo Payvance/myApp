@@ -55,7 +55,7 @@
     cursor: pointer;
     transition: all 0.2s ease;
     box-shadow: var(--shadow-sm, 0 2px 4px rgba(126, 86, 228, 0.2));
-    margin-top: 30px;
+    margin-top: 18px;
     margin-right: 40px;
 }
 
@@ -203,4 +203,20 @@
         align-items: flex-start;
         gap: 16px;
     }
+}
+
+/* Custom row for period type, duration and price */
+/* Group container for Period Type and Duration */
+.period-duration-group {
+    display: flex;
+    gap: 16px;
+    width: 100%;
+}
+
+.period-duration-group> :first-child {
+    flex: 2;
+}
+
+.period-duration-group> :last-child {
+    flex: 1;
 }
