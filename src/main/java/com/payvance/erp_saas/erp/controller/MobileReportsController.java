@@ -30,6 +30,10 @@ public class MobileReportsController {
 
         // Extract filters (any param that is not part of the standard set)
         Map<String, String> filters = new HashMap<>(allParams);
+        System.out.println("DEBUG: MobileReportsController.getVoucherReport called");
+        System.out.println("DEBUG: groupBy = " + groupBy);
+        System.out.println("DEBUG: voucherType = " + voucherType);
+        System.out.println("DEBUG: allParams = " + allParams);
         filters.remove("tenantId");
         filters.remove("companyId");
         filters.remove("voucherType");
