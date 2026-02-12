@@ -40,15 +40,22 @@ public class SuperAdminDashboardService {
     public Map<String, Object> getDashboardData() {
         Map<String, Object> data = new HashMap<>();
         
-        // Cards data - formatted for frontend
+        // Get card data values first
+        Long totalTenants = tenantRepository.getTotalTenants();
+        Long vendorApprovalRequests = vendorRepository.countByStatus("pending_approval");
+        Long caApprovalRequests = caRepository.countByStatus("pending_approval");
+        Long activePlans = planRepository.countByIsActive(1);
+        Long totalRevenueGenerated = getTotalRevenueGenerated();
+        Long guestUsers = userRepository.countGuestUsers();
+        
+        // Cards data - formatted for frontend with null handling
         data.put("cards", Arrays.asList(
-            Map.of("id", "total_tenants", "title", "Total Tenants", "value", tenantRepository.getTotalTenants().toString(), "icon", "bi-people", "color", "primary"),
-            Map.of("id", "vendor_approval_requests", "title", "Vendor Approval Requests", "value", vendorRepository.countByStatus("pending_approval").toString(), "icon", "bi-hourglass-split", "color", "warning"),
-            Map.of("id", "ca_approval_requests", "title", "CA Approval Requests", "value", caRepository.countByStatus("pending_approval").toString(), "icon", "bi-hourglass-split", "color", "warning"),
-            Map.of("id", "active_plans", "title", "Active Plans", "value", planRepository.countByIsActive(1).toString(), "icon", "bi-clock-history", "color", "danger"),
-            Map.of("id", "total_revenue_generated", "title", "Total Revenue Generated", "value", String.format("%,d", getTotalRevenueGenerated()), "icon", "bi-currency-dollar", "color", "success"),
-            Map.of("id", "encashment_requests", "title", "Encashment Requests", "value", "234", "icon", "bi-hourglass-split", "color", "warning"),
-            Map.of("id", "guest_users", "title", "Guest Users", "value", userRepository.countGuestUsers().toString(), "icon", "bi-people", "color", "danger")
+            Map.of("id", "total_tenants", "title", "Total Tenants", "value", totalTenants != null ? totalTenants.toString() : "0", "icon", "bi-people", "color", "primary"),
+            Map.of("id", "vendor_approval_requests", "title", "Vendor Approval Requests", "value", vendorApprovalRequests != null ? vendorApprovalRequests.toString() : "0", "icon", "bi-hourglass-split", "color", "warning"),
+            Map.of("id", "ca_approval_requests", "title", "CA Approval Requests", "value", caApprovalRequests != null ? caApprovalRequests.toString() : "0", "icon", "bi-hourglass-split", "color", "warning"),
+            Map.of("id", "active_plans", "title", "Active Plans", "value", activePlans != null ? activePlans.toString() : "0", "icon", "bi-clock-history", "color", "danger"),
+            Map.of("id", "total_revenue_generated", "title", "Total Revenue Generated", "value", totalRevenueGenerated != null ? String.format("%,d", totalRevenueGenerated) : "0", "icon", "bi-currency-dollar", "color", "success"),
+            Map.of("id", "guest_users", "title", "Guest Users", "value", guestUsers != null ? guestUsers.toString() : "0", "icon", "bi-people", "color", "danger")
         ));
         
         // Pie charts data
@@ -119,7 +126,19 @@ public class SuperAdminDashboardService {
     public Long getTotalRevenueGenerated() {
         BigDecimal approvedBatchesSum = vendorActivationBatchRepository.sumCostPriceByStatus("approved");
         BigDecimal paidInvoicesSum = invoiceRepository.sumTotalPayableByStatus("paid");
-        BigDecimal totalRevenue = approvedBatchesSum.add(paidInvoicesSum);
+        
+        if (approvedBatchesSum == null && paidInvoicesSum == null) {
+            return 0L;
+        }
+        
+        BigDecimal totalRevenue = BigDecimal.ZERO;
+        if (approvedBatchesSum != null) {
+            totalRevenue = totalRevenue.add(approvedBatchesSum);
+        }
+        if (paidInvoicesSum != null) {
+            totalRevenue = totalRevenue.add(paidInvoicesSum);
+        }
+        
         return totalRevenue.longValue();
     }
 }

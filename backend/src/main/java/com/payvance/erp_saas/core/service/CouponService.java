@@ -3,6 +3,8 @@ package com.payvance.erp_saas.core.service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.payvance.erp_saas.core.dto.CouponCheckRequest;
+import com.payvance.erp_saas.core.dto.CouponCheckResponse;
 import com.payvance.erp_saas.core.dto.CouponRequest;
 import com.payvance.erp_saas.core.dto.CouponResponse;
 
@@ -12,8 +14,7 @@ public interface CouponService {
 
     Page<CouponResponse> getAllCoupons(Pageable pageable);
 
-    
     CouponResponse getCouponById(Long id);
 
-   
+    CouponCheckResponse checkCouponAvailability(CouponCheckRequest request);
 }
