@@ -38,20 +38,24 @@ public class VendorDashboardService {
         
         // Calculate total revenue from cost_price and resale_price (single query)
         Map<String, BigDecimal> revenueData = vendorActivationBatchRepository.sumCostAndResalePriceByVendorIdAndStatus(userId, "approved");
-        BigDecimal totalCostPrice = revenueData.get("totalCostPrice");
-        BigDecimal totalResalePrice = revenueData.get("totalResalePrice");
-        BigDecimal totalRevenue = totalResalePrice.subtract(totalCostPrice); // resale - cost
+        BigDecimal totalCostPrice = revenueData != null ? revenueData.get("totalCostPrice") : null;
+        BigDecimal totalResalePrice = revenueData != null ? revenueData.get("totalResalePrice") : null;
+        BigDecimal totalRevenue = (totalCostPrice != null && totalResalePrice != null) ? totalResalePrice.subtract(totalCostPrice) : BigDecimal.ZERO; // resale - cost
         
-        // TODO: Implement with actual repository methods
-        // Cards data - formatted for frontend
+        // Get additional card data values
+        Long pendingBatches = vendorActivationBatchRepository.countByVendorIdAndStatus(userId, "pending");
+        Long approvedBatches = vendorActivationBatchRepository.countByVendorIdAndStatus(userId, "approved");
+        Long rejectedBatches = vendorActivationBatchRepository.countByVendorIdAndStatus(userId, "rejected");
+        
+        // Cards data - formatted for frontend with null handling
         data.put("cards", Arrays.asList(
-            Map.of("id", "total_activations", "title", "Total License", "value", totalActivations.toString(), "icon", "bi-collection", "color", "success"),
-            Map.of("id", "used_activations", "title", "Used License", "value", usedActivations.toString(), "icon", "bi-check2-square", "color", "warning"),
-            Map.of("id", "remaining_activations", "title", "Remaining License", "value", remainingActivations.toString(), "icon", "bi-clock-history", "color", "danger"),
-            Map.of("id", "batch_approval_requests", "title", "Batch Approval Requests", "value", vendorActivationBatchRepository.countByVendorIdAndStatus(userId, "pending").toString(), "icon", "bi-hourglass-split", "color", "primary"),
-            Map.of("id", "approved_batches", "title", "Approved Batches", "value", vendorActivationBatchRepository.countByVendorIdAndStatus(userId, "approved").toString(), "icon", "bi-check-circle", "color", "success"),
-            Map.of("id", "rejected_batches", "title", "Rejected Batches", "value", vendorActivationBatchRepository.countByVendorIdAndStatus(userId, "rejected").toString(), "icon", "bi-x-circle", "color", "danger"),
-            Map.of("id", "total_profit", "title", "Estimated Profit", "value", totalRevenue.toString(), "icon", "bi-currency-rupee", "color", "success")
+            Map.of("id", "total_activations", "title", "Total License", "value", totalActivations != null ? totalActivations.toString() : "0", "icon", "bi-collection", "color", "success"),
+            Map.of("id", "used_activations", "title", "Used License", "value", usedActivations != null ? usedActivations.toString() : "0", "icon", "bi-check2-square", "color", "warning"),
+            Map.of("id", "remaining_activations", "title", "Remaining License", "value", remainingActivations != null ? remainingActivations.toString() : "0", "icon", "bi-clock-history", "color", "danger"),
+            Map.of("id", "batch_approval_requests", "title", "Batch Approval Requests", "value", pendingBatches != null ? pendingBatches.toString() : "0", "icon", "bi-hourglass-split", "color", "primary"),
+            Map.of("id", "approved_batches", "title", "Approved Batches", "value", approvedBatches != null ? approvedBatches.toString() : "0", "icon", "bi-check-circle", "color", "success"),
+            Map.of("id", "rejected_batches", "title", "Rejected Batches", "value", rejectedBatches != null ? rejectedBatches.toString() : "0", "icon", "bi-x-circle", "color", "danger"),
+            Map.of("id", "total_profit", "title", "Estimated Profit", "value", totalRevenue != null ? totalRevenue.toString() : "0", "icon", "bi-currency-rupee", "color", "success")
         ));
         
         // Pie charts data

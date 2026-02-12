@@ -179,7 +179,7 @@ public class TallyXmlParser {
                             // Handle null/empty email
                             config.setLicenseEmail(email != null ? email : "");
                             // Handle null/empty expiry date using helper
-                            // if(ex)
+                            //if(ex)
                             config.setLicenseExpiryDate(parseDate(expiryStr));
 
                             System.out.println(

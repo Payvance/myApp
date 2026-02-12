@@ -52,6 +52,7 @@ public final class ApiPermissions {
                         "/api/wallet/**",
                         "/api/ca/referrals/redemptions/referral/details",
                         "/api/ca/referrals/redemptions/referral/details",
+                        "/api/v1/sync/writeback/job",
                         "/api/v1/sync/writeback/**",
                         "/api/mobile/**"
         };

@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.payvance.erp_saas.core.dto.CouponCheckRequest;
+import com.payvance.erp_saas.core.dto.CouponCheckResponse;
 import com.payvance.erp_saas.core.dto.CouponRequest;
 import com.payvance.erp_saas.core.dto.CouponResponse;
 import com.payvance.erp_saas.core.dto.IdRequest;
@@ -53,6 +55,16 @@ public class CouponController {
         );
     }
 
-  
+    /**
+     * Check coupon availability for a tenant
+     */
+    @PostMapping("/checkcoupon")
+    public ResponseEntity<CouponCheckResponse> checkCouponAvailability(
+            @RequestBody CouponCheckRequest request
+    ) {
+        return ResponseEntity.ok(
+                couponService.checkCouponAvailability(request)
+        );
+    }
 
 }

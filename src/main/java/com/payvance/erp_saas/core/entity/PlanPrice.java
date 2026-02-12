@@ -23,8 +23,12 @@ public class PlanPrice {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "plan_id", nullable = false)
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(
+        name = "plan_id",
+        nullable = false,
+        unique = true
+    )
     private Plan plan;
 
     @Column(name = "billing_period", length = 30, nullable = false)

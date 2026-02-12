@@ -54,20 +54,29 @@ public class TenantDashboardService {
         // Get active plan details
         Optional<Map<String, Object>> planDetailsOpt = subscriptionRepository.findActivePlanDetailsByTenantId(tenantId);
         
+        // Get card data values first
+        Long usersCount = tenantUserRoleRepository.countUsersByTenantId(tenantId);
+        Integer companiesCountInt = tenantUsageRepository.findCompaniesCountByTenantId(tenantId);
+        Long companiesCount = companiesCountInt != null ? (long) companiesCountInt : 0L;
+        String activePlan = subscriptionRepository.findActivePlanNameByTenantId(tenantId).orElse("No Active Plan");
+        Long activeUsers = activeInactiveCounts.get("activeUsers");
+        Long inactiveUsers = activeInactiveCounts.get("inactiveUsers");
+        
         // Cards data - formatted for frontend
         data.put("cards", Arrays.asList(
-            Map.of("id", "users_created", "title", "Users Created", "value", tenantUserRoleRepository.countUsersByTenantId(tenantId).toString(), "icon", "bi-person-check", "color", "primary"),
-            Map.of("id", "companies", "title", "Companies", "value", tenantUsageRepository.findCompaniesCountByTenantId(tenantId).toString(), "icon", "bi-diagram-3", "color", "success"),
-            Map.of("id", "active_plan", "title", "Active Plan", "value", subscriptionRepository.findActivePlanNameByTenantId(tenantId).orElse("No Active Plan"), "icon", "bi-award", "color", "warning"),
-            Map.of("id", "active_vs_inactive_users", "title", "Active vs Inactive Users", "value", activeInactiveCounts.get("activeUsers").toString() + "/" + activeInactiveCounts.get("inactiveUsers").toString(), "icon", "bi-people", "color", "danger")
+            Map.of("id", "users_created", "title", "Users Created", "value", usersCount != null ? usersCount.toString() : "0", "icon", "bi-person-check", "color", "primary"),
+            Map.of("id", "companies", "title", "Companies", "value", companiesCount != null ? companiesCount.toString() : "0", "icon", "bi-diagram-3", "color", "success"),
+            Map.of("id", "active_plan", "title", "Active Plan", "value", activePlan != null ? activePlan : "No Active Plan", "icon", "bi-award", "color", "warning"),
+            Map.of("id", "active_vs_inactive_users", "title", "Active vs Inactive Users", "value", 
+                (activeUsers != null && inactiveUsers != null) ? activeUsers.toString() + "/" + inactiveUsers.toString() : "0/0", "icon", "bi-people", "color", "danger")
         ));
         
         // Pie charts data
         data.put("pieCharts", Arrays.asList(
             Map.of("id", "user_activity", "title", "User Activity",
                 "data", Arrays.asList(
-                    Map.of("name", "Active", "value", activeInactiveCounts.get("activeUsers")),
-                    Map.of("name", "Inactive", "value", activeInactiveCounts.get("inactiveUsers"))
+                    Map.of("name", "Active", "value", activeInactiveCounts.get("activeUsers") != null ? activeInactiveCounts.get("activeUsers") : 0),
+                    Map.of("name", "Inactive", "value", activeInactiveCounts.get("inactiveUsers") != null ? activeInactiveCounts.get("inactiveUsers") : 0)
                 )
             ),
             Map.of("id", "department_distribution", "title", "Department Distribution",

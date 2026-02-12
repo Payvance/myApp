@@ -16,6 +16,7 @@
  **/
 package com.payvance.erp_saas.core.service;
 
+import java.math.BigDecimal;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -45,13 +46,25 @@ import com.payvance.erp_saas.core.dto.VendorBatchRequestDto;
 import com.payvance.erp_saas.core.dto.VendorBatchResponseDto;
 import com.payvance.erp_saas.core.dto.VendorBatchSearchRequestDto;
 import com.payvance.erp_saas.core.entity.ActivationKey;
+import com.payvance.erp_saas.core.entity.Invoice;
+import com.payvance.erp_saas.core.entity.InvoiceItem;
 import com.payvance.erp_saas.core.entity.Plan;
+import com.payvance.erp_saas.core.entity.Subscription;
+import com.payvance.erp_saas.core.entity.SubscriptionEvent;
+import com.payvance.erp_saas.core.entity.TenantActivation;
+import com.payvance.erp_saas.core.entity.TenantUsage;
 import com.payvance.erp_saas.core.entity.User;
 import com.payvance.erp_saas.core.entity.VendorActivationBatch;
 import com.payvance.erp_saas.core.entity.VendorPaymentUpload;
 import com.payvance.erp_saas.core.entity.VendorTenants;
 import com.payvance.erp_saas.core.repository.ActivationKeyRepository;
+import com.payvance.erp_saas.core.repository.InvoiceItemRepository;
+import com.payvance.erp_saas.core.repository.InvoiceRepository;
 import com.payvance.erp_saas.core.repository.PlanRepository;
+import com.payvance.erp_saas.core.repository.SubscriptionEventRepository;
+import com.payvance.erp_saas.core.repository.SubscriptionRepository;
+import com.payvance.erp_saas.core.repository.TenantActivationRepository;
+import com.payvance.erp_saas.core.repository.TenantUsageRepository;
 import com.payvance.erp_saas.core.repository.UserRepository;
 import com.payvance.erp_saas.core.repository.VendorActivationBatchRepository;
 import com.payvance.erp_saas.core.repository.VendorPaymentUploadRepository;
@@ -74,7 +87,14 @@ public class VendorLicenseService {
     private final VendorRepository vendorRepository;
     private final UserRepository userRepository;
     private final VendorTenantsRepository vendorTenantsRepository;
+    private final SubscriptionRepository subscriptionRepository;
+     private final InvoiceRepository InvoiceRepository;
+     private final InvoiceItemRepository InvoiceItemRepository;
+     private final TenantActivationRepository tenantActivationRepository;
+     private final TenantUsageRepository tenantUsageRepository;
+     private final SubscriptionEventRepository subscriptionEventRepository;
 
+     
     private static final String CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private final Random random = new SecureRandom();
     
@@ -192,10 +212,6 @@ public class VendorLicenseService {
 
         ActivationKey key = new ActivationKey();
         key.setVendorBatchId(batch.getId());
-        // For hashing, usually we'd use BCrypt or similar. Using a simple placeholder
-        // for now or standard java hash if needed.
-        // Assuming BCrypt is provided by project or using simple representation for
-        // demo.
         key.setActivationCodeHash(dummyHash(plainCode));
         key.setPlainCodeLast4(plainCode.substring(plainCode.length() - 4));
         key.setStatus(ActivationKey.Status.ISSUED);
@@ -209,19 +225,90 @@ public class VendorLicenseService {
         batchRepository.save(batch);
 
         ActivationKey savedKey = activationKeyRepository.save(key);
+        
+        Plan plan = batch.getPlan();
+        
+        // ===============================
+        // 2️⃣ INSERT subscriptions
+        // ===============================
+        Subscription subscription = new Subscription();
+        subscription.setTenantId(request.getRedeemedTenantId());
+        subscription.setPlan(plan);
+        if (plan.getPlanPrice() != null) {
+            subscription.setPlanPriceId(plan.getPlanPrice().getId());
+        }
+        subscription.setStatus("active");
+        subscription.setStartAt(LocalDateTime.now());
+        subscription.setCurrentPeriodEnd(savedKey.getExpiresAt());
+        subscription = subscriptionRepository.save(subscription);
 
-       
-     // ---------------- FETCH VENDOR EMAIL PROPERLY ----------------
+        // ===============================
+        // 3️⃣ INSERT invoices
+        // ===============================
+        Invoice invoice = new Invoice();
+        invoice.setTenantId(request.getRedeemedTenantId());
+        invoice.setSubscriptionId(subscription.getId());
+        invoice.setInvoiceNumber("INV-VND-" + System.currentTimeMillis() + "-" + generateRandomString(4));
+        invoice.setGateway("vendor_key");
+        invoice.setSubtotal(BigDecimal.ZERO);
+        invoice.setDiscountTotal(BigDecimal.ZERO);
+        invoice.setTotalPayable(BigDecimal.ZERO);
+        invoice.setCurrency("INR");
+        invoice.setStatus("paid");
+        invoice.setPaidAt(LocalDateTime.now());
+        invoice = InvoiceRepository.save(invoice);
+
+        // ===============================
+        // 4️⃣ INSERT invoice_items
+        // ===============================
+        InvoiceItem item = new InvoiceItem();
+        item.setInvoiceId(invoice.getId());
+        item.setItemType("plan");
+        item.setDescription(plan.getName());
+        item.setLineTotal(BigDecimal.ZERO);
+        InvoiceItemRepository.save(item);
+
+        // ===============================
+        // 5️⃣ INSERT tenant_activations
+        // ===============================
+        TenantActivation activation = new TenantActivation();
+        activation.setTenantId(request.getRedeemedTenantId());
+        activation.setSource("vendor_key");
+        activation.setVendorBatchId(savedKey.getVendorBatchId());
+        activation.setActivationCodeHash(savedKey.getActivationCodeHash());
+        activation.setActivatedAt(LocalDateTime.now());
+        activation.setExpiresAt(savedKey.getExpiresAt());
+        activation.setStatus("active");
+        tenantActivationRepository.save(activation);
+
+        // ===============================
+        // 6️⃣ INSERT tenant_usages
+        // ===============================
+        TenantUsage usage = new TenantUsage();
+        usage.setTenantId(request.getRedeemedTenantId());
+        usage.setActiveUsersCount(0);
+        usage.setCompaniesCount(0);
+        tenantUsageRepository.save(usage);
+
+        // ===============================
+        // 7️⃣ INSERT subscription_events
+        // ===============================
+        SubscriptionEvent event = new SubscriptionEvent();
+        event.setTenantId(request.getRedeemedTenantId());
+        event.setSubscriptionId(subscription.getId());
+        event.setEventType("tenant_activated");
+        event.setPayloadJson("{\"source\": \"vendor_key\", \"batchId\": " + batch.getId() + "}");
+        subscriptionEventRepository.save(event);
+
+        // ---------------- FETCH VENDOR EMAIL PROPERLY ----------------
         String vendorEmail = vendorRepository.findById(request.getVendorId())
                 .flatMap(vendor ->
                         userRepository.findById(vendor.getUserId())
                 )
                 .map(User::getEmail)
-                .orElse(null); // CC optional
+                .orElse(null);
 
-     // Build CC list (vendor email optional)
         List<String> ccEmails = null;
-
         if (vendorEmail != null && !vendorEmail.isBlank()) {
             ccEmails = List.of(vendorEmail);
         }
@@ -234,13 +321,13 @@ public class VendorLicenseService {
                     plainCode                   // Plain license key
             );
         }
+
         // Save vendor-tenant relationship
         VendorTenants vendorTenant = new VendorTenants();
         vendorTenant.setTenantId(request.getRedeemedTenantId());
         vendorTenant.setVendorId(request.getVendorId());
         vendorTenantsRepository.save(vendorTenant);
 
-        // TODO: Send Email with plainCode to savedKey.getIssuedToEmail()
         System.out.println("Generated License Key: " + plainCode);
 
         return savedKey;
