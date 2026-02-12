@@ -149,8 +149,8 @@ public class VoucherReportRepositoryImpl implements VoucherReportRepositoryCusto
                 groupColumn = "g.name";
                 sql.append("SELECT g.name, ").append(qtySql).append(", ").append(amountSql)
                         .append(" FROM tally_vouchers v ");
-                sql.append("JOIN tally_ledgers l ON l.name = v.party_ledger_name ");
-                sql.append("JOIN tally_groups g ON g.name = l.group_name ");
+                sql.append("JOIN tally_ledgers l ON l.name = v.party_ledger_name AND l.tenant_id = v.tenant_id AND l.company_id = v.company_id ");
+                sql.append("JOIN tally_groups g ON g.name = l.group_name AND g.tenant_id = v.tenant_id AND g.company_id = v.company_id ");
                 if (useInventoryTable)
                     sql.append("LEFT JOIN tally_inventory_entries ie ON ie.voucher_id = v.id ");
                 break;
@@ -165,21 +165,21 @@ public class VoucherReportRepositoryImpl implements VoucherReportRepositoryCusto
                 sql.append("SELECT si.stock_group_name, ").append(qtySql).append(", ").append(amountSql)
                         .append(" FROM tally_vouchers v ");
                 sql.append("JOIN tally_inventory_entries ie ON ie.voucher_id = v.id ");
-                sql.append("JOIN tally_stock_items si ON si.name = ie.stock_item_name ");
+                sql.append("JOIN tally_stock_items si ON si.name = ie.stock_item_name AND si.tenant_id = v.tenant_id AND si.company_id = v.company_id ");
                 break;
             case "category":
                 groupColumn = "si.category_name";
                 sql.append("SELECT si.category_name, ").append(qtySql).append(", ").append(amountSql)
                         .append(" FROM tally_vouchers v ");
                 sql.append("JOIN tally_inventory_entries ie ON ie.voucher_id = v.id ");
-                sql.append("JOIN tally_stock_items si ON si.name = ie.stock_item_name ");
+                sql.append("JOIN tally_stock_items si ON si.name = ie.stock_item_name AND si.tenant_id = v.tenant_id AND si.company_id = v.company_id ");
                 break;
             case "costCenter":
                 // Cost Center always joins ledger entries
                 groupColumn = "cc.name";
                 sql.append("SELECT cc.name, CAST(COUNT(*) AS DECIMAL(19,4)), SUM(le.amount) FROM tally_vouchers v ");
                 sql.append("JOIN tally_ledger_entries le ON le.voucher_id = v.id ");
-                sql.append("JOIN tally_cost_centres cc ON cc.name = le.ledger_name ");
+                sql.append("JOIN tally_cost_centres cc ON cc.name = le.ledger_name AND cc.tenant_id = v.tenant_id AND cc.company_id = v.company_id ");
                 break;
             case "month":
                 groupColumn = "txn_month";
@@ -239,7 +239,7 @@ public class VoucherReportRepositoryImpl implements VoucherReportRepositoryCusto
             if (filters.containsKey("ledgerGroupName")) {
                 if (!groupBy.equals("ledgerGroup")) {
                     sql.append(
-                            " AND EXISTS (SELECT 1 FROM tally_ledgers fl JOIN tally_groups fg ON fg.name = fl.group_name WHERE fl.name = v.party_ledger_name AND fg.name = :ledgerGroupName) ");
+                            " AND EXISTS (SELECT 1 FROM tally_ledgers fl JOIN tally_groups fg ON fg.name = fl.group_name AND fg.tenant_id = fl.tenant_id AND fg.company_id = fl.company_id WHERE fl.name = v.party_ledger_name AND fl.tenant_id = v.tenant_id AND fl.company_id = v.company_id AND fg.name = :ledgerGroupName) ");
                 } else {
                     sql.append(" AND g.name = :ledgerGroupName ");
                 }
@@ -248,7 +248,7 @@ public class VoucherReportRepositoryImpl implements VoucherReportRepositoryCusto
             // EXISTS logic without joining.
             if (filters.containsKey("stockGroupName")) {
                 sql.append(
-                        " AND EXISTS (SELECT 1 FROM tally_inventory_entries fie JOIN tally_stock_items fsi ON fsi.name = fie.stock_item_name WHERE fie.voucher_id = v.id AND fsi.stock_group_name = :stockGroupName) ");
+                        " AND EXISTS (SELECT 1 FROM tally_inventory_entries fie JOIN tally_stock_items fsi ON fsi.name = fie.stock_item_name AND fsi.tenant_id = v.tenant_id AND fsi.company_id = v.company_id WHERE fie.voucher_id = v.id AND fsi.stock_group_name = :stockGroupName) ");
             }
             if (filters.containsKey("stockItemName")) {
                 sql.append(
@@ -256,11 +256,11 @@ public class VoucherReportRepositoryImpl implements VoucherReportRepositoryCusto
             }
             if (filters.containsKey("categoryName")) {
                 sql.append(
-                        " AND EXISTS (SELECT 1 FROM tally_inventory_entries fie JOIN tally_stock_items fsi ON fsi.name = fie.stock_item_name WHERE fie.voucher_id = v.id AND fsi.category_name = :categoryName) ");
+                        " AND EXISTS (SELECT 1 FROM tally_inventory_entries fie JOIN tally_stock_items fsi ON fsi.name = fie.stock_item_name AND fsi.tenant_id = v.tenant_id AND fsi.company_id = v.company_id WHERE fie.voucher_id = v.id AND fsi.category_name = :categoryName) ");
             }
             if (filters.containsKey("costCenterName")) {
                 sql.append(
-                        " AND EXISTS (SELECT 1 FROM tally_ledger_entries fle JOIN tally_cost_centres fcc ON fcc.name = fle.ledger_name WHERE fle.voucher_id = v.id AND fcc.name = :costCenterName) ");
+                        " AND EXISTS (SELECT 1 FROM tally_ledger_entries fle JOIN tally_cost_centres fcc ON fcc.name = fle.ledger_name AND fcc.tenant_id = v.tenant_id AND fcc.company_id = v.company_id WHERE fle.voucher_id = v.id AND fcc.name = :costCenterName) ");
             }
             if (filters.containsKey("month")) {
                 sql.append(" AND DATE_FORMAT(v.date, '%Y-%m') = :month ");
