@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.payvance.erp_saas.core.dto.ApiResponse;
+import com.payvance.erp_saas.core.dto.RejectedUserDto;
 import com.payvance.erp_saas.core.dto.TenantUserDetailRequest;
 import com.payvance.erp_saas.core.dto.TenantUserResponseDto;
 import com.payvance.erp_saas.core.dto.UserFullDetailsDto;
@@ -69,6 +70,21 @@ public class UserController {
     public ResponseEntity<Page<Map<String, Object>>> getInactiveUsers(Pageable pageable) {
         return ResponseEntity.ok(userService.getInactiveUsers(pageable));
     }
+    
+    /*
+     * Get paginated list of rejected users
+     */
+    @GetMapping("/rejected/pagination")
+    public ResponseEntity<Page<RejectedUserDto>> getRejectedUsers(Pageable pageable) {
+        return ResponseEntity.ok(
+                userService.getRejectedUsers(pageable)
+        );
+    }
+	    
+//    @GetMapping("/inactive/reject")
+//    public ResponseEntity<Page<Map<String, Object>>> getRejectedUser(Pageable pageable) {
+//        return ResponseEntity.ok(userService.getRejectedUser(pageable));
+//    }
     
     /*
      * Get full details of a user by ID

@@ -29,8 +29,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.payvance.erp_saas.core.config.TrialConfig;
+import com.payvance.erp_saas.core.dto.TenantReferralValidationRequest;
 import com.payvance.erp_saas.core.dto.TenantSignupRequest;
 import com.payvance.erp_saas.core.dto.TenantTrialRequest;
+import com.payvance.erp_saas.core.dto.ValidationResponse;
 import com.payvance.erp_saas.core.entity.Tenant;
 import com.payvance.erp_saas.core.enums.RoleEnum;
 import com.payvance.erp_saas.core.service.PartnerSignupService;
@@ -136,4 +138,17 @@ public class TenantController {
         return ResponseEntity.ok(tenantService.getTenantsByUserId(userId));
     }
 
+
+    /*
+     * Validate referral code
+     */
+    @PostMapping("/validate-referral")
+    public ResponseEntity<ValidationResponse> validateReferral(
+            @RequestBody TenantReferralValidationRequest request) {
+
+        ValidationResponse response =
+        		tenantService.validate(request.getReferralCode().trim());
+
+        return ResponseEntity.ok(response);
+    }
 }

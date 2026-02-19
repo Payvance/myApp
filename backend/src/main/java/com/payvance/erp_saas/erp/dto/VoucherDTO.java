@@ -49,6 +49,7 @@ public class VoucherDTO {
     private String irnQrCode;
     private String buyerAddress;
     private String voucherCategory;
+    private String natureOfVoucher;
     private String ackNo;
     private String irpSource;
     private Boolean isEwayApplicable;

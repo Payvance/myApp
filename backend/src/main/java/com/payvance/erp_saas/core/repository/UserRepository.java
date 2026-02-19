@@ -25,6 +25,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.payvance.erp_saas.core.dto.RejectedUserDto;
 import com.payvance.erp_saas.core.dto.TenantUserResponseDto;
 import com.payvance.erp_saas.core.dto.UserFullDetailsDto;
 import com.payvance.erp_saas.core.entity.User;
@@ -127,7 +128,63 @@ public interface UserRepository extends JpaRepository<User, Long> {
     	        )
     	""")
     	Page<Map<String, Object>> findPendingVendorAndCaUsers(Pageable pageable);
-        
+     
+    /*
+     * Fetch The rejected user details 
+     */
+    
+    @Query("""
+    	    SELECT new com.payvance.erp_saas.core.dto.RejectedUserDto(
+    	        u.id,
+    	        u.name,
+    	        u.email,
+    	        u.phone,
+    	        u.isActive,
+
+    	        CASE
+    	            WHEN EXISTS (
+    	                SELECT 1 FROM Vendor v
+    	                WHERE v.userId = u.id
+    	                  AND LOWER(v.status) = 'rejected'
+    	            ) THEN 3
+    	            WHEN EXISTS (
+    	                SELECT 1 FROM Ca c
+    	                WHERE c.userId = u.id
+    	                  AND LOWER(c.status) = 'rejected'
+    	            ) THEN 4
+    	        END,
+
+    	        CASE
+    	            WHEN EXISTS (
+    	                SELECT 1 FROM Vendor v
+    	                WHERE v.userId = u.id
+    	                  AND LOWER(v.status) = 'rejected'
+    	            ) THEN 'VENDOR'
+    	            WHEN EXISTS (
+    	                SELECT 1 FROM Ca c
+    	                WHERE c.userId = u.id
+    	                  AND LOWER(c.status) = 'rejected'
+    	            ) THEN 'CA'
+    	        END
+    	    )
+    	    FROM User u
+    	    WHERE
+    	        EXISTS (
+    	            SELECT 1 FROM Vendor v
+    	            WHERE v.userId = u.id
+    	              AND LOWER(v.status) = 'rejected'
+    	        )
+    	        OR
+    	        EXISTS (
+    	            SELECT 1 FROM Ca c
+    	            WHERE c.userId = u.id
+    	              AND LOWER(c.status) = 'rejected'
+    	        )
+    	""")
+    	Page<RejectedUserDto> findRejectedUsers(Pageable pageable);
+
+
+
     
     /*
      * Fetch full details of a user by user ID

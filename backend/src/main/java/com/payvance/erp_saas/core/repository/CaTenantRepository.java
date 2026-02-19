@@ -1,6 +1,7 @@
 package com.payvance.erp_saas.core.repository;
 
 import com.payvance.erp_saas.core.dto.CATenantListDTO;
+import com.payvance.erp_saas.core.dto.TenantManagementListDTO;
 import com.payvance.erp_saas.core.entity.CaTenant;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -47,4 +48,23 @@ public interface CaTenantRepository extends JpaRepository<CaTenant, Long> {
         WHERE ct.caId = :caId
         """)
     Page<CATenantListDTO> findTenantsByCaIdWithDetails(@Param("caId") Long caId, Pageable pageable);
+    
+    /**
+     * Find all CAs for a tenant with CA details (pagination)
+     */
+    @Query("""
+        SELECT new com.payvance.erp_saas.core.dto.TenantManagementListDTO(
+            c.id,
+            u.name,
+            u.email,
+            u.phone,
+            ct.isView,
+            ct.createdAt
+        )
+        FROM CaTenant ct
+        JOIN Ca c ON ct.caId = c.userId
+        JOIN User u ON c.userId = u.id
+        WHERE ct.tenantId = :tenantId
+        """)
+    Page<TenantManagementListDTO> findCasByTenantIdWithDetails(@Param("tenantId") Long tenantId, Pageable pageable);
 }

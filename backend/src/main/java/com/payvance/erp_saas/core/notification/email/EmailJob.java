@@ -43,26 +43,48 @@ public class EmailJob {
     private static final Logger log = LoggerFactory.getLogger(EmailJob.class);
 
     @Async("emailTaskExecutor")
-    public void sendHtmlEmail(String to,String subject, String htmlBody, List<String> ccEmails) {
-        // Async fire-and-forget: log any exceptions via AsyncUncaughtExceptionHandler
+    public void sendEmailWithAttachment(String to, String subject, String htmlBody, byte[] attachment, String attachmentName, List<String> ccEmails) {
+        log.info("[EmailJob] Sending async email with attachment to={}", to);
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setFrom("no-reply@payvance.co.in");
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(htmlBody, true);
+
+            if (ccEmails != null && !ccEmails.isEmpty()) {
+                helper.setCc(ccEmails.toArray(new String[0]));
+            }
+
+            if (attachment != null) {
+                helper.addAttachment(attachmentName, new org.springframework.core.io.ByteArrayResource(attachment));
+            }
+
+            mailSender.send(message);
+            log.info("[EmailJob] Async email with attachment sent to={}", to);
+
+        } catch (Exception ex) {
+            log.error("[EmailJob] Async email with attachment failed to send to={}: {}", to, ex.getMessage());
+            throw ex instanceof RuntimeException ? (RuntimeException) ex : new RuntimeException(ex);
+        }
+    }
+
+    @Async("emailTaskExecutor")
+    public void sendHtmlEmail(String to, String subject, String htmlBody, List<String> ccEmails) {
         log.info("[EmailJob] Sending async email to={}", to);
         try {
             MimeMessage message = buildMimeMessage(to, subject, htmlBody, ccEmails);
             mailSender.send(message);
             log.info("[EmailJob] Async email sent to={}", to);
-
         } catch (Exception ex) {
-            // Let the async exception handler or logs capture this; still log locally
             log.error("[EmailJob] Async email failed to send to={}: {}", to, ex.getMessage());
             throw ex instanceof RuntimeException ? (RuntimeException) ex : new RuntimeException(ex);
         }
     }
 
-    /**
-     * Synchronous email send. Use this for critical notifications where failures
-     * must be visible to the caller (e.g. startTrial email - so transaction can roll back).
-     */
-    public void sendHtmlEmailSync(String to, String subject, String htmlBody,List<String> ccEmails) {
+    public void sendHtmlEmailSync(String to, String subject, String htmlBody, List<String> ccEmails) {
         log.info("[EmailJob] Sending sync email to={}", to);
         try {
             MimeMessage message = buildMimeMessage(to, subject, htmlBody, ccEmails);

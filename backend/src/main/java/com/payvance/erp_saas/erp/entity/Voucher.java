@@ -122,6 +122,9 @@ public class Voucher {
     @Column(name = "voucher_category", length = 50)
     private String voucherCategory;
 
+    @Column(name = "nature_of_voucher", length = 50)
+    private String natureOfVoucher;
+
     @Column(name = "ack_no", length = 50)
     private String ackNo;
 

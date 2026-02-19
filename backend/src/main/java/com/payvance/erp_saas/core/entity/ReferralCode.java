@@ -60,4 +60,9 @@ public class ReferralCode {
 	    protected void onUpdate() {
 	        this.updatedAt = LocalDateTime.now();
 	    }
+
+		public Long getTenantId() {
+			// TODO Auto-generated method stub
+			return null;
+		}
 }

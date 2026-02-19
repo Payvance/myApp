@@ -15,6 +15,7 @@ import com.payvance.erp_saas.core.entity.Subscription;
 
 public interface SubscriptionRepository extends JpaRepository<Subscription, Long> {
     List<Subscription> findByTenantId(Long tenantId);
+    Optional<Subscription> findFirstByTenantIdOrderByCreatedAtDesc(Long tenantId);
 
     Optional<Subscription> findFirstByTenantIdAndStatusOrderByCreatedAtDesc(Long tenantId, String status);
 

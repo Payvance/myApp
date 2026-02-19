@@ -142,7 +142,7 @@ public class TenantSignupService {
             if (!tenantExists) {
                 ReferralCode tenantReferral = new ReferralCode();
                 tenantReferral.setProgramId(tenantProgram.getId());
-                tenantReferral.setOwnerId(tenant.getId());
+                tenantReferral.setOwnerId(user.getId());
                 tenantReferral.setOwnerType(tenantRoleCode);
                 tenantReferral.setCode(ReferralCodeUtil.buildTenantReferralCode(tenant.getId(), user.getName()));
                 tenantReferral.setStatus("ACTIVE");

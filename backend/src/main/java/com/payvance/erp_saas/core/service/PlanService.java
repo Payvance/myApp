@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.Flow.Subscription;
 import java.util.stream.Collectors;
 
@@ -40,8 +41,18 @@ public class PlanService {
      */
     @Transactional
     public PlanDto createPlan(PlanDto planDto) {
-        if (planRepository.findByCode(planDto.getCode()).isPresent()) {
-            throw new IllegalArgumentException("Plan with code " + planDto.getCode() + " already exists.");
+//        if (planRepository.findByCode(planDto.getCode()).isPresent()) {
+//            throw new IllegalArgumentException("Plan with code " + planDto.getCode() + " already exists.");
+//        }
+    	
+    	
+        Optional<Plan> existingPlan = planRepository.findByCode(planDto.getCode());
+        
+        if (existingPlan.isPresent()) {
+        	PlanDto response = new PlanDto();
+        	response.setSuccess(false);
+        	response.setMessage("Plan with code " + planDto.getCode() + " already exists.");
+        	return response;   // return existing plan
         }
 
         Plan plan = new Plan();
@@ -62,7 +73,10 @@ public class PlanService {
         planPrice.setDuration(planDto.getPlanPrice().getDuration());
 
         Plan savedPlan = planRepository.save(plan);
-        return mapToDto(savedPlan);
+        PlanDto dto = mapToDto(savedPlan);
+        dto.setSuccess(true);
+        dto.setMessage("Plan created successfully");
+        return dto;
     }
 
     /**

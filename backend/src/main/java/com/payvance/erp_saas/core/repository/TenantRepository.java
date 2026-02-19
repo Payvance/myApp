@@ -95,5 +95,10 @@ public interface TenantRepository extends JpaRepository<Tenant, Long> {
      */
     @Query("SELECT COUNT(t) FROM Tenant t")
     Long getTotalTenants();
+    
+    /*
+     * Fetch tenant by ID and status
+     */
+    Optional<Tenant> findByIdAndStatus(Long id, String status);
 
 }

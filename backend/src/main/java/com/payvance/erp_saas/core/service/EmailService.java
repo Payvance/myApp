@@ -17,6 +17,7 @@
 package com.payvance.erp_saas.core.service;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.payvance.erp_saas.core.entity.Ca;
+import com.payvance.erp_saas.core.entity.InvoiceItem;
 import com.payvance.erp_saas.core.entity.ReferralCode;
 import com.payvance.erp_saas.core.entity.User;
 import com.payvance.erp_saas.core.entity.Vendor;
@@ -47,6 +49,7 @@ public class EmailService {
     private final CaRepository caRepository;
     private final VendorRepository vendorRepository;
     private final ReferralCodeRepository referralCodeRepository;
+    private final PdfService pdfService;
 
     @Value("${app.frontend.verify-url}")
     private String verifyUrl;
@@ -229,6 +232,7 @@ public class EmailService {
                 ccEmails
         );
     }
+    
     public void sendTemporaryPasswordEmail(User user, String tempPassword) {
 
         Map<String, Object> vars = new HashMap<>();
@@ -295,6 +299,103 @@ public class EmailService {
         );
     }
     
+    /**
+     * Send CA request notifications to tenant and CA
+     */
+    public void sendCaRequestNotifications(String tenantEmail, String tenantName, 
+                                         String caEmail, String caName, String caPhone) {
+        try {
+            // Send email to tenant
+            Map<String, Object> tenantVariables = Map.of(
+                "subject", "CA Request Sent Successfully",
+                "title", "Your CA Request",
+                "name", tenantName != null ? tenantName : "Tenant",
+                "message", "Your request to connect with CA has been successfully sent.",
+                "caName", caName != null ? caName : "CA",
+                "caEmail", caEmail != null ? caEmail : "Not available",
+                "caPhone", caPhone != null ? caPhone : "Not available",
+                "status", "pending"
+            );
+            
+            sendUniversalEmail(
+                tenantEmail,
+                "CA Request Sent Successfully",
+                tenantVariables,
+                null
+            );
+            
+            // Send email to CA 
+            Map<String, Object> caVariables = Map.of(
+                "subject", "New Tenant Request",
+                "title", "Tenant Request Notification",
+                "name", caName != null ? caName : "CA",
+                "message", "A new tenant has requested to connect with you. Please review their request in your dashboard.",
+                "tenantName", tenantName != null ? tenantName : "Tenant",
+                "status", "pending"
+            );
+            
+            sendUniversalEmail(
+                caEmail,
+                "New Tenant Request",
+                caVariables,
+                null
+            );
+            
+        } catch (Exception e) {
+            // Error sending emails but don't fail the main process
+        }
+    }
+    
+    /**
+     * Send tenant status update emails (approval/rejection) to both tenant and CA
+     */
+    public void sendTenantStatusUpdateEmails(String tenantEmail, String tenantName, 
+                                           String caEmail, String caName, Integer isView) {
+        try {
+            boolean isApproved = isView == 1;
+            String status = isApproved ? "approved" : "rejected";
+            
+            // Send email to tenant
+            Map<String, Object> tenantVariables = Map.of(
+                "subject", "Your CA Request " + (isApproved ? "Approved" : "Rejected"),
+                "title", "CA Request Status Update",
+                "name", tenantName != null ? tenantName : "Tenant",
+                "message", "Your request to connect with CA has been " + status + ".",
+                "caName", caName != null ? caName : "CA",
+                "caEmail", caEmail != null ? caEmail : "Not available",
+                "status", status
+            );
+            
+            sendUniversalEmail(
+                tenantEmail,
+                "Your CA Request " + (isApproved ? "Approved" : "Rejected"),
+                tenantVariables,
+                null
+            );
+            
+            // Send email to CA
+            Map<String, Object> caVariables = Map.of(
+                "subject", "Tenant Request " + (isApproved ? "Approved" : "Rejected"),
+                "title", "Tenant Request Status Update",
+                "name", caName != null ? caName : "CA",
+                "message", "You have " + status + " the tenant request.",
+                "tenantName", tenantName != null ? tenantName : "Tenant",
+                "tenantEmail", tenantEmail != null ? tenantEmail : "Not available",
+                "status", status
+            );
+            
+            sendUniversalEmail(
+                caEmail,
+                "Tenant Request " + (isApproved ? "Approved" : "Rejected"),
+                caVariables,
+                null
+            );
+            
+        } catch (Exception e) {
+            // Error sending emails but don't fail the main process
+        }
+    }
+    
  // ================= OTP EMAIL =================
     public void sendOtpEmail(String toEmail, String otp) {
 
@@ -338,4 +439,33 @@ public void SupportSendUniversalEmail(
 }
 
 
+    public void sendInvoiceEmail(String toEmail, String tenantName, String invoiceNumber, String amount, List<InvoiceItem> items, String gstRate, String gstAmount, String subtotal) {
+        if (toEmail == null || invoiceNumber == null) {
+            throw new IllegalArgumentException("Email and invoice number cannot be null");
+        }
+
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("subject", "Invoice Generated - " + invoiceNumber);
+        variables.put("invoiceNumber", invoiceNumber);
+        variables.put("tenantName", tenantName != null ? tenantName : toEmail);
+        variables.put("tenantEmail", toEmail);
+        variables.put("invoiceDate", java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("MMM dd, yyyy")));
+        variables.put("items", items);
+        variables.put("totalPayable", amount);
+        variables.put("gstRate", gstRate);
+        variables.put("gstAmount", gstAmount);
+        variables.put("subtotal", subtotal);
+        variables.put("actionUrl", verifyUrl + "/login");
+
+        String html = templateService.process("email/invoice", variables);
+        
+        try {
+            byte[] pdfBytes = pdfService.generatePdfFromHtml(html);
+            emailJob.sendEmailWithAttachment(toEmail, "Invoice Generated - " + invoiceNumber, html, pdfBytes, "Invoice_" + invoiceNumber + ".pdf", null);
+        } catch (java.io.IOException e) {
+            // Fallback to HTML email if PDF fails
+            emailJob.sendEmailWithAttachment(toEmail, "Invoice Generated - " + invoiceNumber, html, null, null, null);
+        }
+    }
 }
+

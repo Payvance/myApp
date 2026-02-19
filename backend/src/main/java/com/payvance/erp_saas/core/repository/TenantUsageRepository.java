@@ -33,4 +33,5 @@ public interface TenantUsageRepository extends JpaRepository<TenantUsage, Long> 
      */
     @Query("SELECT tu.companiesCount FROM TenantUsage tu WHERE tu.tenantId = :tenantId")
     Integer findCompaniesCountByTenantId(@Param("tenantId") Long tenantId);
+    boolean existsByTenantId(Long tenantId);
 }

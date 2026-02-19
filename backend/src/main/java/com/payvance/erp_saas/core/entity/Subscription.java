@@ -29,7 +29,7 @@ public class Subscription {
     private Long planPriceId;
 
     @Column(name = "status", length = 30, nullable = false)
-    private String status = "active";
+    private String status = "payment_pending";
 
     @Column(name = "start_at")
     private LocalDateTime startAt;

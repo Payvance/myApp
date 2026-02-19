@@ -1,6 +1,7 @@
 package com.payvance.erp_saas.core.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -35,16 +36,33 @@ public class AddOnService {
      */
     @Transactional
     public AddOnDto createAddOn(AddOnDto addOnDto) {
-        if (addOnRepository.findByCode(addOnDto.getCode()).isPresent()) {
-            throw new IllegalArgumentException("Add-on with code " + addOnDto.getCode() + " already exists.");
-        }
+    	
+//        if (addOnRepository.findByCode(addOnDto.getCode()).isPresent()) {
+//            throw new IllegalArgumentException("Add-on with code " + addOnDto.getCode() + " already exists.");
+//        }
         
+        Optional<AddOn> existingAddOn = addOnRepository.findByCode(addOnDto.getCode());
+
+        // 🔴 If already exists
+        if (existingAddOn.isPresent()) {
+
+            AddOnDto response = new AddOnDto();
+            response.setSuccess(false);
+            response.setMessage("Add-on with code " + addOnDto.getCode() + " already exists.");
+
+            return response;
+        }
 
         AddOn addOn = new AddOn();
         updateEntityFromDto(addOn, addOnDto);
 
         AddOn savedAddOn = addOnRepository.save(addOn);
-        return mapToDto(savedAddOn);
+        
+        AddOnDto response = mapToDto(savedAddOn);
+        response.setSuccess(true);
+        response.setMessage("Add-on created successfully");
+
+        return response; 
     }
 
     /**

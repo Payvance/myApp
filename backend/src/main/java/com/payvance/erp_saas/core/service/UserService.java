@@ -24,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.payvance.erp_saas.core.dto.RejectedUserDto;
 import com.payvance.erp_saas.core.dto.TenantUserResponseDto;
 import com.payvance.erp_saas.core.dto.UserFullDetailsDto;
 import com.payvance.erp_saas.core.dto.UserResponseDTO;
@@ -98,6 +99,16 @@ public class UserService {
      */
     public Page<Map<String, Object>> getInactiveUsers(Pageable pageable) {
         return userRepository.findPendingVendorAndCaUsers(pageable);
+    }
+     
+    /*
+     * Get paginated list of inactive users
+     */
+//    public Page<Map<String, Object>> getRejectedUsers(Pageable pageable) {
+//        return userRepository.findRejectedUsers(pageable);
+//    
+    public Page<RejectedUserDto> getRejectedUsers(Pageable pageable) {
+        return userRepository.findRejectedUsers(pageable);
     }
     
     /*
@@ -263,7 +274,7 @@ public class UserService {
                 if (!caExists) {
                     ReferralCode caReferral = new ReferralCode();
                     caReferral.setProgramId(caProgram.getId());
-                    caReferral.setOwnerId(ca.getId());
+                    caReferral.setOwnerId(user.getId());
                     caReferral.setOwnerType(caRoleCode);
                     caReferral.setCode(ReferralCodeUtil.buildCaReferralCode(ca.getId(), user.getName()));
                     caReferral.setStatus("ACTIVE");

@@ -85,7 +85,17 @@ public class TallyXmlParser {
                         }
                     }
                     voucher.setNarration(getTagValue("NARRATION", el));
+                    voucher.setNatureOfVoucher(getTagValue("NATUREOFVOUCHER", el));
                     voucher.setTenantId(tenantId);
+
+                    // Set Amount (Required for filtering Party Ledger)
+                    String vAmtStr = getTagValue("AMOUNT", el);
+                    if (vAmtStr != null && !vAmtStr.isEmpty()) {
+                        try {
+                            voucher.setAmount(new java.math.BigDecimal(vAmtStr).abs());
+                        } catch (Exception e) {
+                        }
+                    }
 
                     // Parse Ledger Entries
                     List<LedgerEntry> ledgers = new ArrayList<>();
@@ -97,7 +107,14 @@ public class TallyXmlParser {
                         String amtStr = getTagValue("AMOUNT", lEl);
                         if (!amtStr.isEmpty()) {
                             java.math.BigDecimal amt = new java.math.BigDecimal(amtStr);
-                            le.setAmount(amt.abs());
+                            java.math.BigDecimal absAmt = amt.abs();
+
+                            // Skip if matches voucher total (Party Ledger)
+                            if (voucher.getAmount() != null && voucher.getAmount().compareTo(absAmt) == 0) {
+                                continue;
+                            }
+
+                            le.setAmount(absAmt);
                             le.setIsDebit(amt.signum() < 0);
                         }
                         le.setVoucher(voucher);
@@ -179,7 +196,6 @@ public class TallyXmlParser {
                             // Handle null/empty email
                             config.setLicenseEmail(email != null ? email : "");
                             // Handle null/empty expiry date using helper
-                            //if(ex)
                             config.setLicenseExpiryDate(parseDate(expiryStr));
 
                             System.out.println(
