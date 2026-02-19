@@ -39,31 +39,17 @@ const RefferalConfig = () => {
         sortDir: sortOrder,
         search: filters?.search,
       });
-      const allReferrals = response.data.content || [];
- 
-      // Apply search filter if exists
-      let filteredReferrals = allReferrals;
-      if (filters?.search) {
-        filteredReferrals = allReferrals.filter(referral =>
-          referral.name.toLowerCase().includes(filters.search.toLowerCase()) ||
-          referral.code.toLowerCase().includes(filters.search.toLowerCase())
-        );
-      }
- 
- 
-      // Apply pagination
-      const startIndex = (page || 0) * (size || 10);
-      const endIndex = startIndex + (size || 10);
-      const paginatedReferrals = filteredReferrals.slice(startIndex, endIndex);
- 
+
+      const data = response.data || {};
+
       setTableData({
-        content: paginatedReferrals,
-        totalElements: filteredReferrals.length,
-        totalPages: Math.ceil(filteredReferrals.length / (size || 10)),
-        number: page || 0,
-        size: size || 10,
+        content: data.content || [],
+        totalElements: data.totalElements || 0,
+        totalPages: data.totalPages || 0,
+        number: data.number || page || 0,
+        size: data.size || size || 10,
       });
- 
+
     } catch (error) {
       console.error('Error fetching referral programs:', error);
       setTableData({

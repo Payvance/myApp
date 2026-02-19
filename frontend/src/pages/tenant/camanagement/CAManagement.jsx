@@ -1,17 +1,84 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PageHeader from "../../../components/common/pageheader/PageHeader";
 import TenantLayout from "../../../layouts/TenantLayout";
 import InputField from "../../../components/common/inputfield/InputField";
 import Button from "../../../components/common/button/Button";
 import PopUp from "../../../components/common/popups/PopUp";
+import DataTable from "../../../components/common/table/DataTable";
 import { toast } from "react-toastify";
 import formConfig from "../../../config/formConfig";
 import { tenantCaManagementServices } from "../../../services/apiService";
+import { TENANT_CA_MANAGEMENT_COLUMNS } from "../../../config/columnConfig";
 
 const CAManagement = () => {
   const [isCreatePopupOpen, setIsCreatePopupOpen] = useState(false);
   const [caNo, setCaNo] = useState("");
   const [referenceCode, setReferenceCode] = useState("");
+  const [data, setData] = useState({
+    content: [],
+    totalElements: 0,
+    totalPages: 0,
+    number: 0,
+    size: 10,
+  });
+  const [loading, setLoading] = useState(false);
+
+  const fetchData = async ({ page, size, sortField, sortOrder, filters }) => {
+    setLoading(true);
+    try {
+      const userId = localStorage.getItem("user_id");
+      const params = {
+        page,
+        size,
+        userId,
+      };
+
+      if (sortField && sortOrder) {
+        params.sortBy = sortField;
+        params.sortDir = sortOrder;
+      }
+
+      if (filters?.search) {
+        params.search = filters.search;
+      }
+
+      const response = await tenantCaManagementServices.getTenantCAManagementPagination(params);
+      
+      if (response.data && response.data.content) {
+        setData({
+          content: response.data.content,
+          totalElements: response.data.totalElements || 0,
+          totalPages: response.data.totalPages || 0,
+          number: response.data.number || 0,
+          size: response.data.size || 10,
+        });
+      } else {
+        setData({
+          content: [],
+          totalElements: 0,
+          totalPages: 0,
+          number: 0,
+          size: 10,
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching CA management data:", error);
+      toast.error("Failed to fetch CA management data");
+      setData({
+        content: [],
+        totalElements: 0,
+        totalPages: 0,
+        number: 0,
+        size: 10,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData({ page: 0, size: 10 });
+  }, []);
 
   const handleOpenCreatePopup = () => setIsCreatePopupOpen(true);
   const handleCloseCreatePopup = () => {
@@ -37,6 +104,7 @@ const CAManagement = () => {
       
       if (response.data.success) {
         toast.success(response.data.message || "CA created successfully");
+        fetchData({ page: 0, size: 10 });
       } else {
         toast.error(response.data.message || "Failed to create CA");
       }
@@ -61,6 +129,15 @@ const CAManagement = () => {
               Create CA
             </button>
           }
+        />
+        
+        {/* CA Management DataTable */}
+        <DataTable
+          data={data}
+          columns={TENANT_CA_MANAGEMENT_COLUMNS}
+          fetchData={fetchData}
+          loading={loading}
+          showActions={false}
         />
         
         {/* ---------- CREATE CA POPUP ---------- */}

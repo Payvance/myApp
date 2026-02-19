@@ -135,6 +135,7 @@ const REQUIRED_FIELDS = [
   const [isIssuePopupOpen, setIsIssuePopupOpen] = React.useState(false);
   const [issueBatchData, setIssueBatchData] = React.useState(null);
   const [isIssuing, setIsIssuing] = React.useState(false);
+  const isIssuingRef = React.useRef(false);
   const [isCheckingEligibility, setIsCheckingEligibility] = React.useState(false);
   const [eligibilityData, setEligibilityData] = React.useState(null);
 
@@ -284,7 +285,7 @@ const REQUIRED_FIELDS = [
 
         setTimeout(() => {
           toast.success('Tenant eligible for license generation');
-        }, 100); // disappear after 3 seconds
+        }, 10); // disappear after 3 seconds
 
 
       } else {
@@ -307,41 +308,51 @@ const REQUIRED_FIELDS = [
   };
 
   // Handle submit issue license batch
-  const handleSubmitIssueBatch = async () => {
-    if (!issueBatchData || !eligibilityData?.eligible) return;
+ const handleSubmitIssueBatch = async () => {
+  if (!issueBatchData || isIssuingRef.current) return;
 
-    setIsIssuing(true);
-    try {
-      // Create payload with correct field names
-      const payload = {
-        batchId: issueBatchData.id,
-        issuedToEmail: eligibilityData.tenantEmail,
-        issuedToPhone: eligibilityData.tenantPhone,
-        redeemedTenantId: eligibilityData.tenantId,
-        vendorId: eligibilityData.vendorId,
-      };
-      console.log('Issue payload:', payload);
+  // If eligibility was never checked
+  if (!eligibilityData) {
+    toast.error("Please check eligibility first by filling the email field.");
+    return;
+  }
 
-      // Call API to issue license batch
-      const response = await vendorLicenseServices.issueLicenseBatch(payload);
+  //  If message is not eligible
+  if (eligibilityData.message !== "Eligible to get license") {
+    toast.error("Tenant is not eligible to get license.");
+    return;
+  }
 
-      // Show success toast
-      toast.success('License generated successfully!');
+  isIssuingRef.current = true;
+  setIsIssuing(true);
 
-      // Set generated license data and open success popup
-      setGeneratedLicenseData(response.data);
-      setIsSuccessPopupOpen(true);
+  try {
+    const payload = {
+      batchId: issueBatchData.id,
+      issuedToEmail: eligibilityData.tenantEmail,
+      issuedToPhone: eligibilityData.tenantPhone,
+      redeemedTenantId: eligibilityData.tenantId,
+      vendorId: eligibilityData.vendorId,
+    };
 
-      // Close issue popup and refresh table
-      handleCloseIssuePopup();
-      fetchData({ page: tableData.number, size: tableData.size });
-    } catch (error) {
-      console.error('Error issuing license batch:', error);
-      toast.error(error?.response?.data);
-    } finally {
-      setIsIssuing(false);
-    }
-  };
+    const response = await vendorLicenseServices.issueLicenseBatch(payload);
+
+    toast.success('License generated successfully!');
+
+    setGeneratedLicenseData(response.data);
+    setIsSuccessPopupOpen(true);
+
+    handleCloseIssuePopup();
+    fetchData({ page: tableData.number, size: tableData.size });
+
+  } catch (error) {
+    toast.error(error?.response?.data?.message || "Tenant already has an active license. Cannot issue another key");
+  } finally {
+    setIsIssuing(false);
+    isIssuingRef.current = false;
+  }
+};
+
 
   // Handle close success popup
   const handleCloseSuccessPopup = () => {
@@ -652,14 +663,13 @@ const REQUIRED_FIELDS = [
     
       if (decision === 'APPROVED') {
         toast.success("Batch Approved successfully", {
-          autoClose: 1000,
-          onClose: () => {
-            handleClosePopup();}
-        });
-      } else if (decision === 'REJECTED') {
-        toast.error('Batch Rejected');
+          autoClose: 1000 });
+      } else {
+        toast.error('Batch Rejected',{autoClose: 1000});
       }
-    } catch (error) {
+      handleClosePopup();
+    }
+    catch (error) {
       console.error("Error submitting decision:", error);
       const errorMessage = error?.response?.data?.message || error?.message || "Failed to update batch status";
       toast.error(errorMessage);
@@ -814,7 +824,7 @@ const REQUIRED_FIELDS = [
             data={tableData}
             columns={isSuperAdmin ? VENDOR_BATCH_APPROVALS_COLUMNS : [
               ...LICENSE_BATCH_COLUMNS,
-              { accessorKey: 'actionList', header: 'Actions', type: 'text', width: 120 }
+              { accessorKey: 'actionList', header: 'Actions', width: 120}
             ]}
             fetchData={fetchData}
             loading={loading}
@@ -1138,7 +1148,8 @@ const REQUIRED_FIELDS = [
               <Button
                 text="Generate"
                 onClick={handleSubmitIssueBatch}
-                disabled={isIssuing || !eligibilityData?.eligible || isCheckingEligibility}
+                disabled={isIssuing}
+
               />
             </div>
           </div>

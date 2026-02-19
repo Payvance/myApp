@@ -10,7 +10,7 @@ import { toast } from 'react-toastify';
 import { useSearchParams } from 'react-router-dom'; // Add this import
 
 // user management component
-const UserManagement = () => {
+const RejectUsers = () => {
   // URL Params State
   const [searchParams, setSearchParams] = useSearchParams();
   const initialPage = parseInt(searchParams.get('page') || '0', 10);
@@ -46,7 +46,7 @@ const UserManagement = () => {
         search: filters?.search,
       };
       // API call
-      const response = await userServices.getUsersPagination(params);
+      const response = await userServices.getRejectedUsers(params);
       const data = response.data || {};
       setTableData({
         content: data.content || [],
@@ -65,48 +65,48 @@ const UserManagement = () => {
 
 
   // Add active status checkbox column
-const columns = USERS_COLUMNS.map(col => {
-  if (col.accessorKey !== 'active') return col;
-  
-  return {
-    ...col,
-    cell: ({ row }) => {
-      // Get user id and current active status
-      const { id, active } = row.original;
+  const columns = USERS_COLUMNS.map(col => {
+    if (col.accessorKey !== 'active') return col;
+
+    return {
+      ...col,
+      cell: ({ row }) => {
+        // Get user id and current active status
+        const { id, active } = row.original;
         // Handle toggle change
-      const handleToggle = async () => {
-        try {
-          // Update user active status
-          await userServices.updateUser(id, { active: !active });
-          // Reload table data
-          fetchData({
-            page: tableData.number,
-            size: tableData.size,
-          });
+        const handleToggle = async () => {
+          try {
+            // Update user active status
+            await userServices.updateUser(id, { active: !active });
+            // Reload table data
+            fetchData({
+              page: tableData.number,
+              size: tableData.size,
+            });
 
-          toast.success('User status updated');
-        } catch {
-          toast.error('Failed to update status');
-        }
-      };
+            toast.success('User status updated');
+          } catch {
+            toast.error('Failed to update status');
+          }
+        };
 
-      return (
-        <input
-          type="checkbox"
-          checked={!!active}
-          onChange={handleToggle}
-        />
-      );
-    },
-  };
-});
+        return (
+          <input
+            type="checkbox"
+            checked={!!active}
+            onChange={handleToggle}
+          />
+        );
+      },
+    };
+  });
 
   // Render component
   return (
     <SuperAdminLayout>
       <div className="user-page">
         <PageHeader
-          title="User Management"
+          title="Rejected Users"
           subtitle="View and manage users in the system"
         />
 
@@ -116,10 +116,10 @@ const columns = USERS_COLUMNS.map(col => {
             columns={USERS_COLUMNS}
             fetchData={fetchData}
             loading={loading}
-            basePath="/users"
+            basePath="/users/reject"
             primaryKeys={['id']}
             showActions={true}
-            showEditButton={true}
+            showEditButton={false}
             showViewButton={true}
             className="user-data-table"
           />
@@ -129,4 +129,4 @@ const columns = USERS_COLUMNS.map(col => {
   );
 };
 
-export default UserManagement;
+export default RejectUsers;

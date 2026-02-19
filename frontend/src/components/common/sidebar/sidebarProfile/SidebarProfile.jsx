@@ -376,7 +376,7 @@ const UserProfileMenu = ({
       <Button
         text={loading ? "Processing..." : "Update Password"}
         onClick={handleUnifiedReset}
-        disabled={loading || !oldPassword || !newPassword || !confirmPassword || !isPasswordValid || newPassword !== confirmPassword }
+        disabled={loading || !oldPassword || !newPassword || !confirmPassword || !isPasswordValid }
       />
     </div>
   </div>

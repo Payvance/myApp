@@ -42,6 +42,8 @@ const ProfilePage = () => {
   const [showCA, setShowCA] = useState(false);
   const [roles, setRoles] = useState([]);
   const [selectedRoleId, setSelectedRoleId] = useState(null);
+  const [validationErrors, setValidationErrors] = useState({});
+  const hasValidationErrors = Object.values(validationErrors).some(error => error);
 
   /* Getting roles for the dropdown and passed this role to the payload while checkbox clicking */
   useEffect(() => {
@@ -64,11 +66,46 @@ const ProfilePage = () => {
 }, []);
 
 
+  // ==============================
+  //  ADD IT HERE
+  // ==============================
+
+  // const hasValidationErrors = Object.values(validationErrors).some(error => error);
+
+  const isFormIncomplete =
+    !vendorData.vendorType ||
+    !vendorData.gstNo ||
+    !vendorData.cinNo ||
+    !vendorData.panNo ||
+    !vendorData.tanNo ||
+    !addressData.houseNo ||
+    !addressData.area ||
+    !addressData.pincode ||
+    !addressData.city ||
+    !addressData.district ||
+    !addressData.state ||
+    !addressData.country ||
+    !bankData.bankName ||
+    !bankData.branchName ||
+    !bankData.accountNumber ||
+    !bankData.ifscCode;
+
+  const isCAIncomplete = showCA && (
+    !caData.caRegNo ||
+    !caData.icaiMemberStatus ||
+    !caData.practiceType ||
+    !caData.icaiMemberNo
+  );
+
+  // ==============================
+
+
   /* his function is used for the caling the api for the insertion of ca and vendor profile data 
     Sends the status as inactive while data is sends
   */
   const handleSubmit = async (e) => {
     e.preventDefault();
+
 
     let payload = {
       userId,
@@ -155,13 +192,15 @@ const ProfilePage = () => {
         <span className="form-subtitle">Complete your profile information</span>
         <div className="gradient-line"></div>
         <div className="btn-logout">
-          <Button text="Logout" variant="primary" onClick={handleLogout} />
+          <Button text="Logout" type="button" variant="primary" onClick={handleLogout} />
         </div>
         {/* Vendor Section - Single card, just a title */}
         <div className="form-section">
           <VendorPersonalInfo
             vendorData={vendorData}
             setVendorData={setVendorData}
+            validationErrors={validationErrors}
+            setValidationErrors={setValidationErrors}
           />
         </div>
 
@@ -170,6 +209,8 @@ const ProfilePage = () => {
           <AddressDetails
             addressData={addressData}
             setAddressData={setAddressData}
+            validationErrors={validationErrors}
+            setValidationErrors={setValidationErrors}
           />
         </div>
 
@@ -178,6 +219,8 @@ const ProfilePage = () => {
           <BankDetails
             bankData={bankData}
             setBankData={setBankData}
+            validationErrors={validationErrors}
+            setValidationErrors={setValidationErrors}
           />
         </div>
 
@@ -208,13 +251,15 @@ const ProfilePage = () => {
             <CAPersonalInfo
               caData={caData}
               setCaData={setCaData}
+              validationErrors={validationErrors}
+              setValidationErrors={setValidationErrors}
             />
           </div>
         )}
 
         {/* Submit Button */}
         <div className="profile-footer">
-          <Button type="submit" text="Submit" />
+          <Button type="submit" text="Submit" disabled={hasValidationErrors || isFormIncomplete || isCAIncomplete}/>
         </div>
       </form>
 

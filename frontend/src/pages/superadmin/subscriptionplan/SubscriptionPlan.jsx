@@ -51,6 +51,8 @@ const SubscriptionPlan = () => {
   const [formData, setFormData] = useState(initialFormData);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingPlanId, setEditingPlanId] = useState(null);
+  const [showErrorPopup, setShowErrorPopup] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   // handle edit plan
   const handleEditPlan = async (plan) => {
@@ -126,19 +128,24 @@ const SubscriptionPlan = () => {
         billing_period: formData.periodType,
         currency: 'INR',
         amount: Number(formData.planPrice),
-      ...(formData.periodType === 'monthly' && {
-      duration: Number(formData.duration),
-    }),
+        duration: Number(formData.duration),
       },
     };
 
     // create plan api call response
     try {
       const response = await planServices.createPlan(payload);
+        // 🔹 IMPORTANT: Check success flag from backend
+        if (!response.data.success) {
+          setErrorMessage(response.data.message);
+          setShowErrorPopup(true);
+          return;   // stop execution
+        }
       toast.success('Subscription created successfully', {
         onClose: () => {
           // close popup
           setIsCreatePopupOpen(false);
+          setFormData(initialFormData);
 
       // reset form (optional but recommended)
           setFormData({
@@ -156,8 +163,18 @@ const SubscriptionPlan = () => {
       });
       // fetch plans again to show the newly created plan
       await fetchPlans();
-    }
-    finally {
+    }catch (error) {
+
+    // Extract backend message safely
+    const backendMessage =
+      error?.response?.data?.message ||
+      error?.response?.data ||
+      "Something went wrong.";
+
+      setErrorMessage("Something went wrong.");
+      setShowErrorPopup(true);
+
+  } finally {
       setIsSubmitting(false);
     }
   };
@@ -226,9 +243,7 @@ const SubscriptionPlan = () => {
       billing_period: formData.periodType,
       currency: 'INR',
       amount: Number(formData.planPrice),
-      ...(formData.periodType === 'monthly' && {
-        duration: Number(formData.duration),
-      }),
+      duration: Number(formData.duration),
     },
   };
 
@@ -269,11 +284,6 @@ const isFormValid = () => {
   );
 };
 
-useEffect(() => {
-  if (formData.periodType === 'yearly') {
-    setFormData(prev => ({ ...prev, duration: 1 }));
-  }
-}, [formData.periodType]);
 
 
 
@@ -472,6 +482,38 @@ useEffect(() => {
         {/* create plan form div end */}
       </PopUp>
       {/*  popup div end */}
+
+      <PopUp
+      isOpen={showErrorPopup}
+      onClose={() => setShowErrorPopup(false)}
+      showCloseButton={true}
+      size="small"
+    >
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '20px',
+          alignItems: 'center',
+          textAlign: 'center'
+        }}
+      >
+        <div style={{ maxWidth: '350px' }}>
+          <p style={{ fontSize: '16px' }}>
+            {errorMessage}
+          </p>
+        </div>
+
+        <div style={{ width: '100px' }}>
+          <Button
+            text="OK"
+            onClick={() => setShowErrorPopup(false)}
+            variant="primary"
+          />
+        </div>
+      </div>
+    </PopUp>
+
 
       
     </SuperAdminLayout>

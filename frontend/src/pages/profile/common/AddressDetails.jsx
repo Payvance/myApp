@@ -19,8 +19,9 @@ import { formConfig } from "../../../config/formConfig";
 import { externalServices } from "../../../services/apiService";
 import { useState } from "react";
 import { toast } from "react-toastify";
-const AddressDetails = ({ addressData, setAddressData, disabled }) => {
+const AddressDetails = ({ addressData, setAddressData, disabled,validationErrors,setValidationErrors }) => {
 const [isFetched, setIsFetched] = useState(false);
+// const [validationErrors, setValidationErrors] = useState({});
   /* Handled the changed function for the address details form */
   const handleChange = (name, value) => {
     const trimmedValue =
@@ -102,6 +103,8 @@ const [isFetched, setIsFetched] = useState(false);
           validationType="HOUSE"
           max={20}
           required
+          validationErrors={validationErrors || {}} 
+          setValidationErrors={setValidationErrors}
           disabled={disabled}
         />
 
@@ -123,6 +126,8 @@ const [isFetched, setIsFetched] = useState(false);
           validationType="HOUSE"
           max={50}
           required
+          validationErrors={validationErrors || {}} 
+          setValidationErrors={setValidationErrors}
           disabled={disabled}
         />
 
@@ -149,6 +154,8 @@ const [isFetched, setIsFetched] = useState(false);
           validationType="NUMBER_ONLY"
           max={6}
           required
+          validationErrors={validationErrors || {}} 
+          setValidationErrors={setValidationErrors}
           disabled={disabled}
         />
 
@@ -160,6 +167,8 @@ const [isFetched, setIsFetched] = useState(false);
           validationType="ALPHABETS_AND_SPACE"
           max={30}
           required
+          validationErrors={validationErrors || {}} 
+          setValidationErrors={setValidationErrors}
           disabled={disabled}
         />
 
@@ -194,6 +203,8 @@ const [isFetched, setIsFetched] = useState(false);
           validationType="ALPHABETS_AND_SPACE"
           max={30}
           required
+          validationErrors={validationErrors || {}} 
+          setValidationErrors={setValidationErrors}
           disabled={disabled}
         />
 
@@ -205,6 +216,8 @@ const [isFetched, setIsFetched] = useState(false);
           validationType="ALPHABETS_AND_SPACE"
           max={30}
           required
+          validationErrors={validationErrors || {}} 
+          setValidationErrors={setValidationErrors}
           disabled={disabled}
         />
 
@@ -225,6 +238,8 @@ const [isFetched, setIsFetched] = useState(false);
           validationType="ALPHABETS_AND_SPACE"
           max={30}
           required
+          validationErrors={validationErrors || {}} 
+          setValidationErrors={setValidationErrors}
           disabled={disabled}
         />
       </div>

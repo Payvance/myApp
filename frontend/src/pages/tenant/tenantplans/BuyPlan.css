@@ -64,7 +64,6 @@
 .payment-amount {
     text-align: center;
     margin-bottom: 20px;
-    padding-bottom: 15px;
     border-bottom: 1px solid #e0e0e0;
 }
 
@@ -76,14 +75,11 @@
 }
 
 .plan-details {
-    margin-bottom: 20px;
-    padding: 15px;
-    background: #f8f9fa;
-    border-radius: 6px;
-    border: 1px solid #e9ecef;
-    margin-bottom: 20px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid #eee;
+    background-color: var(--bg-primary) !important;
+    color: var(--text-primary);
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border: none !important;
 }
 
 .plan-info {
@@ -101,8 +97,7 @@
 
 .plan-limits {
     display: flex;
-    gap: 20px;
-    justify-content: center;
+    justify-content: space-between;
 }
 
 .plan-limits span {
@@ -115,20 +110,19 @@
 }
 
 .selected-addons {
+    background-color: var(--primary-50) !important;
+    margin-bottom: 20px; 
     margin-bottom: 20px;
-    padding: 15px;
-    background: #f8f9fa;
-    border-radius: 6px;
-    border: 1px solid #e9ecef;
-    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border: none !important;
 }
 
 .selected-addons h4 {
-    margin: 0 0 10px 0;
+    margin: 0px;
     color: #2c3e50;
     font-size: 16px;
     font-weight: 600;
-    margin: 0 0 15px 0;
+    margin: 0px;
     color: #2c3e50;
     font-size: 16px;
     font-weight: 600;
@@ -137,11 +131,10 @@
 .addon-item {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    padding: 8px 0;
-    border-bottom: 1px solid #dee2e6;
-    padding: 10px 0;
-    border-bottom: 1px solid #f0f0f0;
+    align-items: self-end;
+    padding: 0px;
+    border: none !important;
+  
 }
 
 .addon-item:last-child {
@@ -214,4 +207,176 @@
     height: 45px;
     font-size: 16px;
     font-weight: 600;
+}
+
+
+.payment-summary-card {
+  background: var(--primary-50);
+  color: var(--text-primary);
+  padding: 0px;
+  
+  
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;  /* LEFT + RIGHT */
+  align-items: center;
+  padding: 1px 0;
+  font-size: 14px;
+}
+
+.summary-label {
+  color: #374151;
+  font-weight: 500;
+}
+
+.total-label{
+    font-weight: 700;
+}
+
+.summary-value {
+  text-align: right;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  min-width: 120px;   /* keeps alignment clean */
+}
+
+.summary-divider {
+  height: 1px;
+  background: #e5e7eb;
+  margin: 12px 0;
+}
+
+.total-row {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.total-amount {
+  color: var(--text-primary);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+
+.addon-name {
+  font-weight: 600;
+  font-size: 15px;
+  margin-bottom: 10px;
+  color: #111827;
+}
+
+.addon-wrapper{
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+}
+
+/* Quantity Wrapper */
+.addon-quantity-wrapper {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--purple-500);
+  border-radius: 8px;
+  height: 18px;
+  width: 70px;
+  overflow: hidden;
+}
+
+/* Buttons */
+.qty-btn {
+  background: var(--purple-500);
+  border: none;
+  width: 36px;
+  height: 36px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.qty-btn:hover {
+  background: var(--purple-600);
+}
+
+.qty-btn.plus {
+  color: #ffffffaa;
+}
+
+.qty-btn.minus {
+  color: #ffffffaa;
+}
+
+/* Count */
+.qty-count {
+  width: 40px;
+  text-align: center;
+  font-size: 15px;
+  background: var(--purple-500);
+}
+
+/* Price */
+.addon-price {
+  margin-top: 2px;
+  font-weight: 600;
+  color: #000000;
+  font-size: 14px;
+}
+
+
+.popup-payment-summary {
+  padding: 10px 5px;
+  height: 360px;
+  overflow-y: auto;
+}
+
+.popup-section {
+  margin-bottom: 20px;
+}
+
+.popup-section-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--text-primary);
+}
+
+.payment-header-title{
+    padding-left: 15px;
+}
+
+.popup-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.popup-row.discount {
+  color: #16a34a;
+  font-weight: 600;
+}
+
+.popup-row.final {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.popup-divider {
+  height: 1px;
+  background: #e5e7eb;
+  margin: 15px 0;
+}
+
+.popup-action {
+  margin-top: 25px;
+  text-align: center;
+}
+
+.success-popup-content{
+    color: var(--text-primary);
 }

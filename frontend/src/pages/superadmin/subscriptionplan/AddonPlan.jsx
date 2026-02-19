@@ -14,6 +14,7 @@ import SubscriptionCard from "../../../components/common/subscriptioncard/Subscr
 import { addonServices, planServices } from "../../../services/apiService";
 import formConfig from "../../../config/formConfig";
 import { toast } from "react-toastify";
+import Button from "../../../components/common/button/Button";
 
 const AddonPlan = () => {
   const [isCreatePopupOpen, setIsCreatePopupOpen] = useState(false);
@@ -21,6 +22,9 @@ const AddonPlan = () => {
   const [loadingAddons, setLoadingAddons] = useState(false);
   const [addons, setAddons] = useState([]);
   const [plans, setPlans] = useState([]);
+  const [showErrorPopup, setShowErrorPopup] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
 
   const initialFormData = {
     id: null,
@@ -156,10 +160,20 @@ const handleEditAddon = async (addon) => {
       // Create add-on in API
       const response = await addonServices.createAddon(payload);
 
+      const data = response.data;
+      //  If backend says success = false
+      if (data.success === false) {
+        setErrorMessage(data.message);
+        setShowErrorPopup(true);
+        return;
+      }
+      
+    if (data.success === true) {
       toast.success('Add On created successfully', {
       onClose: () => {
         // create add-on popup
         setIsCreatePopupOpen(false);
+        setFormData(initialFormData);
         setFormData({     
           plan_id: "",
           code: "",
@@ -171,7 +185,7 @@ const handleEditAddon = async (addon) => {
         });
       },
         autoClose: 1000 // 2 seconds before onClose triggers
-      });
+      })};
       await fetchAddons();
     } finally {
       setIsSubmitting(false);
@@ -398,6 +412,38 @@ const handleEditAddon = async (addon) => {
         </div>
       </PopUp>
       {/* popup div end */}
+      {/* popup to show error start*/}
+      <PopUp
+      isOpen={showErrorPopup}
+      onClose={() => setShowErrorPopup(false)}
+      showCloseButton={true}
+      size="small"
+    >
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "20px",
+          alignItems: "center",
+          textAlign: "center",
+        }}
+      >
+        <div style={{ maxWidth: "350px" }}>
+          <p style={{ fontSize: "16px" }}>
+            {errorMessage}
+          </p>
+        </div>
+
+        <div style={{ width: "100px" }}>
+        <Button
+          text="OK"
+          onClick={() => setShowErrorPopup(false)}
+          variant="primary"
+        />
+        </div>
+      </div>
+    </PopUp>
+    {/* popup to show error end */}
     </SuperAdminLayout>
   );
 };

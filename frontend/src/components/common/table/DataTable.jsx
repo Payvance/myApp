@@ -9,6 +9,7 @@ import {
 import Pagination from './Pagination';
 import TableActions from './TableActions';
 import DateTimeFormatter from './DateTimeFormatter';
+import { capitalizeEachWord } from '../../../hooks/useCommonFunctions';
 import './DataTable.css';
 
 const DataTable = ({
@@ -118,6 +119,8 @@ const DataTable = ({
         } else if (col.type === 'boolean') {
           // Render booleans/status as visible text so true/false booleans will render
           return <div style={{ textAlign: 'left' }}>{value === true ? 'Yes' : value === false ? 'No' : ''}</div>;
+        } else if (col.type === 'text' || col.type === 'status') {
+          return <div style={{ textAlign: 'left' }}>{capitalizeEachWord(value)}</div>;
         }
         return <div style={{ textAlign: 'left' }}>{value}</div>;
       }),

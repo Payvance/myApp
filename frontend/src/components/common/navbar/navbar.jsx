@@ -30,11 +30,11 @@ const Navbar = ({ isSidebarCollapsed }) => {
       };
     }
     // User page menu items
-    if (location.pathname === '/users' || location.pathname === '/users/pending') {
+    if (location.pathname === '/users' || location.pathname === '/users/pending' || location.pathname === '/users/reject') {
       return {
         title: 'Users',
         // menu items for subscription plan
-        menuItems: ['Users', 'Pending Approval']
+        menuItems: ['Users', 'Pending Approval', 'Reject Users']
       };
     }
     if (location.pathname === '/subscriptionplan') {
@@ -104,8 +104,9 @@ const Navbar = ({ isSidebarCollapsed }) => {
     if (location.pathname === '/redemption/pending') return 'Pending';
     if (location.pathname === '/subscriptionplan') return 'Subscription Plans';
     if (location.pathname === '/addonplans') return 'Add-on Plans';
-    if( location.pathname === '/users') return 'Users';
-    if( location.pathname === '/users/pending') return 'Pending Approval';
+    if (location.pathname === '/users') return 'Users';
+    if (location.pathname === '/users/pending') return 'Pending Approval';
+    if (location.pathname === '/users/reject') return 'Reject Users';
     if (location.pathname === '/vendordiscount') return 'Vendor Discount';
     if (location.pathname === '/offermanagement') return 'Offer Management';
     if (location.pathname === '/referralconfiguration') return 'Referral Configuration';
@@ -136,10 +137,13 @@ const Navbar = ({ isSidebarCollapsed }) => {
       navigate('/redemption/pending');
     }
     else if (item === 'Users') {
-    navigate('/users');
-   } 
+      navigate('/users');
+    }
     else if (item === 'Pending Approval') {
       navigate('/users/pending');
+    }
+    else if (item === 'Reject Users') {
+      navigate('/users/reject');
     }
     else if (item === 'Subscription Plans') {
       navigate('/subscriptionplan');

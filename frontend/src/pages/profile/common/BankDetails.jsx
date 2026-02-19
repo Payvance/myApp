@@ -15,11 +15,14 @@
  *
  **/
 
+import { useState } from "react";
 import InputField from "../../../components/common/inputfield/InputField";
 import { formConfig } from "../../../config/formConfig";
 
-const BankDetails = ({ bankData, setBankData, disabled }) => {
+const BankDetails = ({ bankData, setBankData, disabled ,validationErrors,setValidationErrors}) => {
 
+  // const [validationErrors, setValidationErrors] = useState({});
+  
   /* Handled the changed function for the bank details form*/
   const handleChange = (name, value) => {
     setBankData(prev => ({ ...prev, [name]: value }));
@@ -38,6 +41,8 @@ const BankDetails = ({ bankData, setBankData, disabled }) => {
           validationType="BANK"
           min={2}
           max={50}
+          validationErrors={validationErrors || {}} 
+          setValidationErrors={setValidationErrors}
           required
           disabled={disabled}
         />
@@ -49,6 +54,8 @@ const BankDetails = ({ bankData, setBankData, disabled }) => {
           validationType="ALPHANUMERIC"
           max={50}
           required
+          validationErrors={validationErrors || {}} 
+          setValidationErrors={setValidationErrors}
           disabled={disabled}
         />
         <InputField
@@ -58,6 +65,8 @@ const BankDetails = ({ bankData, setBankData, disabled }) => {
           onChange={(e) => handleChange("accountNumber", e.target.value)}
           validationType="ACCOUNT_NUMBER"
           max={20}
+          validationErrors={validationErrors || {}} 
+          setValidationErrors={setValidationErrors}
           required
           disabled={disabled}
         />
@@ -70,6 +79,8 @@ const BankDetails = ({ bankData, setBankData, disabled }) => {
           }
           validationType="IFSC_CODE"
           max={11}
+          validationErrors={validationErrors || {}} 
+          setValidationErrors={setValidationErrors}
           required
           disabled={disabled}
         />
