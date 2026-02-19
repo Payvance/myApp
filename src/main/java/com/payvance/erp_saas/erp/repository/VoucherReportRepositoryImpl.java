@@ -29,6 +29,8 @@ public class VoucherReportRepositoryImpl implements VoucherReportRepositoryCusto
             String fromDate,
             String toDate,
             String groupBy,
+            boolean isGross,
+            boolean isReturn,
             Map<String, String> filters) {
 
         // Determine Mode: Inventory Mode vs Voucher Mode
@@ -39,25 +41,15 @@ public class VoucherReportRepositoryImpl implements VoucherReportRepositoryCusto
 
         if (useInventoryMode || "costCenter".equals(groupBy)) {
             // Use existing Single-Query Logic (Turnover/Item Values)
-            return executeQuery(tenantId, companyId, voucherType, fromDate, toDate, groupBy, filters, true);
+            return executeQuery(tenantId, companyId, voucherType, fromDate, toDate, groupBy, filters, true, isGross,
+                    isReturn);
         } else {
             // Voucher Mode: Split Query (Bill Values + Quantities)
-            // 1. Fetch Amounts (From Vouchers table only - No join duplication)
             List<VoucherReportDTO> amounts = executeQuery(tenantId, companyId, voucherType, fromDate, toDate, groupBy,
-                    filters, false);
-
-            // 2. Fetch Quantities (From Inventory join - Qty only)
-            // We reuse the inventory query but we only care about Qty
-            // Efficient: We can arguably skip this if Qty is not needed, but let's fetch
-            // for completeness
-            // Or better: We specifically run a "Qty Only" query helper?
-            // To save implementation size, let's reuse executeQuery with a flag?
-            // executeQuery is complex. Let's call it with 'inventoryMode=true' but then we
-            // get Amount as 'ie.amount'.
-            // We want to MERGE: Amount from Step 1, Qty from Step 2.
+                    filters, false, isGross, isReturn);
 
             List<VoucherReportDTO> quantities = executeQuery(tenantId, companyId, voucherType, fromDate, toDate,
-                    groupBy, filters, true);
+                    groupBy, filters, true, isGross, isReturn);
 
             // 3. Merge
             Map<String, VoucherReportDTO> map = new java.util.HashMap<>();
@@ -71,13 +63,9 @@ public class VoucherReportRepositoryImpl implements VoucherReportRepositoryCusto
             for (VoucherReportDTO q : quantities) {
                 if (map.containsKey(q.getName())) {
                     VoucherReportDTO existing = map.get(q.getName());
-                    // Update Qty
-                    // Note: DTO is immutable-ish? No, usually POJO. Assuming mutable setters or
-                    // create new.
                     map.put(q.getName(),
                             new VoucherReportDTO(existing.getName(), q.getQuantity(), existing.getAmount()));
                 } else {
-                    // Qty exists but Amount 0 (e.g. Free items only voucher?)
                     map.put(q.getName(), new VoucherReportDTO(q.getName(), q.getQuantity(), BigDecimal.ZERO));
                 }
             }
@@ -94,7 +82,9 @@ public class VoucherReportRepositoryImpl implements VoucherReportRepositoryCusto
             String toDate,
             String groupBy,
             Map<String, String> filters,
-            boolean useInventoryTable) {
+            boolean useInventoryTable,
+            boolean isGross,
+            boolean isReturn) {
 
         // 1. Fetch Hierarchy (Same as before)
         List<com.payvance.erp_saas.erp.entity.TallyVoucherType> allTypes;
@@ -124,18 +114,20 @@ public class VoucherReportRepositoryImpl implements VoucherReportRepositoryCusto
         String groupColumn = "";
 
         // Logic Switch:
-        // If useInventoryTable = true (Inventory Mode): Use 'ie.amount' (Item Value) +
-        // 'ie.billed_qty'
-        // If useInventoryTable = false (Voucher Mode): Use 'v.amount' (Bill Value), Qty
-        // = 0 (Calculated later via merge)
-
         String qtySql = useInventoryTable
                 ? "SUM(CASE WHEN v.voucher_type IN (:negationTypes) THEN  CAST(COALESCE(NULLIF(REGEXP_REPLACE(ie.billed_qty, '[^0-9.-]', ''), ''), '0') AS DECIMAL(19,4)) ELSE CAST(COALESCE(NULLIF(REGEXP_REPLACE(ie.billed_qty, '[^0-9.-]', ''), ''), '0') AS DECIMAL(19,4)) END)"
                 : "0";
 
-        String amountSql = useInventoryTable
-                ? "SUM(CASE WHEN v.voucher_type IN (:negationTypes) THEN  (CASE WHEN v.is_invoice = 0 OR v.is_invoice IS NULL THEN v.amount ELSE ie.amount END) ELSE (CASE WHEN v.is_invoice = 0 OR v.is_invoice IS NULL THEN v.amount ELSE ie.amount END) END)"
-                : "SUM(CASE WHEN v.voucher_type IN (:negationTypes) THEN  v.amount ELSE v.amount END)";
+        String amountSql = "0";
+        if (isGross) {
+            amountSql = useInventoryTable
+                    ? "SUM(CASE WHEN v.voucher_type IN (:negationTypes) THEN  (CASE WHEN v.is_invoice = 0 OR v.is_invoice IS NULL THEN v.invoice_total ELSE ie.amount END) ELSE (CASE WHEN v.is_invoice = 0 OR v.is_invoice IS NULL THEN -ABS(v.invoice_total) ELSE ABS(v.invoice_total) END) END)"
+                    : "SUM(CASE WHEN v.voucher_type IN (:negationTypes) THEN -ABS(v.invoice_total) ELSE ABS(v.invoice_total) END)";
+        } else {
+            amountSql = useInventoryTable
+                    ? "SUM(CASE WHEN v.voucher_type IN (:negationTypes) THEN  (CASE WHEN v.is_invoice = 0 OR v.is_invoice IS NULL THEN v.amount ELSE ie.amount END) ELSE (CASE WHEN v.is_invoice = 0 OR v.is_invoice IS NULL THEN -ABS(v.amount) ELSE ABS(v.amount) END) END)"
+                    : "SUM(CASE WHEN v.voucher_type IN (:negationTypes) THEN -ABS(v.amount) ELSE ABS(v.amount) END)";
+        }
 
         switch (groupBy) {
             case "ledger":
@@ -149,8 +141,10 @@ public class VoucherReportRepositoryImpl implements VoucherReportRepositoryCusto
                 groupColumn = "g.name";
                 sql.append("SELECT g.name, ").append(qtySql).append(", ").append(amountSql)
                         .append(" FROM tally_vouchers v ");
-                sql.append("JOIN tally_ledgers l ON l.name = v.party_ledger_name AND l.tenant_id = v.tenant_id AND l.company_id = v.company_id ");
-                sql.append("JOIN tally_groups g ON g.name = l.group_name AND g.tenant_id = v.tenant_id AND g.company_id = v.company_id ");
+                sql.append(
+                        "JOIN tally_ledgers l ON l.name = v.party_ledger_name AND l.tenant_id = v.tenant_id AND l.company_id = v.company_id ");
+                sql.append(
+                        "JOIN tally_groups g ON g.name = l.group_name AND g.tenant_id = v.tenant_id AND g.company_id = v.company_id ");
                 if (useInventoryTable)
                     sql.append("LEFT JOIN tally_inventory_entries ie ON ie.voucher_id = v.id ");
                 break;
@@ -165,21 +159,24 @@ public class VoucherReportRepositoryImpl implements VoucherReportRepositoryCusto
                 sql.append("SELECT si.stock_group_name, ").append(qtySql).append(", ").append(amountSql)
                         .append(" FROM tally_vouchers v ");
                 sql.append("JOIN tally_inventory_entries ie ON ie.voucher_id = v.id ");
-                sql.append("JOIN tally_stock_items si ON si.name = ie.stock_item_name AND si.tenant_id = v.tenant_id AND si.company_id = v.company_id ");
+                sql.append(
+                        "JOIN tally_stock_items si ON si.name = ie.stock_item_name AND si.tenant_id = v.tenant_id AND si.company_id = v.company_id ");
                 break;
             case "category":
                 groupColumn = "si.category_name";
                 sql.append("SELECT si.category_name, ").append(qtySql).append(", ").append(amountSql)
                         .append(" FROM tally_vouchers v ");
                 sql.append("JOIN tally_inventory_entries ie ON ie.voucher_id = v.id ");
-                sql.append("JOIN tally_stock_items si ON si.name = ie.stock_item_name AND si.tenant_id = v.tenant_id AND si.company_id = v.company_id ");
+                sql.append(
+                        "JOIN tally_stock_items si ON si.name = ie.stock_item_name AND si.tenant_id = v.tenant_id AND si.company_id = v.company_id ");
                 break;
             case "costCenter":
                 // Cost Center always joins ledger entries
                 groupColumn = "cc.name";
                 sql.append("SELECT cc.name, CAST(COUNT(*) AS DECIMAL(19,4)), SUM(le.amount) FROM tally_vouchers v ");
-                sql.append("JOIN tally_ledger_entries le ON le.voucher_id = v.id ");
-                sql.append("JOIN tally_cost_centres cc ON cc.name = le.ledger_name AND cc.tenant_id = v.tenant_id AND cc.company_id = v.company_id ");
+                sql.append("JOIN tally_ledger_entries le ON le.voucher_id = v.id AND le.amount != v.amount ");
+                sql.append(
+                        "JOIN tally_cost_centres cc ON cc.name = le.ledger_name AND cc.tenant_id = v.tenant_id AND cc.company_id = v.company_id ");
                 break;
             case "month":
                 groupColumn = "txn_month";
@@ -214,15 +211,62 @@ public class VoucherReportRepositoryImpl implements VoucherReportRepositoryCusto
         }
 
         java.util.Set<String> filterTypes = null;
+        java.util.Set<String> targetNatures = null;
+        java.util.Set<String> excludedTypes = null;
+
         if (voucherType != null && !voucherType.isEmpty()) {
+            targetNatures = new java.util.HashSet<>();
+            if ("Sales".equalsIgnoreCase(voucherType)) {
+                targetNatures.add("Sales");
+                if (isReturn) {
+                    targetNatures.add("Sales Return"); // Include Credit Notes Only if Gross
+                }
+            } else if ("Purchase".equalsIgnoreCase(voucherType)) {
+                targetNatures.add("Purchase");
+                if (isReturn) {
+                    targetNatures.add("Purchase Return"); // Include Debit Notes Only if Gross
+                }
+            } else if ("Credit Note".equalsIgnoreCase(voucherType)) {
+                targetNatures.add("Sales Return");
+            } else if ("Debit Note".equalsIgnoreCase(voucherType)) {
+                targetNatures.add("Purchase Return");
+            }
+
+            // Fallback for strict types or if nature not applicable
             filterTypes = new java.util.HashSet<>();
             expandTypes(filterTypes, voucherType, parentToChildren);
-            if ("Sales".equalsIgnoreCase(voucherType)) {
-                expandTypes(filterTypes, "Credit Note", parentToChildren);
-            } else if ("Purchase".equalsIgnoreCase(voucherType)) {
-                expandTypes(filterTypes, "Debit Note", parentToChildren);
+            if (isReturn) {
+                if ("Sales".equalsIgnoreCase(voucherType)) {
+                    expandTypes(filterTypes, "Credit Note", parentToChildren);
+                } else if ("Purchase".equalsIgnoreCase(voucherType)) {
+                    expandTypes(filterTypes, "Debit Note", parentToChildren);
+                }
             }
-            sql.append(" AND v.voucher_type IN (:filterTypes) ");
+
+            // Exclude non-financial types (Orders, Delivery/Receipt Notes)
+            excludedTypes = new java.util.HashSet<>();
+            if ("Sales".equalsIgnoreCase(voucherType)) {
+                excludedTypes.add("Sales Order");
+                excludedTypes.add("Delivery Note");
+            } else if ("Purchase".equalsIgnoreCase(voucherType)) {
+                excludedTypes.add("Purchase Order");
+                excludedTypes.add("Receipt Note");
+            }
+
+            // Remove excluded types from filterTypes (if hierarchy included them)
+            filterTypes.removeAll(excludedTypes);
+
+            if (!targetNatures.isEmpty()) {
+                // Inclusive Logic: Match either Nature OR Type
+                sql.append(
+                        " AND ((v.nature_of_voucher IN (:targetNatures)) OR (v.voucher_type IN (:filterTypes))) ");
+            } else {
+                sql.append(" AND v.voucher_type IN (:filterTypes) ");
+            }
+
+            if (!excludedTypes.isEmpty()) {
+                sql.append(" AND v.voucher_type NOT IN (:excludedTypes) ");
+            }
         }
 
         if (fromDate != null && !fromDate.isEmpty()) {
@@ -260,7 +304,7 @@ public class VoucherReportRepositoryImpl implements VoucherReportRepositoryCusto
             }
             if (filters.containsKey("costCenterName")) {
                 sql.append(
-                        " AND EXISTS (SELECT 1 FROM tally_ledger_entries fle JOIN tally_cost_centres fcc ON fcc.name = fle.ledger_name AND fcc.tenant_id = v.tenant_id AND fcc.company_id = v.company_id WHERE fle.voucher_id = v.id AND fcc.name = :costCenterName) ");
+                        " AND EXISTS (SELECT 1 FROM tally_ledger_entries fle JOIN tally_cost_centres fcc ON fcc.name = fle.ledger_name AND fcc.tenant_id = v.tenant_id AND fcc.company_id = v.company_id WHERE fle.voucher_id = v.id AND fle.amount != v.amount AND fcc.name = :costCenterName) ");
             }
             if (filters.containsKey("month")) {
                 sql.append(" AND DATE_FORMAT(v.date, '%Y-%m') = :month ");
@@ -278,8 +322,14 @@ public class VoucherReportRepositoryImpl implements VoucherReportRepositoryCusto
         if (companyId != null && !companyId.isEmpty())
             query.setParameter("companyId", companyId);
 
+        if (targetNatures != null && !targetNatures.isEmpty()) {
+            query.setParameter("targetNatures", targetNatures);
+        }
         if (filterTypes != null) {
             query.setParameter("filterTypes", filterTypes);
+        }
+        if (excludedTypes != null && !excludedTypes.isEmpty()) {
+            query.setParameter("excludedTypes", excludedTypes);
         }
 
         if (fromDate != null && !fromDate.isEmpty())
@@ -303,14 +353,14 @@ public class VoucherReportRepositoryImpl implements VoucherReportRepositoryCusto
             if (filters.containsKey("month"))
                 query.setParameter("month", filters.get("month"));
         }
-
+        System.out.println("DEBUG: query = " + sql.toString());
         List<Object[]> results = query.getResultList();
         List<VoucherReportDTO> dtos = new ArrayList<>();
         for (Object[] row : results) {
             String name = (String) row[0];
             BigDecimal quantity = toBigDecimal(row[1]);
             BigDecimal amount = toBigDecimal(row[2]);
-            dtos.add(new VoucherReportDTO(name, quantity, amount.abs()));
+            dtos.add(new VoucherReportDTO(name, quantity, amount));
 
         }
         return dtos;

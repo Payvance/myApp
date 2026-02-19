@@ -495,7 +495,8 @@ public class TallySyncService {
 
             java.util.List<Voucher> existingByGuid = new java.util.ArrayList<>();
             if (!guids.isEmpty()) {
-                // Note: findByTenantIdAndCompanyIdAndGuidIn searches within the specific company to ensure uniqueness
+                // Note: findByTenantIdAndCompanyIdAndGuidIn searches within the specific
+                // company to ensure uniqueness
                 existingByGuid = voucherRepository.findByTenantIdAndCompanyIdAndGuidIn(tenantId, companyId, guids);
             }
 
@@ -756,6 +757,7 @@ public class TallySyncService {
 
         v.setBuyerAddress(d.getBuyerAddress());
         v.setVoucherCategory(d.getVoucherCategory());
+        v.setNatureOfVoucher(d.getNatureOfVoucher());
 
         v.setAckNo(d.getAckNo());
         v.setIrpSource(d.getIrpSource());

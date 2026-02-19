@@ -279,6 +279,11 @@ public class VendorLicenseService {
         activation.setActivatedAt(LocalDateTime.now());
         activation.setExpiresAt(savedKey.getExpiresAt());
         activation.setStatus("active");
+        
+        // Set activation price from batch resale price
+        activation.setActivationPrice(batch.getCostPrice());
+        activation.setCurrency(batch.getCurrency());
+        
         tenantActivationRepository.save(activation);
 
         // ===============================

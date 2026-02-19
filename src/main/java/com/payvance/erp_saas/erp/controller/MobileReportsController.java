@@ -26,6 +26,8 @@ public class MobileReportsController {
             @RequestParam(required = false) String fromDate,
             @RequestParam(required = false) String toDate,
             @RequestParam String groupBy,
+            @RequestParam(defaultValue = "false") boolean isGross,
+            @RequestParam(defaultValue = "false") boolean isReturn,
             @RequestParam Map<String, String> allParams) {
 
         // Extract filters (any param that is not part of the standard set)
@@ -33,6 +35,8 @@ public class MobileReportsController {
         System.out.println("DEBUG: MobileReportsController.getVoucherReport called");
         System.out.println("DEBUG: groupBy = " + groupBy);
         System.out.println("DEBUG: voucherType = " + voucherType);
+        System.out.println("DEBUG: isGross = " + isGross);
+        System.out.println("DEBUG: isReturn = " + isReturn);
         System.out.println("DEBUG: allParams = " + allParams);
         filters.remove("tenantId");
         filters.remove("companyId");
@@ -40,9 +44,12 @@ public class MobileReportsController {
         filters.remove("fromDate");
         filters.remove("toDate");
         filters.remove("groupBy");
+        filters.remove("isGross");
+        filters.remove("isReturn");
 
         return ResponseEntity.ok(
-                reportService.getVoucherReport(tenantId, companyId, voucherType, fromDate, toDate, groupBy, filters));
+                reportService.getVoucherReport(tenantId, companyId, voucherType, fromDate, toDate, groupBy, isGross,
+                        isReturn, filters));
     }
 
     @GetMapping("/vouchers/{voucherId}")

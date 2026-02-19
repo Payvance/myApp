@@ -12,5 +12,7 @@ public interface VoucherReportRepositoryCustom {
             String fromDate,
             String toDate,
             String groupBy,
+            boolean isGross,
+            boolean isReturn,
             Map<String, String> filters);
 }

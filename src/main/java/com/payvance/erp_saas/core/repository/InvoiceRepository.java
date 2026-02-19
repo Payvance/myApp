@@ -7,9 +7,8 @@ import org.springframework.stereotype.Repository;
 
 import com.payvance.erp_saas.core.entity.Invoice;
 
-
-
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * Repository for Invoice entity
@@ -25,4 +24,9 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
      */
     @Query("SELECT COALESCE(SUM(i.totalPayable), 0) FROM Invoice i WHERE i.status = :status")
     BigDecimal sumTotalPayableByStatus(@Param("status") String status);
+
+    /**
+     * Find all invoices by subscription ID
+     */
+    List<Invoice> findBySubscriptionId(Long subscriptionId);
 }

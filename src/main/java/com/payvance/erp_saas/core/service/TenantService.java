@@ -27,11 +27,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.payvance.erp_saas.core.config.TrialConfig;
 import com.payvance.erp_saas.core.dto.LicenseCheckDto;
 import com.payvance.erp_saas.core.dto.TrialPeriod;
+import com.payvance.erp_saas.core.dto.ValidationResponse;
+import com.payvance.erp_saas.core.entity.ReferralCode;
 import com.payvance.erp_saas.core.entity.Tenant;
 import com.payvance.erp_saas.core.entity.TenantSetting;
 import com.payvance.erp_saas.core.entity.TenantUsage;
 import com.payvance.erp_saas.core.entity.User;
 import com.payvance.erp_saas.core.entity.Vendor;
+import com.payvance.erp_saas.core.repository.ReferralCodeRepository;
 import com.payvance.erp_saas.core.repository.TenantRepository;
 import com.payvance.erp_saas.core.repository.TenantSettingsRepository;
 import com.payvance.erp_saas.core.repository.TenantUsageRepository;
@@ -57,6 +60,7 @@ public class TenantService {
     private final EmailService emailService;
     private final EventService eventService;
     private final TrialConfig trialConfig;
+    private final ReferralCodeRepository referralCodeRepository;
 
     @Transactional
     public TrialPeriod startTrial(Long tenantId, Long actorUserId) {
@@ -253,4 +257,40 @@ public class TenantService {
         return tenantRepository.findAllById(tenantIds);
     }
 
+    
+ /*
+  * Validate referral code and linked tenant. Returns VALID if both referral code and tenant are valid, otherwise INVALID with reason.
+  */
+    public ValidationResponse validate(String referralCode) {
+
+        // Validate referral code
+        ReferralCode referral = referralCodeRepository
+                .findByCodeAndStatus(referralCode, "ACTIVE")
+                .orElse(null);
+
+        if (referral == null) {
+            return new ValidationResponse(
+                    "INVALID",
+                    "Invalid or expired referral code"
+            );
+        }
+
+        // Validate tenant linked to referral
+        Tenant tenant = tenantRepository
+                .findByIdAndStatus(referral.getOwnerId(), "ACTIVE")
+                .orElse(null);
+
+        if (tenant == null) {
+            return new ValidationResponse(
+                    "INVALID",
+                    "Tenant is inactive or does not exist"
+            );
+        }
+
+        // 3️⃣ Success
+        return new ValidationResponse(
+                "VALID",
+                "Tenant and referral code are valid"
+        );
+    }
 }

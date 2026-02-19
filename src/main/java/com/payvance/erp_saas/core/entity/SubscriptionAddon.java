@@ -34,7 +34,7 @@ public class SubscriptionAddon {
     private Integer quantity = 1;
 
     @Column(name = "status", nullable = false, length = 30)
-    private String status = "active";
+    private String status = "pending";
 
     @Column(name = "effective_from")
     private LocalDateTime effectiveFrom;

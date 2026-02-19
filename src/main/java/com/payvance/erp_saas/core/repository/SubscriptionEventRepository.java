@@ -7,5 +7,5 @@ import com.payvance.erp_saas.core.entity.SubscriptionEvent;
 
 @Repository
 public interface SubscriptionEventRepository extends JpaRepository<SubscriptionEvent, Long> {
-
+    SubscriptionEvent findFirstBySubscriptionIdAndEventTypeOrderByCreatedAtDesc(Long subscriptionId, String eventType);
 }

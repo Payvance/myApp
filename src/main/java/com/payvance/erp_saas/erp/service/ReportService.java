@@ -30,9 +30,11 @@ public class ReportService {
             String fromDate,
             String toDate,
             String groupBy,
+            boolean isGross,
+            boolean isReturn,
             Map<String, String> filters) {
         return voucherReportRepository.getVoucherReport(tenantId, companyId, voucherType, fromDate, toDate, groupBy,
-                filters);
+                isGross, isReturn, filters);
     }
 
     public VoucherDetailDTO getVoucherDetail(Long voucherId, Long tenantId) {

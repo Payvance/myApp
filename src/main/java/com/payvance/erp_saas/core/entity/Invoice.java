@@ -87,6 +87,9 @@ public class Invoice {
     @Column(name = "paid_at")
     private LocalDateTime paidAt;
 
+    @Column(name = "gateway_payment_id", length = 120)
+    private String gatewayPaymentId;
+
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 

@@ -1,7 +1,10 @@
 package com.payvance.erp_saas.core.controller;
 
+import com.payvance.erp_saas.core.dto.TenantManagementListDTO;
 import com.payvance.erp_saas.core.service.TenantManagementService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -58,5 +61,17 @@ public class TenantManagementController {
         } else {
             return ResponseEntity.badRequest().body(response);
         }
+    }
+    
+    /**
+     * Get paginated list of CAs for a tenant
+     */
+    @GetMapping("/pagination")
+    public ResponseEntity<Page<TenantManagementListDTO>> getCaForTenant(Pageable pageable, @RequestParam Long userId) {
+        // Find tenant ID using userId (role 2 = Tenant)
+        Long tenantId = tenantManagementService.findTenantIdByUserId(userId)
+            .orElseThrow(() -> new RuntimeException("Tenant not found for user ID: " + userId));
+        
+        return ResponseEntity.ok(tenantManagementService.getCaForTenant(tenantId, pageable));
     }
 }

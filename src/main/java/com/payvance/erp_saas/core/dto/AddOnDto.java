@@ -17,7 +17,8 @@ import lombok.Data;
  */
 @Data
 public class AddOnDto {
-
+	private Boolean success;
+	private String message;
     private Long id;
 
     @NotEmpty(message = "Code is required")

@@ -1,16 +1,24 @@
 package com.payvance.erp_saas.core.service;
 
+import com.payvance.erp_saas.core.dto.TenantManagementListDTO;
 import com.payvance.erp_saas.core.entity.Ca;
 import com.payvance.erp_saas.core.entity.CaTenant;
 import com.payvance.erp_saas.core.entity.ReferralCode;
+import com.payvance.erp_saas.core.entity.Tenant;
+import com.payvance.erp_saas.core.entity.User;
 import com.payvance.erp_saas.core.repository.CaRepository;
 import com.payvance.erp_saas.core.repository.CaTenantRepository;
 import com.payvance.erp_saas.core.repository.ReferralCodeRepository;
+import com.payvance.erp_saas.core.repository.TenantRepository;
 import com.payvance.erp_saas.core.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -28,6 +36,8 @@ public class TenantManagementService {
     private final CaRepository caRepository;
     private final ReferralCodeRepository referralCodeRepository;
     private final CaTenantRepository caTenantRepository;
+    private final TenantRepository tenantRepository;
+    private final EmailService emailService;
     
     /**
      * Process tenant management request
@@ -61,6 +71,20 @@ public class TenantManagementService {
             // Add CA-Tenant relationship if CA ID is found and entry doesn't exist
             if (caId != null) {
                 addCaTenantIfNotExists(tenantId, caId);
+                
+                // Get tenant details for email
+                Optional<Tenant> tenantOpt = tenantRepository.findById(tenantId);
+                String tenantEmail = tenantOpt.map(Tenant::getEmail).orElse("");
+                String tenantName = tenantOpt.map(tenant -> tenant.getName() != null ? tenant.getName() : "Tenant").orElse("Tenant");
+                
+                // Get CA details for email from User table
+                Optional<User> caUserOpt = userRepository.findById(caId);
+                String caEmail = caUserOpt.map(User::getEmail).orElse("");
+                String caName = caUserOpt.map(User::getName).orElse("CA");
+                String caPhone = caUserOpt.map(User::getPhone).orElse("Not available");
+                
+                // Send email notifications to tenant and Vendor
+                emailService.sendCaRequestNotifications(tenantEmail, tenantName, caEmail, caName, caPhone);
             }
             
             response.put("success", true);
@@ -108,5 +132,19 @@ public class TenantManagementService {
         }
         
         return null; // No match found
+    }
+    
+    /**
+     * Get paginated list of CAs for a tenant
+     */
+    public Page<TenantManagementListDTO> getCaForTenant(Long tenantId, Pageable pageable) {
+        return caTenantRepository.findCasByTenantIdWithDetails(tenantId, pageable);
+    }
+    
+    /**
+     * Find tenant ID by user ID (role 2 = Tenant)
+     */
+    public Optional<Long> findTenantIdByUserId(Long userId) {
+        return userRepository.findEntityIdByUserAndRole(userId, 2);
     }
 }

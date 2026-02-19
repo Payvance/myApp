@@ -25,5 +25,10 @@ public interface ReferralCodeRepository extends JpaRepository<ReferralCode, Long
     Optional<ReferralCode> findByCode(String code);
 	
 	Optional<ReferralCode> findByOwnerIdAndStatus(Long ownerId, String status);
+	
+	Optional<ReferralCode> findByCodeAndStatus(
+            String code,
+            String status
+    );
 
 }
