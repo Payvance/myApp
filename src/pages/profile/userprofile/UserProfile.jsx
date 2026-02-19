@@ -112,6 +112,7 @@ const UserProfile = () => {
     accountNumber: "",
     ifscCode: "",
   });
+  const canEditDiscount = role === "VENDOR" && !isViewMode;
 
 
 
@@ -343,44 +344,45 @@ const UserProfile = () => {
         ) : (
           <div className="profile-sections-container">
 
-            {/* 1. Personal Details (Common) */}
             <PersonalDetails
-              personalData={personalData}
-              setPersonalData={setPersonalData}
-              disabled={isDisabled}
+            personalData={personalData}
+            setPersonalData={setPersonalData}
+            disabled={isDisabled}
             />
 
-            {/* 2. Role Specific Personal Info */}
+  
             {(role === "VENDOR" || role === "CA") && (
-              <VendorPersonalInfo
-                vendorData={vendorData}
-                setVendorData={setVendorData}
-                disabled={isDisabled}
-                role={role}
-              />
-            )}
-            {/* 3. Common Address & Bank Details (Rendered for all roles) */}
-            {role !== "SUPERADMIN" && (
-              <>
-                <AddressDetails
-                  addressData={addressData}
-                  setAddressData={setAddressData}
-                  disabled={isDisabled}
-                />
-                <BankDetails
-                  bankData={bankData}
-                  setBankData={setBankData}
-                  disabled={isDisabled}
-                />
-              </>
-            )}
-            {role === "CA" && (
-              <CAPersonalInfo
-                caData={caData}
-                setCaData={setCaData}
-                disabled={isDisabled}
-              />
-            )}
+            <>
+            <VendorPersonalInfo
+            vendorData={vendorData}
+            setVendorData={setVendorData}
+            disabled={isDisabled}
+            role={role}
+            canEditDiscount={role === "VENDOR" && !isViewMode}
+            />
+
+            <AddressDetails
+            addressData={addressData}
+            setAddressData={setAddressData}
+            disabled={isDisabled}
+           />
+
+           <BankDetails
+           bankData={bankData}
+           setBankData={setBankData}
+           disabled={isDisabled}
+           />
+
+          {role === "CA" && (
+          <CAPersonalInfo
+          caData={caData}
+          setCaData={setCaData}
+          disabled={isDisabled}
+        />
+      )}
+    </>
+  )}
+
 
 
             {/* Save Button (Edit Mode) OR Approve/Reject (Pending Mode) */}

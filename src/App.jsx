@@ -64,6 +64,7 @@ import ForgotPassword from './pages/auth/forgotpassword/ForgotPassword.jsx';
 import ResetPassword from './pages/auth/forgotpassword/resetpassword/ResetPassword.jsx';
 import BuyPlan from './pages/tenant/tenantplans/BuyPlan.jsx';
 import User from './pages/tenant/usermanagement/user/User.jsx';
+import RejectUsers from './pages/usermanagement/RejectUsers.jsx';
 
 
 
@@ -193,6 +194,17 @@ function App() {
           </ProtectedRoute>
         } />
         <Route path="/users/:id/view" element={
+          <ProtectedRoute>
+            <UserProfile />
+          </ProtectedRoute>
+        } />
+        {/* User Management Reject User  */}
+        <Route path="/users/reject" element={
+          <ProtectedRoute>
+            <RejectUsers />
+          </ProtectedRoute>
+        } />
+        <Route path="/users/reject/:id/view" element={
           <ProtectedRoute>
             <UserProfile />
           </ProtectedRoute>

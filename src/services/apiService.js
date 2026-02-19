@@ -94,7 +94,7 @@ resetPassword: ({ email, newPassword }) =>{
 
 export const profileServices = {
   createOrUpdateProfile: (data, roleId) =>
-    api.post(API_ENDPOINTS.PROFILE.CREATE, data, {
+    publicApi.post(API_ENDPOINTS.PROFILE.CREATE, data, {
       headers: {
         ROLE_ID: roleId, // ✅ REQUIRED BY BACKEND
       },
@@ -244,6 +244,19 @@ export const userServices = {
     const url = `${API_ENDPOINTS.USERS.INACTIVE_PAGINATION}?${queryParams.toString()}`;
     return api.get(url);
   },
+
+  //Get Rehject Users using the endpoint
+    getRejectedUsers: (params = {}) => {
+    const queryParams = new URLSearchParams();
+    if (params.page !== undefined) queryParams.append('page', params.page);
+    if (params.size !== undefined) queryParams.append('size', params.size);
+    if (params.sortBy && params.sortDir) {
+      queryParams.append('sort', `${params.sortBy},${params.sortDir}`);
+    }
+    if (params.search) queryParams.append('search', params.search);
+    const url = `${API_ENDPOINTS.USERS.REJECTUSERS}?${queryParams.toString()}`;
+    return api.get(url);
+  },
   // Update user by id 
   updateUser: (id, data) => api.put(API_ENDPOINTS.USERS.UPDATE(id), data),
 
@@ -279,6 +292,18 @@ export const vendorLicenseServices = {
     const url = `${API_ENDPOINTS.VENDOR_LICENSES.BATCHES}?${queryParams.toString()}`;
     return api.get(url);
   },
+
+  subscribePlan: (data) => 
+    api.post(API_ENDPOINTS.VENDOR_LICENSES.SUBSCRIPTION, data),
+
+  simulatePayment: (data) => 
+    api.post(API_ENDPOINTS.VENDOR_LICENSES.SIMULATE_PAYMENT, data),
+
+  getCouponDiscount: (data) => 
+    api.post(API_ENDPOINTS.VENDOR_LICENSES.APPLYCOUPON, data),
+
+  getRefralCode: (data) => 
+    api.post(API_ENDPOINTS.VENDOR_LICENSES.APPLYREFRAL, data),
 
   // Get batch details by ID
   getBatchById: (id) =>
@@ -444,6 +469,24 @@ export const caServices = {
 export const tenantCaManagementServices = {
   createCA: (payload) => {
     return api.post(API_ENDPOINTS.TENANT_CA_MANAGEMENT.MANAGEMENT_PROCESS, payload);
+  },
+
+  getTenantCAManagementPagination: (params = {}) => {
+    const queryParams = new URLSearchParams();
+    
+    if (params.page !== undefined) queryParams.append('page', params.page);
+    if (params.size !== undefined) queryParams.append('size', params.size);
+    if (params.sortBy && params.sortDir) {
+      queryParams.append('sort', `${params.sortBy},${params.sortDir}`);
+    }
+    
+    if (params.search) queryParams.append('search', params.search);
+    
+    // Add userId parameter
+    if (params.userId) queryParams.append('userId', params.userId);
+
+    const url = `${API_ENDPOINTS.TENANT_CA_MANAGEMENT.PAGINATION}?${queryParams.toString()}`;
+    return api.get(url);
   },
 };
 

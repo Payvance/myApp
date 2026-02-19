@@ -56,45 +56,31 @@ const OfferManagement = () => {
     status: 'active'
   });
 
+
   // Fetch data function - matches Spring Boot API contract
- // Fetch data function - matches Spring Boot API contract
   const fetchData = useCallback(async ({ page, size, sortField, sortOrder, filters }) => {
     try {
       setLoading(true);
- 
+
       // Since getAllCoupons doesn't support pagination yet, we'll fetch all and paginate locally
       const response = await couponServices.getCouponsPagination({
         page,
         size,
-        sortBy: sortField,
-        sortDir: sortOrder,
+        sortBy: sortField || 'id',
+        sortDir: sortOrder || 'desc',
         search: filters?.search,
       });
-      const allOffers = response.data.content || [];
- 
-      // Apply search filter if exists
-      let filteredOffers = allOffers;
-      if (filters?.search) {
-        filteredOffers = allOffers.filter(offer =>
-          offer.code.toLowerCase().includes(filters.search.toLowerCase()) ||
-          offer.discountType.toLowerCase().includes(filters.search.toLowerCase())
-        );
-      }
- 
- 
-      // Apply pagination
-      const startIndex = (page || 0) * (size || 10);
-      const endIndex = startIndex + (size || 10);
-      const paginatedOffers = filteredOffers.slice(startIndex, endIndex);
- 
+
+      const data = response.data || {};
+
       setTableData({
-        content: paginatedOffers,
-        totalElements: filteredOffers.length,
-        totalPages: Math.ceil(filteredOffers.length / (size || 10)),
-        number: page || 0,
-        size: size || 10,
+        content: data.content || [],
+        totalElements: data.totalElements || 0,
+        totalPages: data.totalPages || 0,
+        number: data.number || page || 0,
+        size: data.size || size || 10,
       });
- 
+
     } catch (error) {
       console.error('Error fetching offers:', error);
       setTableData({

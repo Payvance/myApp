@@ -21,19 +21,20 @@ import OptionInputBox from "../../../components/common/optioninputbox/OptionInpu
 import { formConfig } from "../../../config/formConfig";
 import { vendorDiscountServices } from "../../../services/apiService";
 
-const VendorPersonalInfo = ({ vendorData, setVendorData, disabled, role  }) => {
+const VendorPersonalInfo = ({ vendorData, setVendorData, disabled, role, validationErrors,setValidationErrors, canEditDiscount }) => {
 
   useEffect(() => {
-  console.log("VendorPersonalInfo updated props:", { vendorData, disabled, role });
-}, [vendorData, disabled, role]);
+    // console.log("VendorPersonalInfo updated props:", { vendorData, disabled, role, canEditDiscount });
+  }, [vendorData, disabled, role, canEditDiscount]);
 
   const [discountOptions, setDiscountOptions] = useState([]);
-  
+  // const [validationErrors, setValidationErrors] = useState({});
+
   const handleChange = (name, value) => {
     if (name === "tanNo") {
-    // Allow typing, but cap at 10 characters
-    if (value.length > 10) return;
-  }
+      // Allow typing, but cap at 10 characters
+      if (value.length > 10) return;
+    }
 
     if (name === "vendorType" && value && value.target) {
       setVendorData((prev) => ({ ...prev, [name]: value.target.value }));
@@ -49,34 +50,33 @@ const VendorPersonalInfo = ({ vendorData, setVendorData, disabled, role  }) => {
   };
 
   const handleDiscountChange = (value) => {
-  // If OptionInputBox returns value directly
-  const selectedValue = value?.target?.value ?? value; // fallback
-  setVendorData((prev) => ({ ...prev, vendorDiscountId: selectedValue }));
-};
-  
+    // If OptionInputBox returns value directly
+    const selectedValue = value?.target?.value ?? value; // fallback
+    setVendorData((prev) => ({ ...prev, vendorDiscountId: selectedValue }));
+  };
+
   useEffect(() => {
-  fetchDiscount();
-}, [vendorData.vendorId]);
+    fetchDiscount();
+  }, [role]);
 
- const fetchDiscount = async () => {
-  if (!vendorData.vendorId) return;
+  const fetchDiscount = async () => {
+    if (role !== "VENDOR") return;
 
-  try {
-    const response = await vendorDiscountServices.getAllDiscounts();
-    const discounts = response.data || [];
+    try {
+      const response = await vendorDiscountServices.getAllDiscounts();
+      const discounts = response.data?.content || []; // Extract content from pagination
 
-    // Map API response to OptionInputBox format
-    const mappedOptions = discounts.map((discount) => ({
-  value: discount.id || "N/A", // what user sees
-  label: discount.name,             // what is stored in payload
-}));
-console.log(mappedOptions)
-setDiscountOptions(mappedOptions);
-  } catch (error) {
-    console.error("Failed to fetch discounts", error);
-    setDiscountOptions([]);
-  }
-};
+      // Map API response to OptionInputBox format
+      const mappedOptions = discounts.map((discount) => ({
+        code: discount.id,      // what is stored (ID)
+        value: discount.name,   // what user sees (Name)
+      }));
+      setDiscountOptions(mappedOptions);
+    } catch (error) {
+      console.error("Failed to fetch discounts", error);
+      setDiscountOptions([]);
+    }
+  };
 
 
 
@@ -93,12 +93,14 @@ setDiscountOptions(mappedOptions);
           value={vendorData.vendorType || ""}
           onChange={handleOptionChange}
           options={[
-            { label: "Individual", value: "Individual" },
-            { label: "Proprietor", value: "Proprietor" },
-            { label: "Partnership", value: "Partnership" },
-            { label: "Company", value: "Company" },
+            { code: "Individual", value: "Individual" },
+            { code: "Proprietor", value: "Proprietor" },
+            { code: "Partnership", value: "Partnership" },
+            { code: "Company", value: "Company" },
           ]}
           required
+          validationErrors={validationErrors || {}} 
+          setValidationErrors={setValidationErrors}
           disabled={disabled}
         />
         <InputField
@@ -109,6 +111,8 @@ setDiscountOptions(mappedOptions);
           validationType="GST"
           required
           max={15}
+          validationErrors={validationErrors || {}} 
+          setValidationErrors={setValidationErrors}
           disabled={disabled}
         />
          <InputField
@@ -119,6 +123,8 @@ setDiscountOptions(mappedOptions);
           validationType="CIN"
           required
           max={21}
+          validationErrors={validationErrors || {}} 
+          setValidationErrors={setValidationErrors}
           disabled={disabled}
         />
         <InputField
@@ -129,6 +135,8 @@ setDiscountOptions(mappedOptions);
           validationType="PAN"
           required
           max={10}
+          validationErrors={validationErrors || {}}
+          setValidationErrors={setValidationErrors}
           disabled={disabled}
         />
       </div>
@@ -145,6 +153,8 @@ setDiscountOptions(mappedOptions);
           required
           max={10}
           min={10}
+          validationErrors={validationErrors || {}} 
+          setValidationErrors={setValidationErrors}
           disabled={disabled}
         />
         {role === "VENDOR" && (
@@ -155,7 +165,9 @@ setDiscountOptions(mappedOptions);
             onChange={handleDiscountChange} // ✅ new handler
             options={discountOptions} // [{label: 7, value: 7}, ...]
             required
-            disabled={disabled}
+            validationErrors={validationErrors || {}} 
+            setValidationErrors={setValidationErrors}
+            disabled={!canEditDiscount}
           />
         )}
 

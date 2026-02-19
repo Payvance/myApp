@@ -212,7 +212,6 @@ const TenantPlans = () => {
             period: `${trialConfig.adsUnlockedDays + trialConfig.extendedTrialDays} days free trial`,
             stats: { code: 'TRIAL' },
             features: [
-              `Get ${trialConfig.adsUnlockedDays + trialConfig.extendedTrialDays} days free access`,
               `First ${trialConfig.adsUnlockedDays} days without ads`,
               `Next ${trialConfig.extendedTrialDays} days with ads`,
               `Up to ${trialConfig.activeUsersCount} users and ${trialConfig.companiesCount} company`

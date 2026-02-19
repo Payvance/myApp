@@ -19,7 +19,11 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { authServices } from "../services/apiService";
 
-const RESEND_TIME = 60;
+const MOBILE_RESEND_TIME = 60;
+const EMAIL_RESEND_TIME = 300;
+const getResendTime = (type) => {
+  return type === "email" ? EMAIL_RESEND_TIME : MOBILE_RESEND_TIME;
+};
 
 const useOtp = () => {
   const [otp, setOtp] = useState(Array(6).fill(""));
@@ -29,26 +33,58 @@ const useOtp = () => {
 
   const [resendTimer, setResendTimer] = useState(0);
   const [canResend, setCanResend] = useState(false);
+  const [lastIdentifier, setLastIdentifier] = useState("");
 
   /* -------------------- TIMER -------------------- */
   useEffect(() => {
-    if (!showOtpModal) return;
-
-    if (resendTimer === 0) {
+    if (resendTimer <= 0) {
       setCanResend(true);
+      // Reset tracking when timer finishes so new calls are allowed
+      setLastIdentifier(""); 
+      return;
+    }
+    setCanResend(false);
+    const timer = setInterval(() => {
+      setResendTimer((prev) => {
+        const nextValue = prev - 1;
+        if (nextValue <= 0) {
+          clearInterval(timer);
+          localStorage.removeItem("active_otp_email");
+          localStorage.removeItem("otp_expiry_time");
+          setLastIdentifier(""); 
+          return 0;
+        }
+        return nextValue;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [resendTimer]);
+  // On component mount, check if there's an active OTP for email in localStorage and set timer accordingly
+  useEffect(() => {
+    const savedEmail = localStorage.getItem("active_otp_email");
+    const savedExpiry = localStorage.getItem("otp_expiry_time");
+
+    if (savedEmail && savedExpiry) {
+      const remaining = Math.floor((Number(savedExpiry) - Date.now()) / 1000);
+      if (remaining > 0) {
+        setResendTimer(remaining);
+        setLastIdentifier(savedEmail);
+      } else {
+        localStorage.removeItem("active_otp_email");
+        localStorage.removeItem("otp_expiry_time");
+      }
+    }
+  }, []);
+
+  /* -------------------- SEND OTP -------------------- */
+  const sendOtp = async (identifier, type = "mobile") => {
+    // Reopen if timer is active for same email
+    if (type === "email" && resendTimer > 0 && identifier === lastIdentifier) {
+      setShowOtpModal(true);
       return;
     }
 
-    const timer = setTimeout(() => {
-      setResendTimer((prev) => prev - 1);
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, [resendTimer, showOtpModal]);
-
-  /* -------------------- SEND OTP -------------------- */
-   const sendOtp = async (identifier, type = "mobile") => {
-   
     try {
       setOtpLoading(true);
       if (type === "email") {
@@ -63,16 +99,26 @@ const useOtp = () => {
       toast.success("OTP sent successfully");
       setShowOtpModal(true);
       setOtp(Array(6).fill(""));
-      setResendTimer(RESEND_TIME);
+      const duration = getResendTime(type);
+      setResendTimer(duration);
       setCanResend(false);
+      setLastIdentifier(identifier);
+      if (type === "email") {
+        localStorage.setItem("active_otp_email", identifier);
+        localStorage.setItem("otp_expiry_time", (Date.now() + duration * 1000).toString());
+      }
     } catch (error) {
-      // if the email is not registered there will be error message 
-    if (type === "email") {
-      toast.error("This email is not registered.");
-    } 
-    else {
-      toast.error("Something went wrong. Please try again.");
-    }
+      const errorMsg = error?.response?.data?.message || "";
+      if (type === "email") {
+        if (errorMsg.toLowerCase().includes("already")) {
+          setShowOtpModal(true);
+          setLastIdentifier(identifier);
+        } else {
+          toast.error("This email is not registered.");
+        }
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
     } finally {
       setOtpLoading(false);
     }
@@ -103,14 +149,19 @@ const useOtp = () => {
       }
 
       toast.success("OTP verified successfully");
+      // Cleanup storage on success
+      if (type === "email") {
+        localStorage.removeItem("active_otp_email");
+        localStorage.removeItem("otp_expiry_time");
+      }
       setOtpVerified(true);
       setShowOtpModal(false);
       return true;
     } catch (error) {
-      toast.error(error?.response?.data || "Invalid OTP");
-      setOtp(Array(6).fill("")); // Clears all 6 boxes
+      toast.error("Invalid OTP");
+      setOtp(Array(6).fill(""));
       setTimeout(() => {
-        document.getElementById("otp-0")?.focus(); // Returns focus to the start
+        document.getElementById("otp-0")?.focus();
       }, 0);
       return false;
     } finally {
@@ -129,11 +180,17 @@ const useOtp = () => {
       }
       toast.success("OTP resent successfully");
       setOtp(Array(6).fill(""));
-      setResendTimer(RESEND_TIME);
+      const duration = getResendTime(type);
+      setResendTimer(duration);
       setCanResend(false);
-      document.getElementById("otp-0")?.focus();
+      setLastIdentifier(identifier);
+      if (type === "email") {
+        localStorage.setItem("active_otp_email", identifier);
+        localStorage.setItem("otp_expiry_time", (Date.now() + duration * 1000).toString());
+      }
+     document.getElementById("otp-0")?.focus();
     } catch (error) {
-      toast.error(error?.response?.data || "Failed to resend OTP");
+      toast.error("Failed to resend OTP. Please try again.");
     } finally {
       setOtpLoading(false);
     }

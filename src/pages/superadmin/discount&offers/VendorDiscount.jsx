@@ -52,43 +52,30 @@ const VendorDiscount = () => {
   });
 
 
- // Fetch data function - matches Spring Boot API contract
+  // Fetch data function - matches Spring Boot API contract
   const fetchData = useCallback(async ({ page, size, sortField, sortOrder, filters }) => {
     try {
       setLoading(true);
- 
+
       // Since getAllDiscounts doesn't support pagination yet, we'll fetch all and paginate locally
       const response = await vendorDiscountServices.getAllDiscounts({
         page,
         size,
-        sortBy: sortField,
-        sortDir: sortOrder,
+        sortBy: sortField || 'id',
+        sortDir: sortOrder || 'desc',
         search: filters?.search,
       });
-      const allDiscounts = response.data.content || [];
- 
-      // Apply search filter if exists
-      let filteredDiscounts = allDiscounts;
-      if (filters?.search) {
-        filteredDiscounts = allDiscounts.filter(discount =>
-          discount.name.toLowerCase().includes(filters.search.toLowerCase()) ||
-          discount.type.toLowerCase().includes(filters.search.toLowerCase())
-        );
-      }
- 
-      // Apply pagination
-      const startIndex = (page || 0) * (size || 10);
-      const endIndex = startIndex + (size || 10);
-      const paginatedDiscounts = filteredDiscounts.slice(startIndex, endIndex);
- 
+
+      const data = response.data || {};
+
       setTableData({
-        content: paginatedDiscounts,
-        totalElements: filteredDiscounts.length,
-        totalPages: Math.ceil(filteredDiscounts.length / (size || 10)),
-        number: page || 0,
-        size: size || 10,
+        content: data.content || [],
+        totalElements: data.totalElements || 0,
+        totalPages: data.totalPages || 0,
+        number: data.number || page || 0,
+        size: data.size || size || 10,
       });
- 
+
     } catch (error) {
       console.error('Error fetching vendor discounts:', error);
       setTableData({

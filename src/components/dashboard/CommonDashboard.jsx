@@ -83,7 +83,7 @@ const CommonDashboard = () => {
 
       {/* Row 3: Data Views Section */}
       <div className="dashboard-section">
-        {roleId === 5 ? (
+        {Number(roleId) === 5 ? (
           <div className="dashboard-ca-section">
             <ReferralCode 
               data={referralCode}

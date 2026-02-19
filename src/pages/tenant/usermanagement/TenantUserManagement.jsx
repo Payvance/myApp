@@ -29,6 +29,7 @@ const TenantUserManagement = () => {
   const [tableData, setTableData] = useState({ content: [], totalElements: 0, totalPages: 0, number: 0, size: 10 });
   const [loading, setLoading] = useState(false);
   const [isSuccessPopupOpen, setIsSuccessPopupOpen] = useState(false);
+  const [validationErrors, setValidationErrors] = useState({});
   const [planDetails, setPlanDetails] = useState({
     activeUsers: 0,
     createdUsers: 0,
@@ -61,6 +62,7 @@ const TenantUserManagement = () => {
     setEmail("");
     resetOtp(); // reset OTP state
     // Reset OTP verified state manually
+    setValidationErrors({});
     resetOtpVerification(); // <-- add this
   };
 
@@ -203,7 +205,7 @@ const fetchData = useCallback(async (params = {}) => {
             basePath="/usermanagement"
             primaryKeys={["userId"]}
             className="license-table"
-            showViewButton= {false}
+            showEditButton= {true}
           />
 
         </div>
@@ -271,6 +273,8 @@ const fetchData = useCallback(async (params = {}) => {
                 validationType="EMAIL"
                 required={true}
                 max={50}
+                validationErrors={validationErrors}
+                setValidationErrors={setValidationErrors}
               />
 
               {/* Submit */}
@@ -278,7 +282,7 @@ const fetchData = useCallback(async (params = {}) => {
                 <Button
                   text="Create Account"
                   onClick={handleSignup}
-                  disabled={!otpVerified || otpLoading}
+                  disabled={!otpVerified || otpLoading || !!validationErrors.signupEmail}
                 />
               </div>
 

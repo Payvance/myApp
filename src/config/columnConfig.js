@@ -152,6 +152,17 @@ export const CA_REDEMPTION_APPROVALS_COLUMNS = [
 ];
 
 // ======================================
+// TENANT CA MANAGEMENT COLUMNS
+// ======================================
+export const TENANT_CA_MANAGEMENT_COLUMNS = [
+  { accessorKey: 'name', header: 'Name', type: 'text', sortable: true, filterable: true, width: 200 },
+  { accessorKey: 'email', header: 'Email', type: 'email', sortable: true, filterable: true, width: 220 },
+  { accessorKey: 'phone', header: 'Phone', type: 'phone', sortable: true, filterable: true, width: 150 },
+  { accessorKey: 'isView', header: 'Status', type: 'integer', sortable: true, filterable: true, width: 120 },
+  { accessorKey: 'createdAt', header: 'Created At', type: 'datetime', sortable: true, filterable: true, width: 180 },
+];
+
+// ======================================
 // CA TENANT REQUESTS COLUMNS
 // ======================================
 export const CA_TENANT_REQUESTS_COLUMNS = [
@@ -201,6 +212,6 @@ export const TANENT_COLUMNS = [
   { accessorKey: 'name', header: 'Name', type: 'text', sortable: true, filterable: true, width: 220 },
   { accessorKey: 'email', header: 'Email', type: 'email', sortable: true, filterable: true, width: 220 },
   { accessorKey: 'phone', header: 'Phone', type: 'phone', sortable: true, filterable: true, width: 140 },
-  { accessorKey: 'tenantStatus', header: 'Tenant Status', type: 'text', sortable: true, filterable: true, width: 140 },
+  { accessorKey: 'tenantStatus', header: 'Tenant Status', type: 'text', sortable: false, filterable: true, width: 140 },
   { accessorKey: 'isActive', header: 'Active', type: 'boolean', sortable: true, accessorFn: (row) => row.tenantUserActive, width: 100 },
 ];

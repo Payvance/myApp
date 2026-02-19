@@ -4,7 +4,7 @@
 /* CSS Custom Properties (Variables) */
 :root[data-theme="custom"] {
   /* Primary Brand Colors - More Vibrant Mix */
-  --primary-50: #fdf4f0;
+  --primary-50: #ffffff;
   --primary-100: #fce9d6;
   --primary-200: #fad8b5;
   --primary-300: #fad8b5;

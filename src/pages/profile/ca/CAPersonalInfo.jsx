@@ -15,11 +15,14 @@
  *
  **/
 
+import { useState } from "react";
 import InputField from "../../../components/common/inputfield/InputField";
 import OptionInputBox from "../../../components/common/optioninputbox/OptionInputBox";
 import formConfig from "../../../config/formConfig";
 
-const CAPersonalInfo = ({ caData, setCaData, disabled }) => {
+const CAPersonalInfo = ({ caData, setCaData, disabled,validationErrors,setValidationErrors }) => {
+
+  // const [validationErrors, setValidationErrors] = useState({});
   const handleChange = (field, value) => {
     if(field === "icaiMemberStatus"){
       if (value.length < 7) return;
@@ -53,6 +56,8 @@ const CAPersonalInfo = ({ caData, setCaData, disabled }) => {
           value={caData.caRegNo || ""}
           onChange={(e) => handleChange("caRegNo", e.target.value)}
           max={30}
+          validationErrors={validationErrors || {}} 
+          setValidationErrors={setValidationErrors}
           validationType="CA_REG_NO"
           required
           disabled={disabled}
@@ -67,6 +72,8 @@ const CAPersonalInfo = ({ caData, setCaData, disabled }) => {
             { label: "Inactive", value: "Inactive" },
           ]}
           required
+          validationErrors={validationErrors || {}} 
+          setValidationErrors={setValidationErrors}
           disabled={disabled}
         />
         <OptionInputBox
@@ -81,6 +88,8 @@ const CAPersonalInfo = ({ caData, setCaData, disabled }) => {
             { label: "Tax", value: "Tax" },
           ]}
           required
+          validationErrors={validationErrors || {}} 
+          setValidationErrors={setValidationErrors}
           disabled={disabled}
         />
         <InputField
@@ -105,6 +114,8 @@ const CAPersonalInfo = ({ caData, setCaData, disabled }) => {
           min={5}
           max={6}
           required
+          validationErrors={validationErrors || {}} 
+          setValidationErrors={setValidationErrors}
           disabled={disabled}
         />
       </div> { /* End of second row*/}

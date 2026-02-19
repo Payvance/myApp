@@ -28,10 +28,18 @@ export const API_ENDPOINTS = {
   VENDOR_LICENSES: {
     BATCHES: "/api/vendor/licenses/batches",
     BATCH_DETAIL: (id) => `/api/vendor/licenses/batches/${id}`,
+    SUBSCRIPTION: "/billing/subscribe",
+
+    SIMULATE_PAYMENT: "/billing/simulate-payment",
     // sending batch status
     BATCH_STATUS: "/api/vendor/licenses/batches/status",
     KEYS: "/api/vendor/licenses/keys",
     ISSUE_KEY: (id) => `/api/vendor/licenses/keys/${id}/issue`,
+
+    APPLYCOUPON: "/api/super-admin/coupons/checkcoupon",
+
+    APPLYREFRAL: "/api/tenants/validate-referral",
+
   // --------------------------------
   // ACTIVE PLANS
   // --------------------------------
@@ -119,6 +127,7 @@ VENDOR_DISCOUNT: (userId) =>
 
   TENANT_CA_MANAGEMENT: {
     MANAGEMENT_PROCESS: "/api/tenantca-management/process",
+    PAGINATION: "/api/tenantca-management/pagination",
   },
 
 AUDIT: {	 
@@ -128,6 +137,7 @@ AUDIT: {
   USERS: {
     PAGINATION: "/api/users/pagination",
     INACTIVE_PAGINATION: "/api/users/inactive/pagination",
+    REJECTUSERS: "api/users/rejected/pagination",
     UPDATE: (id) => `/api/users/${id}/full-details`,
     FULL_DETAILS: (id) => `/api/users/${id}/full-details`,
     GETUSERDATA: (id) => `/api/users/${id}`,
