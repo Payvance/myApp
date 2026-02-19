@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Feb 09, 2026 at 10:35 AM
+-- Generation Time: Feb 19, 2026 at 06:21 AM
 -- Server version: 8.0.45-0ubuntu0.24.04.1
 -- PHP Version: 8.3.6
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `test_core_saas`
+-- Database: `core_saas`
 --
 
 -- --------------------------------------------------------
@@ -29,11 +29,11 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `activation_keys` (
   `id` bigint UNSIGNED NOT NULL,
-  `vendor_batch_id` bigint UNSIGNED NOT NULL,
+  `vendor_batch_id` bigint DEFAULT NULL,
   `activation_code_hash` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `plain_code_last4` varchar(4) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `status` enum('UNUSED','ISSUED','REDEEMED','EXPIRED','REVOKED') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'UNUSED',
-  `issued_to_email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` enum('UNUSED','ISSUED','REDEEMED','EXPIRED','REVOKED') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'UNUSED',
+  `issued_to_email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `issued_to_phone` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `redeemed_tenant_id` bigint UNSIGNED DEFAULT NULL,
   `redeemed_at` timestamp NULL DEFAULT NULL,
@@ -107,11 +107,11 @@ CREATE TABLE `bank_transfer_requests` (
   `id` bigint UNSIGNED NOT NULL,
   `tenant_id` bigint UNSIGNED DEFAULT NULL,
   `wallet_id` bigint UNSIGNED DEFAULT NULL,
-  `referals_count` bigint NOT NULL,
+  `referals_count` int DEFAULT NULL,
   `amount` decimal(38,2) DEFAULT NULL,
-  `payment_mode` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `payment_mode` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `utr_number` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `payer_bank` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `payer_bank` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `paid_amount` decimal(38,2) DEFAULT NULL,
   `paid_date` timestamp NULL DEFAULT NULL,
   `proof_url` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -133,26 +133,26 @@ CREATE TABLE `ca` (
   `user_id` bigint UNSIGNED DEFAULT NULL,
   `address_id` bigint DEFAULT NULL,
   `bank_details_id` bigint DEFAULT NULL,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `contact_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `contact_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `email` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `phone` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `ca_reg_no` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ca_reg_no` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `enrollment_year` int DEFAULT NULL,
-  `icai_member_status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `practice_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `firm_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `icai_member_no` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `aadhar_no` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `status` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `icai_member_status` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `practice_type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `firm_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `icai_member_no` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `aadhar_no` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `rejection_remark` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `ca_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `cin_no` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `gst_no` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `pan_no` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `tan_no` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+  `rejection_remark` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ca_type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `cin_no` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `gst_no` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `pan_no` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `tan_no` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -165,7 +165,7 @@ CREATE TABLE `ca_tenants` (
   `id` bigint UNSIGNED NOT NULL,
   `tenant_id` bigint UNSIGNED NOT NULL,
   `ca_id` bigint UNSIGNED NOT NULL,
-  `is_view` tinyint(1) NOT NULL DEFAULT '1',
+  `is_view` int DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -218,6 +218,22 @@ CREATE TABLE `company_config` (
   `company_name` varchar(150) NOT NULL,
   `email` varchar(120) DEFAULT NULL,
   `phone` varchar(30) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `config`
+--
+
+CREATE TABLE `config` (
+  `id` bigint NOT NULL,
+  `created_at` datetime(6) DEFAULT NULL,
+  `config_key` varchar(50) NOT NULL,
+  `status` varchar(20) NOT NULL,
+  `updated_at` datetime(6) DEFAULT NULL,
+  `config_value` varchar(100) NOT NULL,
+  `value` varchar(60) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -321,7 +337,7 @@ CREATE TABLE `connector_releases` (
 
 CREATE TABLE `coupons` (
   `id` bigint UNSIGNED NOT NULL,
-  `code` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `code` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `discount_type` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `discount_percentage` float DEFAULT NULL,
   `discount_value` double DEFAULT NULL,
@@ -330,8 +346,8 @@ CREATE TABLE `coupons` (
   `valid_to` date DEFAULT NULL,
   `max_uses` bigint DEFAULT NULL,
   `used_count` bigint DEFAULT NULL,
-  `discription` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `status` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `discription` varchar(1000) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -450,7 +466,8 @@ CREATE TABLE `invoices` (
   `status` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'unpaid',
   `paid_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `gateway_payment_id` varchar(120) COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -531,7 +548,9 @@ CREATE TABLE `payments` (
   `currency` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'INR',
   `paid_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `gateway_order_id` varchar(120) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `invoice_id` bigint DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -545,7 +564,7 @@ CREATE TABLE `payment_webhooks` (
   `tenant_id` bigint UNSIGNED DEFAULT NULL,
   `invoice_id` bigint UNSIGNED DEFAULT NULL,
   `gateway` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `event_type` varchar(80) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `event_type` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `signature_valid` tinyint(1) NOT NULL DEFAULT '0',
   `payload_json` json DEFAULT NULL,
   `received_at` timestamp NULL DEFAULT NULL,
@@ -564,7 +583,7 @@ CREATE TABLE `personal_access_tokens` (
   `id` bigint UNSIGNED NOT NULL,
   `tokenable_type` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `tokenable_id` bigint UNSIGNED NOT NULL,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `abilities` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `last_used_at` timestamp NULL DEFAULT NULL,
   `expires_at` timestamp NULL DEFAULT NULL,
@@ -586,7 +605,7 @@ CREATE TABLE `plan` (
   `code` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `is_active` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '1',
-  `is_seprate_db` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '0',
+  `is_seprate_db` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `tenant_id` bigint DEFAULT NULL
@@ -623,7 +642,8 @@ CREATE TABLE `plan_prices` (
   `amount` decimal(12,2) NOT NULL DEFAULT '0.00',
   `is_active` tinyint NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `period_value` int NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -676,13 +696,13 @@ CREATE TABLE `referral_codes` (
 
 CREATE TABLE `referral_programs` (
   `id` bigint UNSIGNED NOT NULL,
-  `code` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `owner_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `code` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `owner_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(1000) COLLATE utf8mb4_unicode_ci NOT NULL,
   `reward_type` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `reward_value` double DEFAULT NULL,
   `reward_percentage` float DEFAULT NULL,
-  `reward_trigger` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `reward_trigger` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `max_per_referrer` double DEFAULT NULL,
   `status` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'active',
   `created_at` timestamp NULL DEFAULT NULL,
@@ -696,7 +716,12 @@ CREATE TABLE `referral_programs` (
 
 INSERT INTO `referral_programs` (`id`, `code`, `owner_type`, `name`, `reward_type`, `reward_value`, `reward_percentage`, `reward_trigger`, `max_per_referrer`, `status`, `created_at`, `updated_at`, `role_id`) VALUES
 (1, 'CA_REF_2025', 'CA', 'CA Referral Program', 'flat', 250, NULL, 'on_payment', NULL, 'active', '2025-12-23 00:13:46', '2025-12-23 00:13:46', 5),
-(2, 'TA_REF_2025', 'TENANT_ADMIN', 'TA Referral Program', 'flat', 250, NULL, 'on_payment', NULL, 'ACTIVE', '2026-01-09 11:39:08', '2026-01-09 11:39:24', 2);
+(2, 'TA_REF_2025', 'TENANT_ADMIN', 'TA Referral Program', 'flat', 250, NULL, 'on_payment', NULL, 'ACTIVE', '2026-01-09 11:39:08', '2026-01-09 11:39:24', 2),
+(3, '0917', 'CA', 'Test', 'FLAT', 120, NULL, NULL, 0, 'ACTIVE', '2026-01-09 16:24:53', '2026-01-09 16:24:53', 0),
+(4, 'gy', 'Tenent', '4465', 'PERCENTAGE', NULL, 54, NULL, 0, 'ACTIVE', '2026-01-09 16:25:19', '2026-01-09 16:25:19', 0),
+(5, 'sam09', 'Tenent', 'testing09', 'PERCENTAGE', NULL, 10, NULL, 0, 'INACTIVE', '2026-01-10 10:38:01', '2026-01-13 17:28:18', 0),
+(6, 'dqw', 'CA', 'few`', 'FLAT', 9, NULL, NULL, 0, 'ACTIVE', '2026-01-10 10:39:04', '2026-01-10 10:39:04', 0),
+(7, '88', 'CA', '8', 'PERCENTAGE', NULL, 8, NULL, 0, 'ACTIVE', '2026-01-12 11:24:30', '2026-01-12 11:24:30', 0);
 
 -- --------------------------------------------------------
 
@@ -707,8 +732,8 @@ INSERT INTO `referral_programs` (`id`, `code`, `owner_type`, `name`, `reward_typ
 CREATE TABLE `role` (
   `id` bigint UNSIGNED NOT NULL,
   `code` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `scope` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `scope` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -889,10 +914,10 @@ CREATE TABLE `tally_vouchers` (
 
 CREATE TABLE `tenants` (
   `id` bigint UNSIGNED NOT NULL,
-  `name` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `email` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `phone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `status` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(150) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `phone` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `trial_start_at` timestamp NULL DEFAULT NULL,
   `trial_end_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -951,8 +976,8 @@ CREATE TABLE `tenant_integrations` (
   `id` bigint UNSIGNED NOT NULL,
   `tenant_id` bigint UNSIGNED NOT NULL,
   `integration_id` bigint UNSIGNED NOT NULL,
-  `status` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `source` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `source` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -966,8 +991,8 @@ CREATE TABLE `tenant_integrations` (
 CREATE TABLE `tenant_settings` (
   `id` bigint UNSIGNED NOT NULL,
   `tenant_id` bigint UNSIGNED NOT NULL,
-  `timezone` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `currency` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `timezone` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `currency` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `max_companies` int UNSIGNED NOT NULL DEFAULT '1',
   `trial_days` int UNSIGNED NOT NULL DEFAULT '14',
   `extended_trial_days` int UNSIGNED NOT NULL DEFAULT '0',
@@ -1018,32 +1043,25 @@ CREATE TABLE `tenant_user_role` (
 
 CREATE TABLE `users` (
   `id` bigint UNSIGNED NOT NULL,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `email` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `phone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `password_hash` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `phone` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `password_hash` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `remember_token` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `email_verified_at` timestamp NULL DEFAULT NULL,
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
   `is_superadmin` tinyint(1) NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `rejection_remark` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+  `rejection_remark` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `mobile_app_version` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `mobile_device_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `mobile_device_model` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `mobile_fcm_token` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `mobile_os_version` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `mobile_platform` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `desktop_device_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `users`
---
-
-INSERT INTO `users` (`id`, `name`, `email`, `phone`, `password_hash`, `remember_token`, `email_verified_at`, `is_active`, `is_superadmin`, `created_at`, `updated_at`, `rejection_remark`) VALUES
-(1, 'Super Admin', 'superadmin@demo.com', '9999999999', '$2a$10$31781D71HewpR0MS1eAKm.Ij2g9SplbQ1n/wCYTbspCd8krtJj6um', NULL, '2026-01-31 18:35:44', 1, 1, '2026-01-31 18:35:44', '2026-01-31 18:35:44', NULL),
-(41, 'Gaurav Ca ', 'akash.tech.0394@gmail.com', '9623193938', '$2a$10$av.IDiF0raWWP5wIrJHBc.fdMc/z1/tfwoQiag5dQdmemJdcJbLWa', NULL, '2026-02-09 06:17:21', 1, 0, '2026-02-09 06:16:14', NULL, NULL),
-(39, 'Parag Gosavi ', 'gauravpayvn@gmail.com', '9082780674', '$2a$10$/wIEfOemwZdLn5RdfMxp6eOGvEafDm7oVT7LD3sItV007EnRZicFC', NULL, '2026-02-07 10:27:54', 1, 0, '2026-02-07 10:25:41', NULL, NULL),
-(40, 'jayesh magar ', 'gaurav22172016@gmail.com', '9082780674', '$2a$10$Jk2waz9F/9G58y4NHTsYH.0Wkurp55JzTBHTITaIp7qajzcVCNdBm', NULL, '2026-02-07 12:42:14', 1, 0, '2026-02-07 12:38:34', NULL, NULL),
-(38, 'Pravin Nagane ', 'gauravsomji@gmail.com', '9082780674', '$2a$10$90I7NG0U1NB1a5U1ZXVU0eP73PcmD1zKw6anHlecuL6lJGIv0b7s.', NULL, '2026-02-07 10:08:18', 1, 0, '2026-02-07 10:07:11', NULL, NULL),
-(37, 'Falgun Sharma ji  Tally', 'falgun.d1@payvance.co.in', '9901505113', '$2a$10$MLhbx41sBDhysO6lqs/kXuNNEKea1g5qd1sW/LMwxtneoCnri2Lme', NULL, NULL, 1, 0, '2026-02-06 11:48:17', NULL, NULL),
-(35, 'Rakesh Sharma', 'falgun.d@payvance.co.in', '9901505113', '$2a$10$Bb5evj4jII/6sxiiECXWS.HaU9iPZJJ/PB38J8yqU.UURsXZaoNVC', NULL, '2026-02-06 11:36:46', 1, 0, '2026-02-06 11:36:07', NULL, NULL),
-(36, 'Rakesh Sharma', 'ceodesk@payvance.co.in', '9901505113', '$2a$10$3.X5ZlXI1YHETd0rH9rvJOVpoYt6jX9LwGLouu7Ss0d.3/JjNhaiC', NULL, '2026-02-06 11:39:12', 1, 0, '2026-02-06 11:38:27', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -1082,21 +1100,21 @@ CREATE TABLE `vendor` (
   `address_id` bigint DEFAULT NULL,
   `bank_details_id` bigint DEFAULT NULL,
   `vendor_discount_id` bigint DEFAULT '1',
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `contact_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `contact_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `email` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `phone` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `vendor_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `vendor_type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `experience_years` int DEFAULT NULL,
-  `gst_no` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `cin_no` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `pan_no` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `tan_no` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `aadhar_no` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `gst_no` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `cin_no` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `pan_no` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `tan_no` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `aadhar_no` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'active',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `rejection_remark` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+  `rejection_remark` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -1315,6 +1333,12 @@ ALTER TABLE `company_access_otps`
 -- Indexes for table `company_config`
 --
 ALTER TABLE `company_config`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `config`
+--
+ALTER TABLE `config`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -1845,6 +1869,12 @@ ALTER TABLE `company_config`
   MODIFY `id` bigint NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `config`
+--
+ALTER TABLE `config`
+  MODIFY `id` bigint NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `connector_commands`
 --
 ALTER TABLE `connector_commands`
@@ -1992,7 +2022,7 @@ ALTER TABLE `referral_codes`
 -- AUTO_INCREMENT for table `referral_programs`
 --
 ALTER TABLE `referral_programs`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `role`
@@ -2100,7 +2130,7 @@ ALTER TABLE `tenant_user_role`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `user_addresses`
@@ -2176,4 +2206,3 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-
