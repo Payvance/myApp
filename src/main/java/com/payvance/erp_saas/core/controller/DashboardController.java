@@ -39,7 +39,7 @@ public class DashboardController {
             case 2: // Tenant
                 return tenantDashboardService.getDashboardData(userId);
             case 5: // CA
-                return caDashboardService.getDashboardData();
+                return caDashboardService.getDashboardData(userId);
             default: // Default response for unknown roles
                 Map<String, Object> emptyData = new HashMap<>();
                 emptyData.put("cards", Arrays.asList());

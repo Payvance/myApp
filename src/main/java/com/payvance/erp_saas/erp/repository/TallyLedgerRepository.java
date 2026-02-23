@@ -18,6 +18,7 @@ public interface TallyLedgerRepository extends JpaRepository<TallyLedger, Long> 
         Page<TallyLedger> findAllByTenantId(Long tenantId, Pageable pageable);
 
         Page<TallyLedger> findByTenantIdAndCompanyId(Long tenantId, String companyId, Pageable pageable);
+
         List<TallyLedger> findByTenantIdAndCompanyId(Long tenantId, String companyId);
 
         Page<TallyLedger> findByTenantIdAndCompanyIdAndGroupName(Long tenantId, String companyId, String groupName,
@@ -29,13 +30,19 @@ public interface TallyLedgerRepository extends JpaRepository<TallyLedger, Long> 
                         @org.springframework.data.repository.query.Param("companyId") String companyId,
                         @org.springframework.data.repository.query.Param("rootGroup") String rootGroup);
 
+        @org.springframework.data.jpa.repository.Query("SELECT l FROM TallyLedger l WHERE l.tenantId = :tenantId AND l.companyId = :companyId AND l.groupName IN (SELECT g.name FROM TallyGroup g WHERE g.tenantId = :tenantId AND (g.name = :rootGroup OR g.primaryGroup = :rootGroup)) ORDER BY ABS(l.closingBalance) DESC")
+        Page<TallyLedger> findTopLedgersByRootGroup(
+                        @org.springframework.data.repository.query.Param("tenantId") Long tenantId,
+                        @org.springframework.data.repository.query.Param("companyId") String companyId,
+                        @org.springframework.data.repository.query.Param("rootGroup") String rootGroup,
+                        Pageable pageable);
+
         java.util.List<TallyLedger> findByTenantIdAndCompanyIdAndName(Long tenantId, String companyId, String name);
 
         java.util.List<TallyLedger> findByTenantIdAndName(Long tenantId, String name);
-        
+
         boolean existsByTenantIdAndCompanyIdAndName(
-                Long tenantId,
-                String companyId,
-                String name
-        );
+                        Long tenantId,
+                        String companyId,
+                        String name);
 }

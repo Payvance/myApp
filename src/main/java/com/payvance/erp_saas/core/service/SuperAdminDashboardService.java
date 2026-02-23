@@ -54,7 +54,7 @@ public class SuperAdminDashboardService {
             Map.of("id", "vendor_approval_requests", "title", "Vendor Approval Requests", "value", vendorApprovalRequests != null ? vendorApprovalRequests.toString() : "0", "icon", "bi-hourglass-split", "color", "warning"),
             Map.of("id", "ca_approval_requests", "title", "CA Approval Requests", "value", caApprovalRequests != null ? caApprovalRequests.toString() : "0", "icon", "bi-hourglass-split", "color", "warning"),
             Map.of("id", "active_plans", "title", "Active Plans", "value", activePlans != null ? activePlans.toString() : "0", "icon", "bi-clock-history", "color", "danger"),
-            Map.of("id", "total_revenue_generated", "title", "Total Revenue Generated", "value", totalRevenueGenerated != null ? String.format("%,d", totalRevenueGenerated) : "0", "icon", "bi-currency-dollar", "color", "success"),
+            Map.of("id", "total_revenue_generated", "title", "Total Revenue Generated", "value", totalRevenueGenerated != null ? String.format("%,d", totalRevenueGenerated) : "0", "icon", "bi-currency-rupee", "color", "success"),
             Map.of("id", "guest_users", "title", "Guest Users", "value", guestUsers != null ? guestUsers.toString() : "0", "icon", "bi-people", "color", "danger")
         ));
         

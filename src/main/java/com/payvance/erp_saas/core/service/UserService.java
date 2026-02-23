@@ -26,6 +26,8 @@ import org.springframework.stereotype.Service;
 
 import com.payvance.erp_saas.core.dto.RejectedUserDto;
 import com.payvance.erp_saas.core.dto.TenantUserResponseDto;
+import com.payvance.erp_saas.core.dto.TenantUserWithRoleDto;
+import com.payvance.erp_saas.core.dto.TenantWithAdminAndUsersResponse;
 import com.payvance.erp_saas.core.dto.UserFullDetailsDto;
 import com.payvance.erp_saas.core.dto.UserResponseDTO;
 import com.payvance.erp_saas.core.dto.UserUpdateRequestDto;
@@ -343,13 +345,42 @@ public class UserService {
 		return userRepository.findByPhone(Phone).isPresent();
 	}
 	
+
 	 public Page<TenantUserResponseDto> getTenantUsers(Long tenantId, Pageable pageable) {
 	        return userRepository.findTenantUsersByTenantId(tenantId, pageable);
 	    }
+    
+    public TenantWithAdminAndUsersResponse getTenantWithAdminAndUsers(Long tenantId, Pageable pageable) {
+        // Get tenant admin 
+        TenantUserWithRoleDto tenantAdmin = userRepository.findTenantAdminByTenantId(tenantId)
+            .orElseThrow(() -> new RuntimeException("Tenant admin not found for tenantId: " + tenantId));
+        
+        // Get tenant users with pagination
+        Page<TenantUserWithRoleDto> tenantUsers =
+                userRepository.findTenantUsersWithRoleByTenantId(tenantId, pageable);
+        
+        // Create flat response
+        TenantWithAdminAndUsersResponse response = new TenantWithAdminAndUsersResponse();
+        response.setTenantadmin(tenantAdmin.getUserId());
+        response.setName(tenantAdmin.getName());
+        response.setEmail(tenantAdmin.getEmail());
+        response.setPhone(tenantAdmin.getPhone());
+        response.setAdminActive(tenantAdmin.getTenantUserActive());
+        response.setAdminRoleId(tenantAdmin.getRoleId());
+        response.setAdminRoleName(tenantAdmin.getRoleName());
+        response.setTenantId(tenantAdmin.getTenantId());
+        response.setTenantStatus(tenantAdmin.getTenantStatus());
+        response.setTenantUsers(tenantUsers);
+        
+        return response;
+    }
 	 
 	 public TenantUserResponseDto getTenantUserById(Long tenantId, Long userId) {
 		    return userRepository
 		            .findTenantUserByTenantIdAndUserId(tenantId, userId)
 		            .orElseThrow(() -> new RuntimeException("Tenant user not found"));
+		}
+	 public Page<Map<String, Object>> getVendorAndCaUsers(Pageable pageable) {
+		    return userRepository.findVendorAndCaUsers(pageable);
 		}
 }

@@ -5,9 +5,12 @@ import com.payvance.erp_saas.core.repository.TenantUsageRepository;
 import com.payvance.erp_saas.core.repository.UserRepository;
 import com.payvance.erp_saas.core.repository.TenantRepository;
 import com.payvance.erp_saas.core.repository.SubscriptionRepository;
+import com.payvance.erp_saas.core.entity.Tenant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -51,6 +54,19 @@ public class TenantDashboardService {
                 .limit(5)
                 .toList();
         
+        // Get tenant status and determine active plan card value
+        Optional<Tenant> tenantOpt = tenantRepository.findById(tenantId);
+        String tenantStatus = tenantOpt.map(Tenant::getStatus).orElse("unknown");
+        
+        String activePlanValue;
+        if ("active".equalsIgnoreCase(tenantStatus)) {
+            // Tenant is active, show active plan
+            activePlanValue = subscriptionRepository.findActivePlanNameByTenantId(tenantId).orElse("No Active Plan");
+        } else {
+            // Tenant is not active, show tenant status
+            activePlanValue = tenantStatus.substring(0, 1).toUpperCase() + tenantStatus.substring(1).toLowerCase();
+        }
+        
         // Get active plan details
         Optional<Map<String, Object>> planDetailsOpt = subscriptionRepository.findActivePlanDetailsByTenantId(tenantId);
         
@@ -58,7 +74,6 @@ public class TenantDashboardService {
         Long usersCount = tenantUserRoleRepository.countUsersByTenantId(tenantId);
         Integer companiesCountInt = tenantUsageRepository.findCompaniesCountByTenantId(tenantId);
         Long companiesCount = companiesCountInt != null ? (long) companiesCountInt : 0L;
-        String activePlan = subscriptionRepository.findActivePlanNameByTenantId(tenantId).orElse("No Active Plan");
         Long activeUsers = activeInactiveCounts.get("activeUsers");
         Long inactiveUsers = activeInactiveCounts.get("inactiveUsers");
         
@@ -66,7 +81,7 @@ public class TenantDashboardService {
         data.put("cards", Arrays.asList(
             Map.of("id", "users_created", "title", "Users Created", "value", usersCount != null ? usersCount.toString() : "0", "icon", "bi-person-check", "color", "primary"),
             Map.of("id", "companies", "title", "Companies", "value", companiesCount != null ? companiesCount.toString() : "0", "icon", "bi-diagram-3", "color", "success"),
-            Map.of("id", "active_plan", "title", "Active Plan", "value", activePlan != null ? activePlan : "No Active Plan", "icon", "bi-award", "color", "warning"),
+            Map.of("id", "active_plan", "title", "Active Plan", "value", activePlanValue, "icon", "bi-award", "color", "warning"),
             Map.of("id", "active_vs_inactive_users", "title", "Active vs Inactive Users", "value", 
                 (activeUsers != null && inactiveUsers != null) ? activeUsers.toString() + "/" + inactiveUsers.toString() : "0/0", "icon", "bi-people", "color", "danger")
         ));
@@ -77,14 +92,6 @@ public class TenantDashboardService {
                 "data", Arrays.asList(
                     Map.of("name", "Active", "value", activeInactiveCounts.get("activeUsers") != null ? activeInactiveCounts.get("activeUsers") : 0),
                     Map.of("name", "Inactive", "value", activeInactiveCounts.get("inactiveUsers") != null ? activeInactiveCounts.get("inactiveUsers") : 0)
-                )
-            ),
-            Map.of("id", "department_distribution", "title", "Department Distribution",
-                "data", Arrays.asList(
-                    Map.of("name", "IT", "value", 40),
-                    Map.of("name", "HR", "value", 25),
-                    Map.of("name", "Finance", "value", 20),
-                    Map.of("name", "Operations", "value", 15)
                 )
             )
         ));
@@ -120,17 +127,42 @@ public class TenantDashboardService {
                     .toList()
             ),
             Map.of("id", "plan_details", "title", "Plan Details",
-                "data", planDetailsOpt.map(planDetails -> Arrays.asList(
-                    Map.of("name", "Plan Name", "value", planDetails.get("planName") != null ? planDetails.get("planName") : "Unknown Plan"),
-                    Map.of("name", "Plan Price", "value", planDetails.get("planPrice") != null ? "$" + planDetails.get("planPrice") : "$0"),
-                    Map.of("name", "Status", "value", planDetails.get("status") != null ? planDetails.get("status") : "Unknown"),
-                    Map.of("name", "Start At", "value", planDetails.get("startAt") != null ? planDetails.get("startAt").toString() : "Unknown"),
-                    Map.of("name", "Current Period", "value", planDetails.get("currentPeriodEnd") != null ? planDetails.get("currentPeriodEnd").toString() : "Unknown")
-                )).orElse(Collections.emptyList())
+                "data", "trial".equalsIgnoreCase(tenantStatus) ? 
+                    Arrays.asList(
+                        Map.of("name", "Status", "value", "Trial"),
+                        Map.of("name", "Trial Start", "value", tenantOpt.map(Tenant::getTrialStartAt).map(date -> date.toString()).orElse("--")),
+                        Map.of("name", "Trial End", "value", tenantOpt.map(Tenant::getTrialEndAt).map(date -> date.toString()).orElse("--")),
+                        Map.of("name", "Trial Days Left", "value", calculateTrialDaysLeft(tenantOpt))
+                    ) : 
+                    planDetailsOpt.map(planDetails -> Arrays.asList(
+                        Map.of("name", "Plan Name", "value", planDetails.get("planName") != null ? planDetails.get("planName") : "No Plan"),
+                        Map.of("name", "Plan Price", "value", planDetails.get("planPrice") != null ? "₹" + planDetails.get("planPrice") : "₹0"),
+                        Map.of("name", "Status", "value", planDetails.get("status") != null ? planDetails.get("status") : "--"),
+                        Map.of("name", "Start At", "value", planDetails.get("startAt") != null ? planDetails.get("startAt").toString() : "--"),
+                        Map.of("name", "Current Period End", "value", planDetails.get("currentPeriodEnd") != null ? planDetails.get("currentPeriodEnd").toString() : "--")
+                    )).orElse(Collections.emptyList())
             )
         ));
         
         return data;
     }
     
+    private String calculateTrialDaysLeft(Optional<Tenant> tenantOpt) {
+        if (tenantOpt.isEmpty() || tenantOpt.get().getTrialEndAt() == null) {
+            return "Trial period not set";
+        }
+        
+        LocalDate today = LocalDate.now();
+        LocalDate trialEnd = tenantOpt.get().getTrialEndAt().toLocalDate();
+        
+        long daysLeft = ChronoUnit.DAYS.between(today, trialEnd);
+        
+        if (daysLeft < 0) {
+            return "Trial expired";
+        } else if (daysLeft == 0) {
+            return "Trial ends today";
+        } else {
+            return String.valueOf(daysLeft);
+        }
+    }
 }

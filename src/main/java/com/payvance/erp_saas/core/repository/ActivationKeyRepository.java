@@ -34,6 +34,7 @@ import com.payvance.erp_saas.core.entity.ActivationKey;
 public interface ActivationKeyRepository
         extends JpaRepository<ActivationKey, Long>, JpaSpecificationExecutor<ActivationKey> {
     List<ActivationKey> findByVendorBatchId(Long vendorBatchId);
+    boolean existsByRedeemedTenantId(Long redeemedTenantId);
     
     
     /*

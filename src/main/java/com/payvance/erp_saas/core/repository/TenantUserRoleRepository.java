@@ -25,6 +25,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.payvance.erp_saas.core.dto.TenantUserNestedResponse;
+import com.payvance.erp_saas.core.dto.UserNestedData;
 import com.payvance.erp_saas.core.entity.TenantUserRole;
 
 @Repository
@@ -89,4 +91,24 @@ public interface TenantUserRoleRepository
         ORDER BY tur.createdAt DESC
         """)
     List<Map<String, Object>> findRecentUsersByTenantId(@Param("tenantId") Long tenantId);
+    /*
+     * Get all tenants with their users
+     */
+    @Query("""
+    	    SELECT new com.payvance.erp_saas.core.dto.UserNestedData(
+    	        tur.tenantId,
+    	        u.id,
+    	        COALESCE(u.name, 'Unknown'),
+    	        u.email,
+    	        u.phone,
+    	        tur.roleId,
+    	        tur.isActive
+    	    )
+    	    FROM TenantUserRole tur
+    	    JOIN User u ON tur.userId = u.id
+    	    ORDER BY tur.tenantId, tur.createdAt ASC
+    	""")
+    	List<UserNestedData> getAllTenantUsers();
+    
+    
 }

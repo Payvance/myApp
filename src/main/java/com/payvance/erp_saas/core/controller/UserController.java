@@ -35,6 +35,7 @@ import com.payvance.erp_saas.core.dto.ApiResponse;
 import com.payvance.erp_saas.core.dto.RejectedUserDto;
 import com.payvance.erp_saas.core.dto.TenantUserDetailRequest;
 import com.payvance.erp_saas.core.dto.TenantUserResponseDto;
+import com.payvance.erp_saas.core.dto.TenantWithAdminAndUsersResponse;
 import com.payvance.erp_saas.core.dto.UserFullDetailsDto;
 import com.payvance.erp_saas.core.dto.UserResponseDTO;
 import com.payvance.erp_saas.core.dto.UserUpdateRequestDto;
@@ -159,12 +160,12 @@ public class UserController {
 	}
     
     @GetMapping("/tenant-users")
-    public ResponseEntity<Page<TenantUserResponseDto>> getTenantUsers(
+    public ResponseEntity<TenantWithAdminAndUsersResponse> getTenantUsers(
             @RequestHeader("X-Tenant-Id") Long tenantId,
             Pageable pageable) {
 
-        Page<TenantUserResponseDto> page = userService.getTenantUsers(tenantId, pageable);
-        return ResponseEntity.ok(page);
+        TenantWithAdminAndUsersResponse response = userService.getTenantWithAdminAndUsers(tenantId, pageable);
+        return ResponseEntity.ok(response);
     }
     
     @PostMapping("/tenant-users/details")
@@ -176,6 +177,13 @@ public class UserController {
                 userService.getTenantUserById(tenantId, request.getUserId());
 
         return ResponseEntity.ok(response);
+    }
+    /*
+     * Get paginated list of Vendor and CA users
+     */
+    @GetMapping("/vendor-ca/pagination")
+    public ResponseEntity<Page<Map<String, Object>>> getVendorAndCaUsers(Pageable pageable) {
+        return ResponseEntity.ok(userService.getVendorAndCaUsers(pageable));
     }
 
     

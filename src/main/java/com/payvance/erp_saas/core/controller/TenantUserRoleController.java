@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.payvance.erp_saas.core.dto.TenantUsageAndRolesResponse;
 import com.payvance.erp_saas.core.dto.TenantUserStatusRequest;
+import com.payvance.erp_saas.core.dto.TenantUserNestedResponse;
+import com.payvance.erp_saas.core.dto.AllTenantsNestedResponse;
 import com.payvance.erp_saas.core.service.TenantUserRoleService;
 
 import lombok.RequiredArgsConstructor;
@@ -46,6 +48,16 @@ public class TenantUserRoleController {
     ) {
         return ResponseEntity.ok(
         		tenantUserRoleService.getTenantUsageAndRoles(tenantId)
+        );
+    }
+
+    /*
+     * Get all tenants with their users
+     */
+    @GetMapping("/all-tenants-nested")
+    public ResponseEntity<AllTenantsNestedResponse> getAllTenantsWithUsers() {
+        return ResponseEntity.ok(
+            tenantUserRoleService.getAllTenantsWithUsers()
         );
     }
 

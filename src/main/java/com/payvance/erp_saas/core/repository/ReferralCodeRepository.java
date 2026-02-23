@@ -3,6 +3,8 @@ package com.payvance.erp_saas.core.repository;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.payvance.erp_saas.core.entity.ReferralCode;
@@ -30,5 +32,10 @@ public interface ReferralCodeRepository extends JpaRepository<ReferralCode, Long
             String code,
             String status
     );
+
+    Optional<ReferralCode> findByOwnerId(Long ownerId);
+
+    @Query("SELECT r.code FROM ReferralCode r WHERE r.ownerId = :ownerId AND r.status = 'active'")
+    Optional<String> findReferralCodeByOwnerId(@Param("ownerId") Long ownerId);
 
 }

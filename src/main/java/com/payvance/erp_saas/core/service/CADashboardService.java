@@ -1,11 +1,13 @@
 package com.payvance.erp_saas.core.service;
 
+import com.payvance.erp_saas.core.repository.ReferralCodeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Service for CA Dashboard Data
@@ -18,11 +20,13 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CADashboardService {
     
+    private final ReferralCodeRepository referralCodeRepository;
+    
     /**
      * Get complete dashboard data for CA
      * TODO: Implement with actual repository methods
      */
-    public Map<String, Object> getDashboardData() {
+    public Map<String, Object> getDashboardData(Long caUserId) {
         Map<String, Object> data = new HashMap<>();
         
         // TODO: Implement with actual repository methods
@@ -72,7 +76,10 @@ public class CADashboardService {
             )
         ));
 
-        data.put("referralCode", Map.of("code", "CA2024REF"));
+        // Fetch CA's referral code directly
+        String referralCode = referralCodeRepository.findReferralCodeByOwnerId(caUserId)
+            .orElse("No referral code");
+        data.put("referralCode", Map.of("code", referralCode));
         data.put("transactionHistory", Arrays.asList(
             Map.of("date", "2024-03-15", "type", "Credit", "amount", 2500, "status", "Completed"),
             Map.of("date", "2024-03-14", "type", "Credit", "amount", 1800, "status", "Completed"),

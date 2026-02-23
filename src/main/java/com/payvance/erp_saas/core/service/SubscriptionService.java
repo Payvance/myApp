@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +42,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SubscriptionService {
 
+    private static final Logger logger = LoggerFactory.getLogger(SubscriptionService.class);
+
     private final SubscriptionRepository subscriptionRepository;
     private final InvoiceRepository invoiceRepository;
     private final InvoiceItemRepository invoiceItemRepository;
@@ -54,6 +58,7 @@ public class SubscriptionService {
     private final EmailService emailService;
     private final GstRateService gstRateService;
     private final PlanLimitationRepository planLimitationRepository;
+    private final ActivationKeyService activationKeyService;
 
     @Transactional
     public Invoice startSubscription(Long tenantId, Long planId, List<Map<String, Object>> addonRequests, BigDecimal discountAmount) {
@@ -192,34 +197,60 @@ public class SubscriptionService {
         tenant.setStatus("active");
         tenantRepository.save(tenant);
 
-        // 2. Update Invoice Status to Paid
+        // 2. Resolve Invoice for metadata (Price, Currency)
         Invoice invoice = invoiceRepository.findBySubscriptionId(subscriptionId)
                 .stream()
-                .filter(inv -> "unpaid".equals(inv.getStatus()))
+                .filter(inv -> "paid".equals(inv.getStatus()) || "unpaid".equals(inv.getStatus()))
                 .findFirst()
                 .orElse(null);
-        if (invoice != null) {
-            invoice.setStatus("paid");
-            invoiceRepository.save(invoice);
-        }
+        
+        logger.info("[DEBUG] Activation Flow - Invoice ID: {}, Status: {}", 
+                (invoice != null ? invoice.getId() : "NOT_FOUND"),
+                (invoice != null ? invoice.getStatus() : "N/A"));
 
-        // 3. Check for existing TenantActivation (idempotency)
-        boolean alreadyActive = tenantActivationRepository.existsByTenantIdAndStatus(tenantId, "active");
-        if (!alreadyActive) {
-            // Create new Tenant Activation with amount
+        // 3. Handle activation and license key
+        // Generate System Activation Key upon subscription.
+        // This will throw an error if the tenant already has an active key.
+        logger.info("[DEBUG] Starting Key Generation for tenantId: {}", tenantId);
+        java.util.Map<String, String> keyData = activationKeyService.generateSystemKeyForTenant(
+                tenantId,
+                tenant.getEmail(),
+                tenant.getPhone()
+        );
+        
+        String plainKey = keyData.get("plainKey");
+        String keyHash = keyData.get("hash");
+        logger.info("[DEBUG] Key Generated Successfully. plainKey prefix: {}", (plainKey != null ? plainKey.substring(0, 4) : "NULL"));
+
+        // Check for existing TenantActivation to decide whether to create or update
+        java.util.List<TenantActivation> existingActivations = tenantActivationRepository.findByTenantIdAndStatus(tenantId, "active");
+        
+        if (existingActivations.isEmpty()) {
+            // Create new Tenant Activation
             TenantActivation activation = new TenantActivation();
             activation.setTenantId(tenantId);
             activation.setSource("self_payment");
-            activation.setActivatedAt(LocalDateTime.now());
-            activation.setExpiresAt(subscription.getCurrentPeriodEnd());
-            activation.setStatus("active");
-            
-            // Store activation amount from invoice
-            if (invoice != null) {
-                activation.setActivationPrice(invoice.getTotalPayable());
-            }
-            
+            attachmentActivationFields(activation, subscription, invoice, keyHash);
             tenantActivationRepository.save(activation);
+        } else {
+            // Update the most recent active activation
+            TenantActivation activation = existingActivations.get(0);
+            attachmentActivationFields(activation, subscription, invoice, keyHash);
+            tenantActivationRepository.save(activation);
+        }
+
+        // Send License Key Email with plain key
+        try {
+            logger.info("[DEBUG] Attempting to send License Key Email to: {}", tenant.getEmail());
+            emailService.sendLicenseIssuedEmailSync(
+                    tenant.getEmail(),
+                    null,
+                    plainKey
+            );
+            logger.info("[DEBUG] License Key Email Sent Successfully.");
+        } catch (Exception e) {
+            logger.error("[ERROR] Failed to send License Key Email: {}. But the key is saved in DB.", e.getMessage());
+            // We don't rethrow because we want the transaction (key and activation) to COMMIT.
         }
 
         // 4. Create/Update Tenant Usage with Plan Limitations
@@ -242,6 +273,7 @@ public class SubscriptionService {
             
             tenantUsageRepository.save(usage);
         }
+
 
         // 5. Update Subscription Status to Active
         subscription.setStatus("active");
@@ -487,5 +519,16 @@ public class SubscriptionService {
             "subscription_status", subscription.getStatus(),
             "tenant_id", invoice.getTenantId()
         );
+    }
+
+    private void attachmentActivationFields(TenantActivation activation, Subscription subscription, Invoice invoice, String keyHash) {
+        activation.setActivatedAt(LocalDateTime.now());
+        activation.setExpiresAt(subscription.getCurrentPeriodEnd());
+        activation.setStatus("active");
+        activation.setActivationCodeHash(keyHash);
+        if (invoice != null) {
+            activation.setActivationPrice(invoice.getTotalPayable());
+            activation.setCurrency(invoice.getCurrency());
+        }
     }
 }

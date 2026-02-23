@@ -27,6 +27,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.payvance.erp_saas.core.dto.RejectedUserDto;
 import com.payvance.erp_saas.core.dto.TenantUserResponseDto;
+import com.payvance.erp_saas.core.dto.TenantUserWithRoleDto;
 import com.payvance.erp_saas.core.dto.UserFullDetailsDto;
 import com.payvance.erp_saas.core.entity.User;
 
@@ -62,13 +63,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
         CASE
             WHEN u.isSuperadmin = true THEN 'SUPERADMIN'
             WHEN tur.roleId = 2 THEN 'TENANT_ADMIN'
-            WHEN tur.roleId IS NOT NULL THEN 'TENANT'
+            WHEN tur.roleId = 3 THEN 'TENANT_USER'
             WHEN v.id IS NOT NULL THEN 'VENDOR'
             WHEN c.id IS NOT NULL THEN 'CA'
         END as roleName
     	    )
     	    FROM User u
-    	    LEFT JOIN TenantUserRole tur ON tur.userId = u.id AND tur.isActive = true
+    	    LEFT JOIN TenantUserRole tur ON tur.userId = u.id 
     	    LEFT JOIN Vendor v ON v.userId = u.id
     	    LEFT JOIN Ca c ON c.userId = u.id
     	""")
@@ -268,6 +269,30 @@ public interface UserRepository extends JpaRepository<User, Long> {
     	        @Param("tenantId") Long tenantId,
     	        @Param("userId") Long userId
     	);
+    
+    @Query("""
+    	    SELECT new com.payvance.erp_saas.core.dto.TenantUserWithRoleDto(
+    	        u.id,
+    	        u.name,
+    	        u.email,
+    	        u.phone,
+    	        tur.isActive,
+    	        tur.tenantId,
+    	        t.status,
+    	        tur.roleId,
+    	        CASE 
+    	            WHEN tur.roleId = 2 THEN 'TENANT_ADMIN'
+    	            WHEN tur.roleId = 3 THEN 'TENANT_USER'
+    	            ELSE 'UNKNOWN'
+    	        END
+    	    )
+    	    FROM User u
+    	    JOIN TenantUserRole tur ON u.id = tur.userId
+    	    JOIN Tenant t ON t.id = tur.tenantId
+    	    WHERE tur.roleId = 2
+    	      AND tur.tenantId = :tenantId
+    	""")
+    	Optional<TenantUserWithRoleDto> findTenantAdminByTenantId(@Param("tenantId") Long tenantId);
 
     /*
      * Count guest users (users not in tenant/vendor/ca roles and not superadmin)
@@ -304,5 +329,60 @@ public interface UserRepository extends JpaRepository<User, Long> {
             @Param("userId") Long userId,
             @Param("roleId") Integer roleId
     );
+    
+    /*
+     * Fetch the details of the CA and Vendor
+     */  
+    @Query("""
+    	    SELECT new map(
+    	        u.id as id,
+    	        u.name as name,
+    	        u.email as email,
+    	        u.phone as phone,
+    	        u.isActive as active,
+
+    	        CASE
+    	            WHEN v.id IS NOT NULL THEN 3
+    	            WHEN c.id IS NOT NULL THEN 4
+    	        END as roleId,
+
+    	        CASE
+    	            WHEN v.id IS NOT NULL THEN 'VENDOR'
+    	            WHEN c.id IS NOT NULL THEN 'CA'
+    	        END as roleName
+    	    )
+    	    FROM User u
+    	    LEFT JOIN Vendor v ON v.userId = u.id
+    	    LEFT JOIN Ca c ON c.userId = u.id
+    	    WHERE v.id IS NOT NULL OR c.id IS NOT NULL
+    	""")
+    	Page<Map<String, Object>> findVendorAndCaUsers(Pageable pageable);
+    
+    @Query("""
+    	    SELECT new com.payvance.erp_saas.core.dto.TenantUserWithRoleDto(
+    	        u.id,
+    	        u.name,
+    	        u.email,
+    	        u.phone,
+    	        tur.isActive,
+    	        tur.tenantId,
+    	        t.status,
+    	        tur.roleId,
+    	        CASE 
+    	            WHEN tur.roleId = 2 THEN 'TENANT_ADMIN'
+    	            WHEN tur.roleId = 3 THEN 'TENANT_USER'
+    	            ELSE 'UNKNOWN'
+    	        END
+    	    )
+    	    FROM User u
+    	    JOIN TenantUserRole tur ON u.id = tur.userId
+    	    JOIN Tenant t ON t.id = tur.tenantId
+    	    WHERE tur.roleId = 3
+    	      AND tur.tenantId = :tenantId
+    	""")
+    	Page<TenantUserWithRoleDto> findTenantUsersWithRoleByTenantId(
+    	        @Param("tenantId") Long tenantId,
+    	        Pageable pageable
+    	);
 
 }
