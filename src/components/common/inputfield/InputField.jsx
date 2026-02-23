@@ -35,6 +35,8 @@ const InputField = ({
   onFocus,
   customValidation,
   onPaste,
+  onCopy,
+  onCut,
   classN, // ✅ NEW added for adjusting medium type inputfield
   validationErrors = {},
   setValidationErrors = () => {},
@@ -172,7 +174,7 @@ const InputField = ({
 const enforcePattern = (inputValue, validationType) => {
   if (!validationType || !VALIDATION_PATTERNS[validationType]) return inputValue;
 
-  // ✅ Skip password, pan and amount validation
+  // ✅ Skip password, pan, amount, mobile and email validation
   if (validationType === "PASSWORD" || validationType === "PAN" || validationType === "AMOUNT" || validationType === "EMAIL") return inputValue;
   
 
@@ -496,6 +498,8 @@ const formatWithCommas = (value) => {
             value={validationType === "AMOUNT" ? displayValue : (type?.toLowerCase() === "date" ? normalizeDate(value) : value)} // checks whether the type is date if the type is date then the coverter will be applied otherwise it will show the normal value 
             name={name}
             onPaste={onPaste}
+            onCopy={onCopy}
+            onCut={onCut}
             onFocus={onFocus}
             required={required}
             disabled={disabled}

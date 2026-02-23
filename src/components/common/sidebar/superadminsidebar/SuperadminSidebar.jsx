@@ -1,71 +1,200 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback, memo } from 'react';
 import '../Sidebar.css';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import UserProfileMenu from '../sidebarProfile/SidebarProfile';
 import { APP_NAME } from '../../../../config/Config';
 
+/* ───────────── Static Data ───────────── */
+
+const userSubItems = [
+  { path: '/users', icon: 'bi bi-person-lines-fill', label: 'All Partners' },
+  { path: '/users/pending', icon: 'bi bi-hourglass-split', label: 'Pending Approval' },
+  { path: '/users/reject', icon: 'bi bi-person-x-fill', label: 'Rejected Partners' },
+  { path: '/vendordiscount', icon: 'bi bi-percent', label: 'Discount' },
+];
+
+const tenantSubItems = [
+  { path: '/tenantmanagement', icon: 'bi bi-building', label: 'All Tenants' },
+  { path: '/offermanagement', icon: 'bi bi-percent', label: 'Offers' },
+];
+
+const approvalSubItems = [
+  { path: '/licenseinventory', icon: 'bi bi-file-earmark-check', label: 'Vendor Batch Requests' },
+  { path: '/ca-redemption-approvals', icon: 'bi bi-patch-check-fill', label: 'CA Redemption Approvals' },
+];
+
+const plansSubItems = [
+  { path: '/subscriptionplan', icon: 'bi bi-card-checklist', label: 'Subscription Plans' },
+  { path: '/addonplans', icon: 'bi bi-plus-circle', label: 'Add-on Plans' },
+];
+
+const menuItems = [
+  { path: '/dashboard', icon: 'bi bi-house', label: 'Dashboard' },
+  {
+    label: 'Plans',
+    icon: 'bi bi-card-checklist',
+    hasSubMenu: true,
+    subItems: plansSubItems,
+  },
+  {
+    label: 'Partners',
+    icon: 'bi bi-people',
+    hasSubMenu: true,
+    subItems: userSubItems,
+  },
+  {
+    label: 'Tenant',
+    icon: 'bi bi-buildings',
+    hasSubMenu: true,
+    subItems: tenantSubItems,
+  },
+  { path: '/referralconfiguration', icon: 'bi bi-share-fill', label: 'Referral' },
+  {
+    label: 'Approvals',
+    icon: 'bi bi-check-circle',
+    hasSubMenu: true,
+    subItems: approvalSubItems,
+  },
+  { path: '/audits', icon: 'bi bi-bar-chart', label: 'Audits' },
+];
+
+/* ───────────── Active Route Logic ───────────── */
+
+function getIsActive(item, pathname) {
+  if (item.hasSubMenu) {
+    return item.subItems.some((sub) =>
+      pathname.startsWith(sub.path)
+    );
+  }
+  return pathname === item.path;
+}
+
+/* ───────────── Sub Menu Item ───────────── */
+
+const SubMenuItem = memo(({ sub, isActive }) => (
+  <li className={isActive ? 'active' : ''}>
+    <Link to={sub.path}>
+      <span className="icon sub-icon">
+        <i className={sub.icon}></i>
+      </span>
+      <span className="label">{sub.label}</span>
+    </Link>
+  </li>
+));
+
+/* ───────────── Nav Item ───────────── */
+
+const NavItem = memo(({
+  item,
+  isActive,
+  isCollapsed,
+  isExpanded,
+  toggleMenu,
+  currentPath
+}) => {
+  return (
+    <>
+      <li
+        className={[
+          isActive ? 'active' : '',
+          item.hasSubMenu ? 'has-submenu' : ''
+        ].filter(Boolean).join(' ')}
+        title={isCollapsed ? item.label : ''}
+      >
+        {item.hasSubMenu && !isCollapsed ? (
+          <button className="submenu-trigger" onClick={toggleMenu}>
+            <span className="icon">
+              <i className={item.icon}></i>
+            </span>
+            <span className="label">{item.label}</span>
+            <span className={`submenu-chevron ${isExpanded ? 'open' : ''}`}>
+              <i className="bi bi-chevron-down"></i>
+            </span>
+          </button>
+        ) : (
+          <Link to={item.path || '#'}>
+            <span className="icon">
+              <i className={item.icon}></i>
+            </span>
+            <span className="label">{item.label}</span>
+          </Link>
+        )}
+      </li>
+
+      {item.hasSubMenu && !isCollapsed && (
+        <div className={`submenu-wrapper ${isExpanded ? 'expanded' : ''}`}>
+          <ul className="submenu">
+            {item.subItems.map((sub) => (
+              <SubMenuItem
+                key={sub.path}
+                sub={sub}
+                isActive={currentPath === sub.path}
+              />
+            ))}
+          </ul>
+        </div>
+      )}
+    </>
+  );
+});
+
+/* ───────────── Main Sidebar ───────────── */
+
 const SuperAdminSidebar = ({ isCollapsed, setIsCollapsed }) => {
   const location = useLocation();
-  const navigate = useNavigate();
-  const [openMenu, setOpenMenu] = useState(false);
   const menuRef = useRef(null);
 
-  // Close menu on outside click
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (menuRef.current && !menuRef.current.contains(e.target)) {
-        setOpenMenu(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+  // 🔥 Only ONE active dropdown at a time
+  const [activeMenu, setActiveMenu] = useState(() => {
+    const current = menuItems.find(
+      (item) =>
+        item.hasSubMenu &&
+        item.subItems.some((sub) =>
+          location.pathname.startsWith(sub.path)
+        )
+    );
+    return current?.label || null;
+  });
+
+  const toggleMenu = useCallback((label) => {
+    setActiveMenu((prev) => (prev === label ? null : label));
   }, []);
 
-  const menuItems = [
-    { path: '/dashboard', icon: <i className="bi bi-house"></i>, label: 'Dashboard' },
-    { path: '/subscriptionplan', icon: <i className="bi-card-checklist"></i>, label: 'Plans' },
-    { path: '/vendordiscount', icon: <i className="bi bi-percent"></i>, label: 'Discount and Offers' },
-    // change the pathApprovals and Audits 
-    { path: '/users', icon: <i className="bi bi-people"></i>, label: 'Users' },
-    { path: '/licenseinventory', icon: <i className="bi bi-check2"></i>, label: 'Approvals' },
-    { path: '/audits', icon: <i className="bi bi-bar-chart"></i>, label: 'Audits' },
-  ];
-
-  // Check if current route is plan-related
-  const isPlanRelatedRoute = location.pathname.startsWith('/subscriptionplan') || location.pathname.startsWith('/addonplan');
-
-  // Check if current route is discount/offer related
-  const isDiscountOfferRelatedRoute = location.pathname === '/vendordiscount' || location.pathname === '/offermanagement' || location.pathname === '/referralconfiguration';
-
-  // Check if current route is approval-related
-  const isApprovalRelatedRoute = location.pathname === '/licenseinventory' || location.pathname === '/ca-redemption-approvals';
-  // Check if current route is users related
-  const isUserRelatedRoute = location.pathname === '/users' || location.pathname.startsWith('/users/');
+  // Close dropdowns when sidebar collapses
+  useEffect(() => {
+    if (isCollapsed) {
+      setActiveMenu(null);
+    }
+  }, [isCollapsed]);
 
   return (
-    <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
+    <aside
+      className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}
+      ref={menuRef}
+    >
       {/* Header */}
       <div className="sidebar-header">
         <div className="header-content">
-          {/* sidebar header now has a professional logo that provides visual branding */}
           {!isCollapsed ? (
             <>
               <i className="bi bi-lightning-charge-fill logo-icon"></i>
               <span className="logo">{APP_NAME}</span>
             </>
           ) : (
-            // an elegant hover effect that reveals the brand logo
-            <div className="collapsed-logo-container" onClick={() => setIsCollapsed(false)}>
+            <div
+              className="collapsed-logo-container"
+              onClick={() => setIsCollapsed(false)}
+            >
               <i className="bi bi-layout-sidebar-reverse logo-icon clickable"></i>
               <i className="bi bi-lightning-charge-fill logo-icon hover-icon"></i>
             </div>
           )}
         </div>
+
         <button
           className="collapse-btn"
           onClick={() => setIsCollapsed(!isCollapsed)}
         >
-          {/* when the sidebar collapse at that time the icon like chatgpt show  */}
           <i className={`bi ${isCollapsed ? '' : 'bi-layout-sidebar-reverse'}`}></i>
         </button>
       </div>
@@ -74,26 +203,24 @@ const SuperAdminSidebar = ({ isCollapsed, setIsCollapsed }) => {
       <nav className="sidebar-nav">
         <ul>
           {menuItems.map((item) => (
-            <li
-              key={item.path}
-              // it checks the current path and if it matches the item path then it will add active class
-              className={(location.pathname === item.path) || (item.label === 'Plans' && isPlanRelatedRoute) || (item.label === 'Discount and Offers' && isDiscountOfferRelatedRoute) || (item.label === 'Approvals' && isApprovalRelatedRoute) || (item.label === 'Users' && isUserRelatedRoute) ? 'active' : ''}
-              title={isCollapsed ? item.label : ''}
-            >
-              <Link to={item.path}>
-                <span className="icon">{item.icon}</span>
-                <span className="label">{item.label}</span>
-              </Link>
-            </li>
+            <NavItem
+              key={item.label}
+              item={item}
+              isActive={getIsActive(item, location.pathname)}
+              isCollapsed={isCollapsed}
+              isExpanded={activeMenu === item.label}
+              toggleMenu={() => toggleMenu(item.label)}
+              currentPath={location.pathname}
+            />
           ))}
         </ul>
       </nav>
 
       {/* Footer */}
       <UserProfileMenu
-       showUpgrade = {false}
-       showPersonalization = {true}
-       showForgotPassword = {true}
+        showUpgrade={false}
+        showPersonalization={true}
+        showForgotPassword={true}
       />
     </aside>
   );

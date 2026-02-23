@@ -127,7 +127,6 @@ const AssignedClients = () => {
       <div className="assigned-clients-content">
         <PageHeader
           title="Assigned Clients"
-          subtitle="Manage and issue licences to your clients"
         />
 
         <div className="assigned-clients-table">

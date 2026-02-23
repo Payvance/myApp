@@ -3,11 +3,13 @@ import { Link, useNavigate } from "react-router-dom";
 import Button from "../../button/Button";
 import PopUp from "../../popups/PopUp";
 import { authServices, resetPasswordServices, userServices } from "../../../../services/apiService";
+import { toast } from "react-toastify";
 import "./SidebarProfile.css";
+import { useTheme } from "../../../../context/ThemeContext";
 import { SUPPORT_INFO } from "../../../../config/Config";
 import InputField from "../../inputfield/InputField";
-import { toast } from "react-toastify";
 import formConfig from "../../../../config/formConfig";
+import ThemeDropdown from "../../themedropdown/ThemeDropdown";
 import PaswordInputBox from "../../inputfield/PaswordInputBox";
 
 /* Utils */
@@ -26,13 +28,13 @@ const UserProfileMenu = ({
   showPersonalization = true,
   showForgotPassword = true,
 }) => {
-   /* -------------------- STATE -------------------- */
+  /* -------------------- STATE -------------------- */
   const [openMenu, setOpenMenu] = useState(false);
   const [openSupport, setOpenSupport] = useState(false);
   const [showLogoutPopup, setShowLogoutPopup] = useState(false);
   const [supportPosition, setSupportPosition] = useState("right");
   const [user, setUser] = useState({ name: "", email: "" });
-  const [forgotStep, setForgotStep] = useState(0); // 0 = closed, 1 = old password, 2 = new password
+  const [forgotStep, setForgotStep] = useState(0);
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -42,15 +44,18 @@ const UserProfileMenu = ({
   const [showOldPass, setShowOldPass] = useState(false);
   const [showNewPass, setShowNewPass] = useState(false);
   const [showConfirmPass, setShowConfirmPass] = useState(false);
-  const [isPasswordValid, setIsPasswordValid] = useState(false); 
+  const [isPasswordValid, setIsPasswordValid] = useState(false);
+  const [copiedField, setCopiedField] = useState(null);
+  const [isThemeDropdownOpen, setIsThemeDropdownOpen] = useState(false);
+
+  // -------------------- THEME CONTEXT --------------------
+  const { theme, setTheme, isDark, isCustom } = useTheme();
 
   const menuRef = useRef(null);
   const supportRef = useRef(null);
   const navigate = useNavigate();
 
   /* -------------------- EFFECTS -------------------- */
-
-  /* Close on outside click */
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (menuRef.current && !menuRef.current.contains(e.target)) {
@@ -62,7 +67,6 @@ const UserProfileMenu = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  /* Fetch user data */
   useEffect(() => {
     const getUserData = async () => {
       try {
@@ -78,17 +82,13 @@ const UserProfileMenu = ({
         console.error("Failed to fetch user data:", error);
       }
     };
-
     getUserData();
   }, []);
 
-
   /* -------------------- HANDLERS -------------------- */
-  // Logout
   const handleLogout = async () => {
     setShowLogoutPopup(false);
     setOpenMenu(false);
-
     try {
       await authServices.logout();
       localStorage.removeItem("token");
@@ -99,82 +99,78 @@ const UserProfileMenu = ({
     }
   };
 
-  /* Support dropdown positioning */
   const toggleSupport = () => {
     setOpenSupport((prev) => !prev);
-
     if (!openSupport && supportRef.current) {
       const rect = supportRef.current.getBoundingClientRect();
       const viewportWidth = window.innerWidth;
-      const supportWidth = 220;
-
-      if (rect.right + supportWidth > viewportWidth) {
-        setSupportPosition("left");
-      } else {
-        setSupportPosition("right");
-      }
+      setSupportPosition(rect.right + 220 > viewportWidth ? "left" : "right");
     }
   };
 
- /* Copy to clipboard */
-  const copyToClipboard = (text) => {
-    navigator.clipboard.writeText(text);
+  const handleThemeChange = (selectedTheme) => {
+    // Set the theme using ThemeContext
+    setTheme(selectedTheme);
   };
 
- const handleUnifiedReset = async (e) => {
-  e?.preventDefault();
-  if (!oldPassword || !newPassword || !confirmPassword) {
-    toast.error("All fields are required");
-    return;
-  }
-    if (!isPasswordValid) { 
-    toast.error("Password does not meet the criteria");
-    return;
-  }
-  if (newPassword !== confirmPassword) {
-    toast.error("Confirm Password does not match Password");
-    return;
-  }
-  if (oldPassword === newPassword) {
-    toast.error("New password must be different from current password");
-    return;
-  }
-
-  setLoading(true);
-  try {
-    const verifyRes = await resetPasswordServices.verifyAndResetPassword({
-      currentPassword: oldPassword,
+  /* Copy with double-tick feedback */
+  const copyToClipboard = (text, field) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopiedField(field);
+      setTimeout(() => setCopiedField(null), 2000);
     });
+  };
 
-    if (verifyRes.data === 1) {
-      const resetRes = await resetPasswordServices.setNewPassword({
-        newPassword: newPassword,
-      });
-
-      if (resetRes.data.message === "Password changed successfully") {
-        toast.success("Password changed successfully");
-        setShowResetPopup(false); // CLOSE POPUP
-        handleLogout();
-      } else {
-        toast.error("Failed to update password");
-      }
-    } else {
-      toast.error("Incorrect current password. Try again.");
+  const handleUnifiedReset = async (e) => {
+    e?.preventDefault();
+    if (!oldPassword || !newPassword || !confirmPassword) {
+      toast.error("All fields are required");
+      return;
     }
-  } catch (err) {
-    toast.error("An error occurred during password reset");
-  } finally {
-    setLoading(false);
-  }
-};
+    if (!isPasswordValid) {
+      toast.error("Password does not meet the criteria");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast.error("Confirm Password does not match Password");
+      return;
+    }
+    if (oldPassword === newPassword) {
+      toast.error("New password must be different from current password");
+      return;
+    }
+    setLoading(true);
+    try {
+      const verifyRes = await resetPasswordServices.verifyAndResetPassword({
+        currentPassword: oldPassword,
+      });
+      if (verifyRes.data === 1) {
+        const resetRes = await resetPasswordServices.setNewPassword({
+          newPassword: newPassword,
+        });
+        if (resetRes.data.message === "Password changed successfully") {
+          toast.success("Password changed successfully");
+          setShowResetPopup(false);
+          handleLogout();
+        } else {
+          toast.error("Failed to update password");
+        }
+      } else {
+        toast.error("Incorrect current password. Try again.");
+      }
+    } catch (err) {
+      toast.error("An error occurred during password reset");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   /* -------------------- JSX -------------------- */
-
   return (
     <>
-      {/* ================= Sidebar Footer START ================= */}
       <div className="sidebar-footer" ref={menuRef}>
-        {/* -------- USER PROFILE START -------- */}
+
+        {/* ── User profile row ── */}
         <div
           className="user-profile"
           onClick={() => {
@@ -183,30 +179,41 @@ const UserProfileMenu = ({
           }}
         >
           <span className="avatar">{getInitials(user.name)}</span>
-
           <div className="user-info">
-            <span className="username" title={user.name}>
-              {user.name}
-            </span>
-            <span className="role" title={user.email}>
-              @{user.email}
-            </span>
+            <span className="username" title={user.name}>{user.name}</span>
           </div>
         </div>
-        {/* -------- USER PROFILE END -------- */}
 
-        
-        {/* -------- DROPDOWN START -------- */}
+        {/* ── Dropdown ── */}
         {openMenu && (
           <div className="profile-dropdown">
+            {/* ── Theme ── */}
+            <div className="theme-button-container">
+              <button 
+                className="navbar-btn theme-btn"
+                onClick={() => setIsThemeDropdownOpen(!isThemeDropdownOpen)}
+              >
+                {isCustom ? (
+                  <i className="bi bi-palette-fill"></i>
+                ) : isDark ? (
+                  <i className="bi bi-moon-fill"></i>
+                ) : (
+                  <i className="bi bi-sun-fill"></i>
+                )}
+              </button>
+              <ThemeDropdown 
+                isOpen={isThemeDropdownOpen}
+                onClose={() => setIsThemeDropdownOpen(false)}
+                onThemeChange={handleThemeChange}
+              />
+            </div>
+
+            <div className="dropdown-divider" />
+
             {showUpgrade && (
               <button
                 className="dropdown-item upgrade-glow"
-                 style={{ width: "100%" }}
-                onClick={() => {
-                  navigate(upgradeRoute);
-                  setOpenMenu(false);
-                }}
+                onClick={() => { navigate(upgradeRoute); setOpenMenu(false); }}
               >
                 <i className="bi bi-star-fill" />
                 <span>Upgrade plan</span>
@@ -214,72 +221,57 @@ const UserProfileMenu = ({
             )}
 
             {showLicense && (
-              <Link
-                to="/license"
-                className="dropdown-item"
-                onClick={() => setOpenMenu(false)}
-              >
+              <Link to="/license" className="dropdown-item" onClick={() => setOpenMenu(false)}>
                 <i className="bi bi-patch-check" />
                 <span>License Information</span>
               </Link>
             )}
 
             {showPersonalization && (
-              <Link
-                to="/personalization"
-                className="dropdown-item"
-                onClick={() => setOpenMenu(false)}
-              >
+              <Link to="/personalization" className="dropdown-item" onClick={() => setOpenMenu(false)}>
                 <i className="bi bi-palette-fill" />
                 <span>Personalization</span>
               </Link>
             )}
-
             <div className="dropdown-divider" />
 
-            {/* -------- HELP SECTION START -------- */}
+            {/* ── Help / Support ── */}
             <div className="help-wrapper" ref={supportRef}>
               <div className="dropdown-item" onClick={toggleSupport}>
                 <i className="bi bi-life-preserver" />
                 <span>Help</span>
-                <i
-                  className={`bi bi-chevron-${openSupport ? "left" : "right"
-                    } ms-auto`}
-                />
+                <i className={`bi bi-chevron-${openSupport ? "left" : "right"} ms-auto`} />
               </div>
 
               {openSupport && (
-                <div
-                  className={`support-box slide-fade support-${supportPosition}`}
-                >
-                  <h6 className="support-title">Support</h6>
+                <div className={`support-box slide-fade support-${supportPosition}`}>
+                  <p className="support-title">Support</p>
 
+                  {/* Email row */}
                   <div className="support-item">
                     <i className="bi bi-envelope-fill" />
-                    <span>{SUPPORT_INFO.email}</span>
+                    <span title={SUPPORT_INFO.email}>{SUPPORT_INFO.email}</span>
                     <i
-                      className="bi bi-clipboard copy-icon"
-                      onClick={() => copyToClipboard(SUPPORT_INFO.email)}
+                      className={`bi ${copiedField === 'email' ? 'bi-check2-all copy-icon copy-icon--done' : 'bi-clipboard copy-icon'}`}
+                      onClick={() => copyToClipboard(SUPPORT_INFO.email, 'email')}
                     />
                   </div>
 
+                  {/* Phone row */}
                   <div className="support-item">
                     <i className="bi bi-telephone-fill" />
-                    <span>{SUPPORT_INFO.phone}</span>
+                    <span title={SUPPORT_INFO.phone}>{SUPPORT_INFO.phone}</span>
                     <i
-                      className="bi bi-clipboard copy-icon"
-                      onClick={() => copyToClipboard(SUPPORT_INFO.phone)}
+                      className={`bi ${copiedField === 'phone' ? 'bi-check2-all copy-icon copy-icon--done' : 'bi-clipboard copy-icon'}`}
+                      onClick={() => copyToClipboard(SUPPORT_INFO.phone, 'phone')}
                     />
                   </div>
                 </div>
               )}
             </div>
-              {/* -------- HELP SECTION END -------- */}
 
-              {/* Reset Password START */}
             {showForgotPassword && (
               <Link
-
                 className="dropdown-item"
                 onClick={() => {
                   setShowResetPopup(true);
@@ -295,18 +287,13 @@ const UserProfileMenu = ({
               </Link>
             )}
 
-            <button
-              className="dropdown-item logout"
-              onClick={() => setShowLogoutPopup(true)}
-            >
+            <button className="dropdown-item logout" onClick={() => setShowLogoutPopup(true)}>
               <i className="bi bi-box-arrow-right" />
               <span>Log out</span>
             </button>
-            {/* Logout END */}
           </div>
         )}
       </div>
-       {/* ================= Sidebar Footer END ================= */}
 
       {/* ================= UNIFIED RESET PASSWORD POPUP ================= */}
 <PopUp
@@ -326,27 +313,30 @@ const UserProfileMenu = ({
         type={showOldPass ? "text" : "password"}
         classN="large"
         max={16}
+        onPaste={(e) => e.preventDefault()} 
+        onCopy={(e) => e.preventDefault()}
       />
       <i className={`bi ${showOldPass ? "bi-eye" : "bi-eye-slash"} eye-icon-signup`} 
          onClick={() => setShowOldPass(!showOldPass)}></i>
     </div>
 
-    {/* NEW PASSWORD (Validation box will now float to the right) */}
-    <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
-    <div className="position-relative signup-pass-container">
-      <PaswordInputBox
-        label="New Password"
-        value={newPassword}
-        onChange={setNewPassword} 
-        type={showNewPass ? "text" : "password"}
-        onValidationChange={setIsPasswordValid}
-        validationType="PASSWORD"
-        classN="large"
-        showCaseInfo={true}
-      />
-      <i className={`bi ${showNewPass ? "bi-eye" : "bi-eye-slash"} eye-icon-signup`} 
-         onClick={() => setShowNewPass(!showNewPass)}></i>    
-    </div>
+          <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+            <div className="position-relative signup-pass-container">
+              <PaswordInputBox
+                label="New Password"
+                value={newPassword}
+                onChange={setNewPassword}
+                type={showNewPass ? "text" : "password"}
+                onValidationChange={setIsPasswordValid}
+                validationType="PASSWORD"
+                classN="large"
+                showCaseInfo={true}
+              />
+              <i
+                className={`bi ${showNewPass ? "bi-eye" : "bi-eye-slash"} eye-icon-signup`}
+                onClick={() => setShowNewPass(!showNewPass)}
+              />
+            </div>
 
     {/* CONFIRM NEW PASSWORD */}
     <div className="position-relative signup-pass-container">
@@ -357,49 +347,44 @@ const UserProfileMenu = ({
         type={showConfirmPass ? "text" : "password"}
         classN="large"
         max={16}
-        onPaste={(e) => e.preventDefault()} // Disable paste for confirm password
+        onPaste={(e) => e.preventDefault()} 
+        onCopy={(e) => e.preventDefault()}
       />
       <i className={`bi ${showConfirmPass ? "bi-eye" : "bi-eye-slash"} eye-icon-signup`} 
          onClick={() => setShowConfirmPass(!showConfirmPass)}></i>
     </div>
     </div>
 
-    <div className="password-note-section">
-      <strong>Note:</strong>
-      <ul style={{ marginTop: "5px", paddingLeft: "18px" }}>
-        <li>To keep your account safe, change your password every 180 days.</li>
-        <li>Once your password is changed, you will be automatically logged out.</li>
-      </ul>
-    </div>
+          <div className="password-note-section">
+            <strong>Note:</strong>
+            <ul style={{ marginTop: "5px", paddingLeft: "18px" }}>
+              <li>To keep your account safe, change your password every 180 days.</li>
+              <li>Once your password is changed, you will be automatically logged out.</li>
+            </ul>
+          </div>
 
-    <div className="popup-buttons">
-      <Button
-        text={loading ? "Processing..." : "Update Password"}
-        onClick={handleUnifiedReset}
-        disabled={loading || !oldPassword || !newPassword || !confirmPassword || !isPasswordValid }
-      />
-    </div>
-  </div>
-</PopUp>
+          <div className="popup-buttons">
+            <Button
+              text={loading ? "Processing..." : "Update Password"}
+              onClick={handleUnifiedReset}
+              disabled={loading || !oldPassword || !newPassword || !confirmPassword || !isPasswordValid}
+            />
+          </div>
+        </div>
+      </PopUp>
 
-      {/* ================= LOGOUT POPUP START ================= */}
+      {/* ── Logout Popup ── */}
       <PopUp
         isOpen={showLogoutPopup}
         onClose={() => setShowLogoutPopup(false)}
         title="Log Out"
-        subtitle="Are you sure you want to log out of your account?"
         size="small"
       >
-        <div className="popup-buttons" style={{marginTop : "10px"}}>
-          <Button
-            text="Cancel"
-            variant="green-line"
-            onClick={() => setShowLogoutPopup(false)}
-          />
+        <div className="popup-buttons" style={{ marginTop: "10px" }}>
+          <Button text="Cancel" variant="green-line" onClick={() => setShowLogoutPopup(false)} />
           <Button text="Logout" variant="red-line" onClick={handleLogout} />
         </div>
       </PopUp>
-      {/* ================= LOGOUT POPUP END ================= */}
     </>
   );
 };

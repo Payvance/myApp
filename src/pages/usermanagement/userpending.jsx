@@ -50,7 +50,7 @@ const UserPending = () => {
   return (
     <SuperAdminLayout>
       <div className="user-page">
-        <PageHeader title="Pending Approval" subtitle="View users For pending approval" />
+        <PageHeader title="Pending Approval" />
 
         <div className="user-table-container">
           <DataTable

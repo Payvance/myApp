@@ -5,7 +5,7 @@ export const APP_NAME = "Finalyst";
 
 // Company-related info grouped in an object
 export const COMPANY_INFO = {
-  name: "PayVance Innovations Private Limited",
+  name: "PayVance Innovation Private Limited © 2025",
   address: "123 Main St, City, Country"
 };
 

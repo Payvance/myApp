@@ -119,7 +119,6 @@ const CAManagement = () => {
       <div className="license-inventory-content">
         <PageHeader
           title="CA Management"
-          subtitle="Manage your Chartered Accountant records"
           button={
             <button
               type="button"
@@ -145,7 +144,6 @@ const CAManagement = () => {
           isOpen={isCreatePopupOpen}
           onClose={handleCloseCreatePopup}
           title="Create New CA"
-          subtitle="Enter CA details to create a new record"
           size="medium"
         >
           <div className="signup-panel">

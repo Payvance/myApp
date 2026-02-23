@@ -272,7 +272,6 @@ const handleEditAddon = async (addon) => {
         {/* Page Header Component */}
         <PageHeader
           title="Add-ons"
-          subtitle="Manage usage-based add-ons"
           button={<button className="create-plan-btn" onClick={handleCreateAddon}>Create Add-on</button>}
         />
 
@@ -302,7 +301,6 @@ const handleEditAddon = async (addon) => {
         onClose={handleCloseCreatePopup}
         title={formData.id ? "Update Add-on" : "Create New Add-on"}
         // added subtitle to popup
-        subtitle="Configure add-on settings and offers"
         size="large"
       >
         {/* create plan form div start */}

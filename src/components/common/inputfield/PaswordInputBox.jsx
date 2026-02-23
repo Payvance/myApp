@@ -103,6 +103,8 @@ const PaswordInputBox = ({ label, value, onChange, onValidationChange, type = "p
           maxLength={16}
           onChange={(e) => validatePassword(e.target.value.slice(0, 16))}
           onFocus={handleFocus}
+          onCopy={(e) => e.preventDefault()}
+          onPaste={(e) => e.preventDefault()}
           onBlur={() => setTimeout(() => setShowBox(false), 200)}
           autoComplete="new-password"
           onKeyDown={(e) => {

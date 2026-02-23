@@ -177,9 +177,9 @@ export const CA_TENANT_REQUESTS_COLUMNS = [
 // USERS COLUMNS
 // ======================================
 export const USERS_COLUMNS = [
-  { accessorKey: 'id', header: 'ID', type: 'integer', sortable: true, filterable: true, width: 80 },
-  { accessorKey: 'name', header: 'Name', type: 'text', sortable: true, filterable: true, width: 220 },
-  { accessorKey: 'email', header: 'Email', type: 'email', sortable: true, filterable: true, width: 220 },
+  { accessorKey: 'id', header: 'Sr no.', type: 'integer', sortable: true, filterable: true, width: 80 },
+  { accessorKey: 'name', header: 'Full Name', type: 'text', sortable: true, filterable: true, width: 220 },
+  { accessorKey: 'email', header: 'Email Id', type: 'email', sortable: true, filterable: true, width: 220 },
   { accessorKey: 'phone', header: 'Phone', type: 'phone', sortable: true, filterable: true, width: 140 },
   { accessorKey: 'roleName', header: 'Role', type: 'text', sortable: true, filterable: true, width: 150 }, // Add roleName column
   { accessorKey: 'active', header: 'Active', type: 'boolean', sortable: true, filterable: true, width: 100 },
@@ -195,6 +195,17 @@ export const TENANT_PLAN_USAGE_COLUMNS = [
   { accessorKey: 'activeUsers', header: 'Users', type: 'integer', sortable: true, filterable: true, width: 120 },
   { accessorKey: 'activeCompanies', header: 'company', type: 'integer', sortable: true, filterable: true, width: 120 },
 ];
+
+// ======================================
+// TENANT COLUMNS
+// ======================================
+export const TENANT_USERS_COLUMNS = [
+  { accessorKey: 'name', header: 'Name', type: 'text', sortable: true, filterable: true, width: 200 },
+  { accessorKey: 'email', header: 'Email', type: 'email', sortable: true, filterable: true, width: 220 },
+  { accessorKey: 'phone', header: 'Phone', type: 'phone', sortable: true, filterable: true, width: 150 },
+  { accessorKey: 'active', header: 'Active', type: 'boolean', sortable: true, filterable: true, width: 100 },
+];
+
 // ======================================
 // TENANT PLAN USAGE COLUMNS
 // ======================================
@@ -212,6 +223,19 @@ export const TANENT_COLUMNS = [
   { accessorKey: 'name', header: 'Name', type: 'text', sortable: true, filterable: true, width: 220 },
   { accessorKey: 'email', header: 'Email', type: 'email', sortable: true, filterable: true, width: 220 },
   { accessorKey: 'phone', header: 'Phone', type: 'phone', sortable: true, filterable: true, width: 140 },
+  {
+    accessorKey: 'roleName',
+    header: 'Role',
+    type: 'text',
+    width: 160,
+    accessorFn: (row) => {
+      if (!row.roleName) return '';
+      return row.roleName
+        .toLowerCase()
+        .replace('_', ' ')
+        .replace(/\b\w/g, (l) => l.toUpperCase());
+    }
+  },
   { accessorKey: 'tenantStatus', header: 'Tenant Status', type: 'text', sortable: false, filterable: true, width: 140 },
   { accessorKey: 'isActive', header: 'Active', type: 'boolean', sortable: true, accessorFn: (row) => row.tenantUserActive, width: 100 },
 ];

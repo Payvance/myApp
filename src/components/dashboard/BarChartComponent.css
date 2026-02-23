@@ -13,8 +13,69 @@
   font-size: 16px;
   font-weight: 600;
   color: rgb(29, 29, 29);
-  margin: 0 0 12px 0;
-  text-align: center;
+  margin: 0;
+  text-align: left;
+}
+
+.bar-chart__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 12px;
+}
+
+.bar-chart__year-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.bar-chart__year-selector label {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgb(29, 29, 29);
+  white-space: nowrap;
+}
+
+.bar-chart__year-select {
+  padding: 4px 8px;
+  border: 1px solid rgba(63, 63, 63, 0.2);
+  border-radius: 4px;
+  font-size: 12px;
+  background: white;
+  color: rgb(29, 29, 29);
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+  min-width: 80px;
+}
+
+.bar-chart__apply-btn {
+  padding: 4px 12px;
+  background: rgba(0, 145, 255, 0.8);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-left: 4px;
+}
+
+.bar-chart__apply-btn:hover {
+  background: rgba(0, 145, 255, 1);
+}
+
+.bar-chart__apply-btn:active {
+  background: rgba(0, 145, 255, 0.7);
+}
+
+.bar-chart__year-select:focus {
+  outline: none;
+  border-color: rgba(0, 145, 255, 0.5);
+  box-shadow: 0 0 0 2px rgba(0, 145, 255, 0.1);
 }
 
 .bar-chart__container {

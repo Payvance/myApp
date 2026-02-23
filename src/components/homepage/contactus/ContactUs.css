@@ -1,0 +1,273 @@
+/* ══════════════════════════════
+   Contact Us — cu- prefixed classes
+══════════════════════════════ */
+
+.cu-section {
+    width: 100%;
+    background: radial-gradient(ellipse at 50% 0%, #fdf4ff 0%, #f0ebff 50%, #ffffff 100%);
+    scroll-margin-top: 65px;
+    border-top: 1px solid #ede9fe;
+}
+
+/* ── Header ── */
+.cu-header {
+    text-align: center;
+    padding: 5rem 10% 3rem;
+}
+
+.cu-eyebrow {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    color: #a855f7;
+    text-transform: uppercase;
+    margin-bottom: 0.85rem;
+}
+
+/* ── Header ── */
+.cu-header {
+    text-align: center;
+    padding: 5rem 10% 3.5rem;
+    background: white
+}
+
+.cu-main-title {
+    font-size: 2.6rem;
+    font-weight: 900;
+    color: #1e1b4b;
+    margin: 0 0 0.75rem;
+    line-height: 1.2;
+}
+
+.cu-main-sub {
+    font-size: 1rem;
+    color: #64748b;
+    max-width: 560px;
+    margin: 0 auto;
+    line-height: 1.8;
+}
+
+/* ── Two column body ── */
+.cu-body {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 3rem;
+    padding: 2rem;
+    align-items: start;
+}
+
+/* ── Info Cards (left) ── */
+.cu-info-col {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.cu-info-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    background: #ffffff;
+    border: 1px solid #ede9fe;
+    border-radius: 1.25rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 16px rgba(168, 85, 247, 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cu-info-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 28px rgba(168, 85, 247, 0.12);
+}
+
+.cu-info-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 0.9rem;
+    background: linear-gradient(135deg, #a855f7, #7c3aed);
+    color: #ffffff;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(168, 85, 247, 0.28);
+}
+
+.cu-info-card h4 {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #1e1b4b;
+    margin: 0 0 0.4rem;
+}
+
+.cu-info-card p {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin: 0;
+    line-height: 1.7;
+}
+
+.cu-closed {
+    color: #ef4444 !important;
+    font-weight: 600;
+}
+
+/* ── Form (right) ── */
+.cu-form-col {
+    position: sticky;
+    top: 80px;
+}
+
+.cu-form-card {
+    background: #ffffff;
+    border: 1.5px solid #ede9fe;
+    border-radius: 1.75rem;
+    padding: 2.5rem;
+    box-shadow: 0 8px 32px rgba(168, 85, 247, 0.08);
+}
+
+.cu-form-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #1e1b4b;
+    margin: 0 0 0.4rem;
+}
+
+.cu-form-sub {
+    font-size: 0.88rem;
+    color: #64748b;
+    margin: 0 0 1.75rem;
+    line-height: 1.6;
+}
+
+/* Success banner */
+.cu-success-msg {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: rgba(168, 85, 247, 0.08);
+    border: 1px solid #c4b5fd;
+    color: #7c3aed;
+    font-size: 0.88rem;
+    font-weight: 600;
+    padding: 0.85rem 1.1rem;
+    border-radius: 0.85rem;
+    margin-bottom: 1.5rem;
+}
+
+.cu-success-msg i {
+    font-size: 1.1rem;
+}
+
+/* Form layout */
+.cu-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.cu-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+}
+
+.cu-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.cu-field-full {
+    grid-column: 1 / -1;
+}
+
+.cu-field label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+.cu-field input,
+.cu-field textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 0.75rem;
+    font-size: 0.9rem;
+    color: #1e293b;
+    background: #fafafa;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+.cu-field input:focus,
+.cu-field textarea:focus {
+    border-color: #a855f7;
+    box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
+    background: #ffffff;
+}
+
+.cu-field textarea {
+    resize: vertical;
+    min-height: 130px;
+}
+
+/* Submit button */
+.cu-submit-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    background: linear-gradient(135deg, #a855f7, #7c3aed);
+    color: #ffffff;
+    border: none;
+    font-size: 0.95rem;
+    font-weight: 700;
+    font-family: inherit;
+    padding: 0.9rem 2rem;
+    border-radius: 0.85rem;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(168, 85, 247, 0.35);
+    transition: opacity 0.2s ease, gap 0.2s ease;
+    margin-top: 0.25rem;
+}
+
+.cu-submit-btn:hover {
+    opacity: 0.88;
+    gap: 0.9rem;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+    .cu-body {
+        grid-template-columns: 1fr;
+        padding: 0 5% 3rem;
+    }
+
+    .cu-form-col {
+        position: static;
+    }
+
+    .cu-header {
+        padding: 3.5rem 5% 2rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .cu-form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .cu-title {
+        font-size: 1.75rem;
+    }
+
+    .cu-form-card {
+        padding: 1.75rem 1.25rem;
+    }
+}

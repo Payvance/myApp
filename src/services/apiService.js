@@ -60,33 +60,33 @@ api.interceptors.response.use(
 // ======================================
 export const authServices = {
   login: (email, password) =>
-  publicApi.post(API_ENDPOINTS.AUTH.LOGIN, { email, password }),
+    publicApi.post(API_ENDPOINTS.AUTH.LOGIN, { email, password }),
 
-  getRoles: () => 
-  publicApi.get(API_ENDPOINTS.AUTH.ROLE),
+  getRoles: () =>
+    publicApi.get(API_ENDPOINTS.AUTH.ROLE),
 
-  signup: (data) => 
-  publicApi.post(API_ENDPOINTS.AUTH.SIGNUP, data),
+  signup: (data) =>
+    publicApi.post(API_ENDPOINTS.AUTH.SIGNUP, data),
 
   otpsend: (mobile) =>
-  postWithParams(API_ENDPOINTS.AUTH.OTPSEND, { mobile }),
+    postWithParams(API_ENDPOINTS.AUTH.OTPSEND, { mobile }),
 
   otpverify: ({ mobile, otp }) =>
-  postWithParams(API_ENDPOINTS.AUTH.OTPVERIFY, { mobile, otp }),
+    postWithParams(API_ENDPOINTS.AUTH.OTPVERIFY, { mobile, otp }),
 
-  emailOtpSend: (email) => 
-  publicApi.post(API_ENDPOINTS.AUTH.EMAIL_OTP_SEND, { email }),
+  emailOtpSend: (email) =>
+    publicApi.post(API_ENDPOINTS.AUTH.EMAIL_OTP_SEND, { email }),
 
-  emailOtpVerify: (email, otp) => 
-  publicApi.post(API_ENDPOINTS.AUTH.EMAIL_OTP_VERIFY, { email, otp }),  
+  emailOtpVerify: (email, otp) =>
+    publicApi.post(API_ENDPOINTS.AUTH.EMAIL_OTP_VERIFY, { email, otp }),
 
-resetPassword: ({ email, newPassword }) =>{
-  const urlwithParams = API_ENDPOINTS.AUTH.RESETPASSWORD(email, newPassword);
-  return publicApi.post(urlwithParams);
-},
+  resetPassword: ({ email, newPassword }) => {
+    const urlwithParams = API_ENDPOINTS.AUTH.RESETPASSWORD(email, newPassword);
+    return publicApi.post(urlwithParams);
+  },
 
-  
- checkPhoneExists: (phone) => 
+
+  checkPhoneExists: (phone) =>
     api.get(API_ENDPOINTS.AUTH.CHECK_PHONE, { params: { phone } }),
   logout: () =>
     api.post(API_ENDPOINTS.AUTH.LOGOUT),
@@ -141,7 +141,7 @@ export const addonServices = {
     api.put(API_ENDPOINTS.ADDONS.GET_BY_ID(id), data),
 
   // Get addon by id
-  getaddonbyplan: (id) => 
+  getaddonbyplan: (id) =>
     api.post(API_ENDPOINTS.ADDONS.GET_BY_PLAN, id),
 
 };
@@ -159,7 +159,7 @@ export const vendorDiscountServices = {
     if (params.size !== undefined) queryParams.append('size', params.size);
     if (params.sortBy && params.sortDir) {
       queryParams.append('sort', `${params.sortBy},${params.sortDir}`);
-    } 
+    }
     const url = `${API_ENDPOINTS.VENDOR_DISCOUNT.LIST}?${queryParams.toString()}`;
     return api.get(url);
   },
@@ -181,7 +181,7 @@ export const referralProgramServices = {
   getAllReferrals: (params = {}) => {
     const queryParams = new URLSearchParams();
     if (params.page !== undefined) queryParams.append('page', params.page);
-    if (params.size !== undefined) queryParams.append('size', params.size); 
+    if (params.size !== undefined) queryParams.append('size', params.size);
     if (params.sortBy && params.sortDir) {
       queryParams.append('sort', `${params.sortBy},${params.sortDir}`);
     }
@@ -198,21 +198,21 @@ export const couponServices = {
     api.post(API_ENDPOINTS.COUPONS.UPSERT, data),
 
   getCouponsPagination: (params = {}) => {
-  const queryParams = new URLSearchParams();
+    const queryParams = new URLSearchParams();
 
-  if (params.page !== undefined) queryParams.append('page', params.page);
-  if (params.size !== undefined) queryParams.append('size', params.size);
-  if (params.sortBy && params.sortDir) {
-    queryParams.append('sort', `${params.sortBy},${params.sortDir}`);
-  }
-  if (params.search) queryParams.append('search', params.search);
+    if (params.page !== undefined) queryParams.append('page', params.page);
+    if (params.size !== undefined) queryParams.append('size', params.size);
+    if (params.sortBy && params.sortDir) {
+      queryParams.append('sort', `${params.sortBy},${params.sortDir}`);
+    }
+    if (params.search) queryParams.append('search', params.search);
 
-  const url = `${API_ENDPOINTS.COUPONS.LIST}?${queryParams.toString()}`;
-  return api.get(url);
-},
-  getoffermanagmentbyid: (data) => 
+    const url = `${API_ENDPOINTS.COUPONS.LIST}?${queryParams.toString()}`;
+    return api.get(url);
+  },
+  getoffermanagmentbyid: (data) =>
     api.post(API_ENDPOINTS.COUPONS.GETOFFRMANAGMENTBYID, data),
-  
+
 };
 
 // ======================================
@@ -241,12 +241,27 @@ export const userServices = {
       queryParams.append('sort', `${params.sortBy},${params.sortDir}`);
     }
     if (params.search) queryParams.append('search', params.search);
+    if (params.status) queryParams.append('status', params.status);
     const url = `${API_ENDPOINTS.USERS.INACTIVE_PAGINATION}?${queryParams.toString()}`;
     return api.get(url);
   },
 
+  // Get vendor CA pagination data
+  getVendorCaPagination: (params = {}) => {
+    const queryParams = new URLSearchParams();
+    if (params.page !== undefined) queryParams.append('page', params.page);
+    if (params.size !== undefined) queryParams.append('size', params.size);
+    if (params.sortBy && params.sortDir) {
+      queryParams.append('sort', `${params.sortBy},${params.sortDir}`);
+    }
+    if (params.search) queryParams.append('search', params.search);
+    if (params.status) queryParams.append('status', params.status);
+    const url = `${API_ENDPOINTS.USERS.VENDOR_CA_PAGINATION}?${queryParams.toString()}`;
+    return api.get(url);
+  },
+
   //Get Rehject Users using the endpoint
-    getRejectedUsers: (params = {}) => {
+  getRejectedUsers: (params = {}) => {
     const queryParams = new URLSearchParams();
     if (params.page !== undefined) queryParams.append('page', params.page);
     if (params.size !== undefined) queryParams.append('size', params.size);
@@ -293,16 +308,16 @@ export const vendorLicenseServices = {
     return api.get(url);
   },
 
-  subscribePlan: (data) => 
+  subscribePlan: (data) =>
     api.post(API_ENDPOINTS.VENDOR_LICENSES.SUBSCRIPTION, data),
 
-  simulatePayment: (data) => 
+  simulatePayment: (data) =>
     api.post(API_ENDPOINTS.VENDOR_LICENSES.SIMULATE_PAYMENT, data),
 
-  getCouponDiscount: (data) => 
+  getCouponDiscount: (data) =>
     api.post(API_ENDPOINTS.VENDOR_LICENSES.APPLYCOUPON, data),
 
-  getRefralCode: (data) => 
+  getRefralCode: (data) =>
     api.post(API_ENDPOINTS.VENDOR_LICENSES.APPLYREFRAL, data),
 
   // Get batch details by ID
@@ -330,8 +345,8 @@ export const vendorLicenseServices = {
     }),
   // Check license eligibility
   checkEligibility: (email, phone) =>
-    api.post(API_ENDPOINTS.VENDOR_LICENSES.CHECK_ELIGIBILITY, { 
-      email, 
+    api.post(API_ENDPOINTS.VENDOR_LICENSES.CHECK_ELIGIBILITY, {
+      email,
       phone,
       userId: localStorage.getItem("user_id")
     }),
@@ -473,15 +488,15 @@ export const tenantCaManagementServices = {
 
   getTenantCAManagementPagination: (params = {}) => {
     const queryParams = new URLSearchParams();
-    
+
     if (params.page !== undefined) queryParams.append('page', params.page);
     if (params.size !== undefined) queryParams.append('size', params.size);
     if (params.sortBy && params.sortDir) {
       queryParams.append('sort', `${params.sortBy},${params.sortDir}`);
     }
-    
+
     if (params.search) queryParams.append('search', params.search);
-    
+
     // Add userId parameter
     if (params.userId) queryParams.append('userId', params.userId);
 
@@ -493,13 +508,13 @@ export const tenantCaManagementServices = {
 export const caTenantServices = {
   getTenantsForCa: (params = {}) => {
     const queryParams = new URLSearchParams();
-    
+
     if (params.page !== undefined) queryParams.append('page', params.page);
     if (params.size !== undefined) queryParams.append('size', params.size);
     if (params.sortBy && params.sortDir) {
       queryParams.append('sort', `${params.sortBy},${params.sortDir}`);
     }
-    
+
     // Add caUserId parameter
     if (params.caUserId) queryParams.append('caUserId', params.caUserId);
 
@@ -512,7 +527,14 @@ export const caTenantServices = {
   },
 };
 
+// ======================================
+// COMPANY CONFIG SERVICES
+// ======================================
 
+export const companyConfigServices = {
+  getCompanyDetails: () =>
+    api.get(API_ENDPOINTS.COMPANY_CONFIG.LIST),
+};
 // ======================================
 // TENANT SERVICES
 // ======================================
@@ -525,23 +547,23 @@ export const tenantServices = {
   },
   // Get inactive/pending users using the endpoint
   getInactiveUsersPagination: (params = {}, tenantId) => {
-  const queryParams = new URLSearchParams();
+    const queryParams = new URLSearchParams();
 
-  if (params.page !== undefined) queryParams.append('page', params.page);
-  if (params.size !== undefined) queryParams.append('size', params.size);
-  if (params.sortBy && params.sortDir) {
-    queryParams.append('sort', `${params.sortBy},${params.sortDir}`);
-  }
-  if (params.search) queryParams.append('search', params.search);
+    if (params.page !== undefined) queryParams.append('page', params.page);
+    if (params.size !== undefined) queryParams.append('size', params.size);
+    if (params.sortBy && params.sortDir) {
+      queryParams.append('sort', `${params.sortBy},${params.sortDir}`);
+    }
+    if (params.search) queryParams.append('search', params.search);
 
-  const url = `${API_ENDPOINTS.Tanent.TANENT_USER}?${queryParams.toString()}`;
+    const url = `${API_ENDPOINTS.Tanent.TANENT_USER}?${queryParams.toString()}`;
 
-  return api.get(url, {
-    headers: {
-      'X-Tenant-Id': tenantId,
-    },
-  });
-},
+    return api.get(url, {
+      headers: {
+        'X-Tenant-Id': tenantId,
+      },
+    });
+  },
   // Update tenant user status
   updateTenantUserStatus: (data, tenantId) => {
     return api.post(API_ENDPOINTS.Tanent.UPDATE_TANENT_USER, data, {
@@ -580,7 +602,7 @@ export const tenantServices = {
         'X-Tenant-Id': tenantId
       }
     });
-},
+  },
   getTrialConfig: (tenantId) => {
     return api.get(API_ENDPOINTS.Tanent.GET_TRIAL_CONFIG, {
       headers: {
@@ -588,14 +610,14 @@ export const tenantServices = {
       },
     });
   },
-  getLatestGst : () => {
+  getLatestGst: () => {
     return api.get(API_ENDPOINTS.Tanent.GET_GST);
   },
 
-  getPerticularTanentInfo: (userId) =>{
-    return api.get(API_ENDPOINTS.Tanent.GET_PERTICULAR_TANENT_INFO,{
+  getPerticularTanentInfo: (userId) => {
+    return api.get(API_ENDPOINTS.Tanent.GET_PERTICULAR_TANENT_INFO, {
       headers: {
-        'X-User-Id' : userId,
+        'X-User-Id': userId,
       }
     })
   }
@@ -630,6 +652,25 @@ export const dashboardServices = {
     return api.post(API_ENDPOINTS.DASHBOARD.BASE(roleId), payload);
   },
 };
+
+export const tenantUsersServices = {
+  getTenantsPagination: (params = {}) => {
+    const queryParams = new URLSearchParams();
+    if (params.page !== undefined) queryParams.append('page', params.page);
+    if (params.size !== undefined) queryParams.append('size', params.size);
+    if (params.sortBy && params.sortDir) {
+      queryParams.append('sort', `${params.sortBy},${params.sortDir}`);
+    }
+    if (params.search) queryParams.append('search', params.search);
+    const url = `${API_ENDPOINTS.TENANT_USERS.ALL_TENANTS_NESTED}?${queryParams.toString()}`;
+    return api.get(url);
+  },
+
+  getAllTenantsNested: () => {
+    return api.get(API_ENDPOINTS.TENANT_USERS.ALL_TENANTS_NESTED);
+  },
+};
+
 
 // ======================================
 // DEFAULT EXPORT 

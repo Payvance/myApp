@@ -114,7 +114,6 @@ const RedemptionPending = () => {
       <div className="redemption-content">
         <PageHeader
           title="Redemption Pending"
-          subtitle="Select referrals to redeem and submit for approval"
         />
 
         {/* ---------------------------

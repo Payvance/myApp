@@ -40,7 +40,6 @@ const AuditView = () => {
             <div className="audit-view-container">
                 <PageHeader
                     title="Audit Log Details"
-                    subtitle="View detailed information about this activity"
                     showBackButton={true}
                 />
 

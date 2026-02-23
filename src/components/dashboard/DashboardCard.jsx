@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import './DashboardCard.css';
 
 const DashboardCard = ({
@@ -9,10 +10,38 @@ const DashboardCard = ({
   size = 'medium',
   width = 'auto'
 }) => {
+  const navigate = useNavigate();
+
+  const handleCardClick = (e) => {
+    // Prevent event bubbling
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Navigate based on card title - using actual routes from App.jsx
+    if (title) {
+      const titleLower = title.toLowerCase();
+      
+      if (titleLower === 'users created') {
+        navigate('/usermanagement');
+      } else if (titleLower === 'companies') {
+        navigate('/plansmanagement');
+      } else if (titleLower === 'active plan') {
+        navigate('/plansmanagement');
+      } else if (titleLower === 'active vs inactive users') {
+        navigate('/usermanagement'); // User management with active/inactive filter
+      } else if (titleLower === 'active users') {
+        navigate('/usermanagement'); // User management with active filter
+      } else if (titleLower === 'pending requests') {
+        navigate('/tenantrequests'); // Using existing route
+      }
+    }
+  };
+
   return (
     <div 
-      className={`dashboard-card dashboard-card--${color} dashboard-card--${size}`}
+      className={`dashboard-card dashboard-card--${color} dashboard-card--${size} dashboard-card--clickable`}
       style={{ width }}
+      onClick={handleCardClick}
     >
       <div className="dashboard-card__icon">
         <i className={`bi ${icon}`}></i>

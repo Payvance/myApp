@@ -83,7 +83,6 @@ const Redemption = () => {
       <div className="redemption-content">
         <PageHeader
           title="Redemption"
-          subtitle="View your referral reward redemptions"
         />
 
         <div className="redemption-table">

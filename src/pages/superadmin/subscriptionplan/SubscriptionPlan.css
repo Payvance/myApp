@@ -83,7 +83,7 @@
 
 /* Ensure cards fill grid slots correctly and override fixed widths */
 .plans-grid .subscription-card {
-    width: 95% !important;
+    width: 90% !important;
     max-width: none !important;
     min-width: 0 !important;
     margin: 0 !important;

@@ -1,3 +1,5 @@
+import { sign } from "chart.js/helpers";
+
 export const formConfig = {
   signin: {
     email: {
@@ -24,6 +26,12 @@ export const formConfig = {
     role: {
       label: "Role",
     }, 
+    welcome : {
+      label : "Welcome Back!"
+    },
+    subtext : {
+      label : "Sign in to continue to your account"
+    },
   },
 
   caprofile: {
@@ -253,6 +261,26 @@ export const formConfig = {
     maxUser: {
       label : "Max Users"
     }
-  }
+  },
+  signup : {
+    hey : {
+      label : "Hey there!"
+    },
+    sub :{
+      label : "Begin Your Journey With Creating An Account With Us."
+    },
+    welcome : {
+      label : "Welcome Back!"
+    },
+    subtext : {
+      label : "Already Have An Account? Sign In To Continue."
+    },
+    get :{
+      label : "Get Started With FinlyticZ"
+    },
+    signup : {
+      label : "Sign up to continue to your account"
+    }
+  },
 };
 export default formConfig;

@@ -8,13 +8,23 @@
   gap: 10px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
   transition: all 0.3s ease;
-  cursor: pointer;
+  cursor: default;
   box-sizing: border-box;
 }
 
 .dashboard-card:hover {
   transform: translateY(-1px);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.dashboard-card--clickable {
+  cursor: pointer;
+}
+
+.dashboard-card--clickable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: var(--primary-color, #1976d2);
 }
 
 .dashboard-card__icon {

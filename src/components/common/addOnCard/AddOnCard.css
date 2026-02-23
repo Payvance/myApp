@@ -1,0 +1,287 @@
+/* src/components/common/addOnCard/AddOnCard.css */
+
+/* ============================================================
+   AddOnCard — themed with LightTheme.css variables
+   All --addon-* locals map to the project's design system.
+   ============================================================ */
+
+:root {
+  /* ---- Local tokens mapped to LightTheme variables ---- */
+  --addon-radius:               14px;
+
+  --addon-border:               var(--border-primary);          /* #e6eaf0  */
+  --addon-border-selected:      var(--purple-500);              /* #7E56E4  */
+
+  --addon-bg:                   var(--card-bg);                 /* #ffffff  */
+  --addon-bg-selected:          var(--purple-50);               /* #f8f9fa  */
+
+  --addon-shadow:               var(--shadow-md);               /* 0 4px 6px … */
+  --addon-shadow-selected:      0 4px 20px rgba(126, 86, 228, 0.18);
+
+  --addon-accent:               var(--purple-500);              /* #7E56E4  */
+  --addon-accent-hover:         var(--purple-600);              /* #9F52D0  */
+  --addon-accent-light:         var(--purple-100);              /* #f3f4f6  */
+
+  --addon-text-primary:         var(--text-primary);            /* #0e0e0e  */
+  --addon-text-secondary:       var(--text-secondary);          /* #6B7280  */
+
+  --addon-badge-bg:             var(--gradient-primary);        /* purple gradient */
+  --addon-badge-text:           var(--text-inverse);            /* #ffffff  */
+
+  --addon-code-bg:              var(--bg-tertiary);             /* #f2f5f9  */
+  --addon-code-text:            var(--primary-600);             /* #4b5563  */
+
+  --addon-stepper-track:        var(--bg-tertiary);             /* #f2f5f9  */
+  --addon-stepper-active-track: var(--purple-100);              /* #f3f4f6  */
+
+  --addon-btn-disabled:         var(--primary-200);             /* #d1d5db  */
+
+  --addon-transition:           0.22s ease;
+}
+
+/* ---- Card shell ---- */
+.addon-card {
+  background: var(--addon-bg);
+  border: 1.5px solid var(--addon-border);
+  border-radius: var(--addon-radius);
+  padding: 20px 22px;
+  box-shadow: var(--addon-shadow);
+  transition:
+    border-color var(--addon-transition),
+    background   var(--addon-transition),
+    box-shadow   var(--addon-transition),
+    transform    var(--addon-transition);
+  cursor: default;
+}
+
+.addon-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.addon-card--selected {
+  border-color: var(--addon-border-selected);
+  background:   var(--addon-bg-selected);
+  box-shadow:   var(--addon-shadow-selected);
+}
+
+/* ---- Header ---- */
+.addon-card__header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.addon-card__icon-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: var(--addon-accent-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.addon-card__icon-img {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+}
+
+.addon-card__icon-fallback {
+  font-size: 20px;
+}
+
+.addon-card__title-group {
+  flex: 1;
+  min-width: 0;
+}
+
+.addon-card__name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.addon-card__name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--addon-text-primary);
+  margin: 0;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+/* Badge uses the brand gradient */
+.addon-card__badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  background: var(--gradient-primary);
+  color: var(--addon-badge-text);
+  padding: 2px 8px;
+  border-radius: 20px;
+  white-space: nowrap;
+  animation: addonBadgePop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes addonBadgePop {
+  from { transform: scale(0.6); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+.addon-card__subtitle {
+  font-size: 12.5px;
+  color: var(--addon-text-secondary);
+  margin: 4px 0 0;
+  line-height: 1.5;
+}
+
+/* ---- Pricing row ---- */
+.addon-card__pricing-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.addon-card__price-block {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+}
+
+.addon-card__price {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--addon-text-primary);
+  letter-spacing: -0.03em;
+}
+
+.addon-card__period {
+  font-size: 12px;
+  color: var(--addon-text-secondary);
+}
+
+.addon-card__code-badge {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  background: var(--addon-code-bg);
+  color: var(--addon-code-text);
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-family: 'Courier New', monospace;
+}
+
+/* ---- Features ---- */
+.addon-card__features {
+  list-style: none;
+  margin: 0 0 16px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.addon-card__feature-item {
+  font-size: 12.5px;
+  color: var(--addon-text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.addon-card__feature-item i {
+  color: var(--addon-accent);
+  font-size: 13px;
+}
+
+/* ---- Stepper ---- */
+.addon-card__stepper-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+
+.addon-card__stepper {
+  display: inline-flex;
+  align-items: center;
+  background: var(--addon-stepper-track);
+  border-radius: 50px;
+  padding: 3px;
+  gap: 2px;
+  transition: background var(--addon-transition);
+}
+
+.addon-card__stepper--active {
+  background: var(--addon-stepper-active-track);
+}
+
+.addon-card__stepper-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--addon-text-primary);
+  transition:
+    background  var(--addon-transition),
+    color       var(--addon-transition),
+    transform   0.1s ease;
+}
+
+.addon-card__stepper-btn:hover:not(:disabled) {
+  background: var(--addon-accent);
+  color: var(--text-inverse);
+  transform: scale(1.08);
+}
+
+.addon-card__stepper-btn:active:not(:disabled) {
+  background: var(--addon-accent-hover);
+  transform: scale(0.95);
+}
+
+.addon-card__stepper-btn:disabled {
+  color: var(--addon-btn-disabled);
+  cursor: not-allowed;
+}
+
+.addon-card__stepper-count {
+  min-width: 32px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--addon-text-primary);
+  letter-spacing: -0.01em;
+  transition: color var(--addon-transition);
+}
+
+.addon-card__stepper--active .addon-card__stepper-count {
+  color: var(--addon-accent);
+}
+
+/* "N added" label */
+.addon-card__qty-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--addon-accent);
+  animation: addonFadeIn 0.2s ease both;
+}
+
+@keyframes addonFadeIn {
+  from { opacity: 0; transform: translateX(6px); }
+  to   { opacity: 1; transform: translateX(0); }
+}

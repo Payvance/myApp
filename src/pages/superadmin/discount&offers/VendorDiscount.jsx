@@ -284,7 +284,6 @@ const VendorDiscount = () => {
 
         <PageHeader
           title="Vendor Discounts"
-          subtitle="Manage vendor discount codes and offers"
           // button component to create discount
           button={<button className="create-plan-btn" onClick={handleCreateDiscount}>Create Discount</button>}
         />
@@ -397,7 +396,6 @@ const VendorDiscount = () => {
         isOpen={isEditPopupOpen}
         onClose={handleCloseEditPopup}
         title="Edit Vendor Discount"
-        subtitle="Modify discount settings and offers"
         size="large"
       >
         <div className="edit-discount-form">

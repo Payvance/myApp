@@ -33,7 +33,7 @@ import useOtp from "../../../../hooks/useOtp.js";
 import PaswordInputBox from "../../../../components/common/inputfield/PaswordInputBox.jsx"
 import PopUp from "../../../../components/common/popups/PopUp.jsx";
 import { COMPANY_INFO } from "../../../../config/Config.js";
- 
+import { validateField } from "../../../../config/validateField.js";
 const SignIn = () => {
   const {
   otp,
@@ -77,6 +77,7 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 const [isPasswordValid, setIsPasswordValid] = useState(false);
 const [signinEmail, setSigninEmail] = useState("");
 const [signinPassword, setSigninPassword] = useState("");
+const [validationErrors, setValidationErrors] = useState({});
   /* This useeffect is used for the getting roles from the dropdown
      Set the role tenenet admin
   */
@@ -268,10 +269,10 @@ const handleSignup = async () => {
         {/* left side - form fields */}
         <div className="signin-left">
           <div className="welcome-header">
-            <h2>Welcome Back!</h2>
+            <h2>{formConfig.signin.welcome.label}</h2>
             <div className="gradient-line"></div>
           </div>
-          <p>Sign in to continue to your account</p>
+          <p>{formConfig.signin.subtext.label}</p>
  
           {/* email input field */}
           <InputField
@@ -293,6 +294,8 @@ const handleSignup = async () => {
             onChange={(e) => setSigninPassword(e.target.value)}
             name="password"
             validationType="PASSWORD"
+            onCopy={(e) => e.preventDefault()}
+            onPaste={(e) => e.preventDefault()}
             min={8}
             max={16}
           />
@@ -315,7 +318,6 @@ const handleSignup = async () => {
           </div>
  
           {/* footer */}
-          <Footer>{COMPANY_INFO.name} © 2025</Footer>
         </div>
  
         {/* right side - welcome (slides left on register) */}
@@ -325,8 +327,8 @@ const handleSignup = async () => {
           {!showRegister ? (
             <>
               {/* sign in form */}
-              <h2>Hey There!</h2>
-              <p>Begin Your Journey With Creating An Account With Us.</p>
+              <h2>{formConfig.signup.hey.label}</h2>
+              <p>{formConfig.signup.sub.label}</p>
               <div className="signin-right-action">
                 <Button text="Create Account" variant="outline" onClick={handleRegister} />
               </div>
@@ -334,8 +336,8 @@ const handleSignup = async () => {
           ) : (
             <>
               {/* sign up form */}
-              <h2>Welcome Back!</h2>
-              <p>Already Have An Account? Sign In To Continue.</p>
+              <h2>{formConfig.signup.welcome.label}</h2>
+              <p>{formConfig.signup.subtext.label}</p>
               <div className="signin-right-action">
                 <Button text="Sign In" variant="outline" onClick={handleBackToSignIn} />
               </div>
@@ -349,9 +351,9 @@ const handleSignup = async () => {
           <div className="signup-inner">
             {/* welcome header */}
             <div className="welcome-header">
-              <h2>Create Account</h2>
+              <h2>{formConfig.signup.get.label}</h2>
               <div className="gradient-line"></div>
-              <p>Sign up to continue to your account</p>
+              <p>{formConfig.signup.signup.label}</p>
             </div>
             {/* welcome header div end */}
             {/* reuable input field component */}
@@ -373,8 +375,10 @@ const handleSignup = async () => {
                 onChange={(e) => setMobileNumber(e.target.value)}
                 name="mobileNumber"
                 validationType="MOBILE"
-                disabled={otpVerified}
                 max={10}
+                disabled={otpVerified}
+                validationErrors={validationErrors}
+                setValidationErrors={setValidationErrors}
               />
             </div>
             <div className="otp-btn-col">
@@ -383,7 +387,7 @@ const handleSignup = async () => {
                 type="button"
                 className="otp-btn"
                 onClick={() => sendOtp(mobileNumber)}
-                disabled={otpLoading}
+                disabled={otpLoading || !!validationErrors.mobileNumber || mobileNumber.length !== 10}
               >
                 Send OTP
               </button>
@@ -422,6 +426,8 @@ const handleSignup = async () => {
               onChange={(e) => setConfirmPassword(e.target.value)}
               name="confirmPassword"
               max={16}
+              onCopy={(e) => e.preventDefault()}
+              onPaste={(e) => e.preventDefault()}
            
             />  
             <i className={`bi ${showConfirmPassword ? "bi-eye" : "bi-eye-slash"} eye-icon-confirm`}
@@ -439,7 +445,6 @@ const handleSignup = async () => {
             </div>
             <div className="signup-back">
               <button type="button" className="forgot" onClick={handleBackToSignIn}>Back to Sign In</button>
-              <Footer>{COMPANY_INFO.name} © 2025</Footer>
               <div className="partner-link">
               <Link to="/partnerwithus" className="forgot">
                 Partner with us
@@ -497,7 +502,7 @@ const handleSignup = async () => {
  
       </div> {/* signin card end */}
  
- 
+       <Footer />
         <PopUp
         isOpen={isPopupOpen}
         onClose={() => setIsPopupOpen(false)}

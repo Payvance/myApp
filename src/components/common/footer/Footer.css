@@ -6,7 +6,7 @@
   /* the width should be 100 % of the parent container */
   width: 100%;
   padding: 2px 0;
-  color: var(--text-quaternary);
+  color: #6b7280;
   font-size: 12px;
   text-align: center;
   position: relative;

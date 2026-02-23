@@ -47,6 +47,7 @@ import Audit from './pages/audit/Audit.jsx'
 import AuditView from './pages/audit/auditview/AuditView.jsx'
 
 import TenantDashboard from './pages/tenant/dashboard/TenantDashboard.jsx';
+import TenantManagement from './pages/superadmin/tenant/TenantManagement.jsx';
 
 
 import TenantPlans from './pages/tenant/tenantplans/TenantPlans.jsx';
@@ -65,6 +66,7 @@ import ResetPassword from './pages/auth/forgotpassword/resetpassword/ResetPasswo
 import BuyPlan from './pages/tenant/tenantplans/BuyPlan.jsx';
 import User from './pages/tenant/usermanagement/user/User.jsx';
 import RejectUsers from './pages/usermanagement/RejectUsers.jsx';
+import HomePage from './pages/homepage/HomePage.jsx';
 
 
 
@@ -80,13 +82,13 @@ const GlobalAuthChecker = () => {
   useEffect(() => {
     const checkGlobalAuth = () => {
       const token = getAccessToken();
-      const publicRoutes = ['/signin', '/partnerwithus', '/forgotpassword', '/resetpassword'];
-      
+      const publicRoutes = ['/', '/signin', '/partnerwithus', '/forgotpassword', '/resetpassword'];
+
       // If not authenticated and trying to access protected route
       if (!token && !publicRoutes.includes(location.pathname)) {
-        navigate('/signin', { 
+        navigate('/signin', {
           state: { from: location.pathname },
-          replace: true 
+          replace: true
         });
       }
     };
@@ -110,7 +112,7 @@ function App() {
     <BrowserRouter basename={basePath}>
       {/* Global auth checker */}
       <GlobalAuthChecker />
-      
+
       {/* Toast container (add only once in whole app) */}
       <ToastContainer
         position="top-right"
@@ -131,26 +133,27 @@ function App() {
         <Route path="/forgotpassword" element={<ForgotPassword />} />
         {/* Reset Password - Public */}
         <Route path="/resetpassword" element={<ResetPassword />} />
-        
-        {/* Redirects base URL (/) to /signin */}
-        <Route path="/" element={<Navigate to="/signin" replace />} />
+
+        {/* Base URL (/) renders HomePage */}
+        <Route path="/" element={<HomePage />} />
+        <Route path="/home" element={<HomePage />} />
 
         {/* PROTECTED ROUTES - Require Authentication */}
-        
+
         {/* Dashboard route */}
         <Route path="/dashboard" element={
           <ProtectedRoute>
             <Dashboard />
           </ProtectedRoute>
         } />
-        
+
         {/* Subscription Plan route */}
         <Route path="/subscriptionplan" element={
           <ProtectedRoute>
             <SubscriptionPlan />
           </ProtectedRoute>
         } />
-        
+
         {/* Vendor Discount route */}
         <Route path="/vendordiscount" element={
           <ProtectedRoute>
@@ -171,7 +174,7 @@ function App() {
             <RefferalConfig />
           </ProtectedRoute>
         } />
-        
+
         {/* User Management routes */}
         <Route path="/users" element={
           <ProtectedRoute>
@@ -209,14 +212,14 @@ function App() {
             <UserProfile />
           </ProtectedRoute>
         } />
-        
+
         {/* Profile route */}
         <Route path="/profile" element={
           <ProtectedRoute>
             <ProfilePage />
           </ProtectedRoute>
         } />
-        
+
         {/* License Inventory routes */}
         <Route path="/licenseinventory" element={
           <ProtectedRoute>
@@ -240,21 +243,21 @@ function App() {
             <VendorDashboard />
           </ProtectedRoute>
         } />
-        
+
         {/* Assigned Clients route */}
         <Route path="/assignedclients" element={
           <ProtectedRoute>
             <AssignedClients />
           </ProtectedRoute>
         } />
-        
+
         {/* Add-on Plans Route */}
         <Route path="/addonplans" element={
           <ProtectedRoute>
             <AddonPlan />
           </ProtectedRoute>
         } />
-        
+
         {/* Audit routes */}
         <Route path="/audits" element={
           <ProtectedRoute>
@@ -266,14 +269,14 @@ function App() {
             <AuditView />
           </ProtectedRoute>
         } />
-        
+
         {/* Approvals route redirected to licenseinventory */}
         <Route path="/approvals" element={
           <ProtectedRoute>
             <Navigate to="/licenseinventory" replace />
           </ProtectedRoute>
         } />
-        
+
         {/* CA Redemption Approvals route */}
         <Route path="/ca-redemption-approvals" element={
           <ProtectedRoute>
@@ -287,7 +290,7 @@ function App() {
             <CADashboard />
           </ProtectedRoute>
         } />
-        
+
         {/* Redemption routes */}
         <Route path="/redemption/pending" element={
           <ProtectedRoute>
@@ -299,7 +302,7 @@ function App() {
             <Redemption />
           </ProtectedRoute>
         } />
-        
+
         {/* Tenant Dashboard route */}
         <Route path="/tenantdashboard" element={
           <ProtectedRoute>
@@ -311,6 +314,11 @@ function App() {
         <Route path="/usermanagement" element={
           <ProtectedRoute>
             <TenantUserManagement />
+          </ProtectedRoute>
+        } />
+        <Route path="/tenantmanagement" element={
+          <ProtectedRoute>
+            <TenantManagement />
           </ProtectedRoute>
         } />
         <Route path="/camanagement" element={
@@ -335,10 +343,10 @@ function App() {
         } />
         <Route path="/BuyPlan" element={
           <ProtectedRoute>
-            <BuyPlan/>
+            <BuyPlan />
           </ProtectedRoute>
         } />
-        
+
         {/* Tenant User Creation routes */}
         <Route path="/usermanagement/:id/view" element={
           <ProtectedRoute>

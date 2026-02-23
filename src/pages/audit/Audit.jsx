@@ -194,7 +194,6 @@ const handleInputChange = (e) => {
         {/* page header component*/}
         <PageHeader
           title="Audit Logs"
-          subtitle="Track all system activities and changes"
         />
         {/* filter section */}
         <div className='audit-filters'>

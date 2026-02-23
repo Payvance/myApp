@@ -46,7 +46,7 @@ const UserManagement = () => {
         search: filters?.search,
       };
       // API call
-      const response = await userServices.getUsersPagination(params);
+      const response = await userServices.getVendorCaPagination(params);
       const data = response.data || {};
       setTableData({
         content: data.content || [],
@@ -106,8 +106,7 @@ const columns = USERS_COLUMNS.map(col => {
     <SuperAdminLayout>
       <div className="user-page">
         <PageHeader
-          title="User Management"
-          subtitle="View and manage users in the system"
+          title="Partner Management"
         />
 
         <div className="user-table-container">

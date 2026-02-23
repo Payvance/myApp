@@ -70,7 +70,6 @@ const RefferalConfig = () => {
         {/* Page Header Component */}
         <PageHeader
           title="Referral Configuration"
-          subtitle="Manage referral codes and offers"
         />
 
         {/* Data Table */}
