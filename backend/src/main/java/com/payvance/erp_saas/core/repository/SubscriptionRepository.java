@@ -93,5 +93,15 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     		List<Long> findTenantIdsByPlanId(@Param("planId") Long planId);
 
 
+     @Query("""
+    		    SELECT s.plan.id
+    		    FROM Subscription s
+    		    WHERE s.tenantId = :tenantId
+    		    AND s.status = 'active'
+    		""")
+    		Optional<Long> findActivePlanIdByTenantId(Long tenantId);
+
+
+    	
 
 }

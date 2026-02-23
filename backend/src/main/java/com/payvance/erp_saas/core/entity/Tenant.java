@@ -65,4 +65,9 @@ public class Tenant {
         return !"active".equalsIgnoreCase(status)
                 && !"trial".equalsIgnoreCase(status);
     }
+
+	public boolean isEmpty() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }
