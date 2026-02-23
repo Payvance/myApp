@@ -91,6 +91,30 @@ public interface TenantUserRoleRepository
         ORDER BY tur.createdAt DESC
         """)
     List<Map<String, Object>> findRecentUsersByTenantId(@Param("tenantId") Long tenantId);
+
+    /*
+     * Count users created monthly by tenant admin for financial year (April to March)
+     */
+    @Query("""
+        SELECT FUNCTION('MONTH', tur.createdAt) as month, 
+               FUNCTION('YEAR', tur.createdAt) as year,
+               COUNT(*) as count
+        FROM TenantUserRole tur 
+        WHERE tur.tenantId = :tenantId 
+        AND tur.roleId = 3
+        AND (
+            (FUNCTION('YEAR', tur.createdAt) = :startYear AND FUNCTION('MONTH', tur.createdAt) >= 4) OR
+            (FUNCTION('YEAR', tur.createdAt) > :startYear AND FUNCTION('YEAR', tur.createdAt) < :endYear) OR
+            (FUNCTION('YEAR', tur.createdAt) = :endYear AND FUNCTION('MONTH', tur.createdAt) <= 3)
+        )
+        GROUP BY FUNCTION('MONTH', tur.createdAt), FUNCTION('YEAR', tur.createdAt)
+        ORDER BY FUNCTION('YEAR', tur.createdAt), FUNCTION('MONTH', tur.createdAt)
+        """)
+    List<Object[]> countUsersCreatedMonthlyByTenantIdAndYearRange(
+        @Param("tenantId") Long tenantId, 
+        @Param("startYear") Integer startYear,
+        @Param("endYear") Integer endYear
+    );
     /*
      * Get all tenants with their users
      */

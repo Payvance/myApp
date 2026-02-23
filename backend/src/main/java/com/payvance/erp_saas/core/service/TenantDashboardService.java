@@ -11,12 +11,14 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Service for Tenant Dashboard Data
@@ -39,7 +41,7 @@ public class TenantDashboardService {
      * Get complete dashboard data for Tenant
      * TODO: Implement with actual repository methods
      */
-    public Map<String, Object> getDashboardData(Long userId) {
+    public Map<String, Object> getDashboardData(Long userId, Integer startYear, Integer endYear) {
         Map<String, Object> data = new HashMap<>();
         
         // Find tenantId using single query (role 2 = Tenant)
@@ -98,21 +100,8 @@ public class TenantDashboardService {
         
         // Bar charts data
         data.put("barCharts", Arrays.asList(
-            Map.of("id", "user_growth", "title", "User Growth", "xAxis", "month", "yAxis", "users",
-                "data", Arrays.asList(
-                    Map.of("month", "Apr", "users", 45),
-                    Map.of("month", "May", "users", 52),
-                    Map.of("month", "Jun", "users", 48),
-                    Map.of("month", "Jul", "users", 58),
-                    Map.of("month", "Aug", "users", 62),
-                    Map.of("month", "Sep", "users", 68),
-                    Map.of("month", "Oct", "users", 72),
-                    Map.of("month", "Nov", "users", 78),
-                    Map.of("month", "Dec", "users", 82),
-                    Map.of("month", "Jan", "users", 85),
-                    Map.of("month", "Feb", "users", 88),
-                    Map.of("month", "Mar", "users", 92)
-                )
+            Map.of("id", "user_creation_trend", "title", "User Creation Trend", "xAxis", "month", "yAxis", "users_created",
+                "data", getUserCreationTrendData(userId, startYear, endYear)
             )
         ));
         
@@ -129,17 +118,18 @@ public class TenantDashboardService {
             Map.of("id", "plan_details", "title", "Plan Details",
                 "data", "trial".equalsIgnoreCase(tenantStatus) ? 
                     Arrays.asList(
-                        Map.of("name", "Status", "value", "Trial"),
-                        Map.of("name", "Trial Start", "value", tenantOpt.map(Tenant::getTrialStartAt).map(date -> date.toString()).orElse("--")),
-                        Map.of("name", "Trial End", "value", tenantOpt.map(Tenant::getTrialEndAt).map(date -> date.toString()).orElse("--")),
-                        Map.of("name", "Trial Days Left", "value", calculateTrialDaysLeft(tenantOpt))
+                        Map.of("name", "Plan Name", "value", "Trial"),
+                        Map.of("name", "Plan Price", "value", "₹0"),
+                        Map.of("name", "Start Date", "value", tenantOpt.map(Tenant::getTrialStartAt).map(date -> date.toLocalDate().toString()).orElse("--")),
+                        Map.of("name", "End Date", "value", tenantOpt.map(Tenant::getTrialEndAt).map(date -> date.toLocalDate().toString()).orElse("--")),
+                        Map.of("name", "Days Left", "value", calculateTrialDaysLeft(tenantOpt))
                     ) : 
                     planDetailsOpt.map(planDetails -> Arrays.asList(
                         Map.of("name", "Plan Name", "value", planDetails.get("planName") != null ? planDetails.get("planName") : "No Plan"),
                         Map.of("name", "Plan Price", "value", planDetails.get("planPrice") != null ? "₹" + planDetails.get("planPrice") : "₹0"),
                         Map.of("name", "Status", "value", planDetails.get("status") != null ? planDetails.get("status") : "--"),
-                        Map.of("name", "Start At", "value", planDetails.get("startAt") != null ? planDetails.get("startAt").toString() : "--"),
-                        Map.of("name", "Current Period End", "value", planDetails.get("currentPeriodEnd") != null ? planDetails.get("currentPeriodEnd").toString() : "--")
+                        Map.of("name", "Start Date", "value", planDetails.get("startAt") != null ? planDetails.get("startAt").toString().split("T")[0] : "--"),
+                        Map.of("name", "End Date", "value", planDetails.get("currentPeriodEnd") != null ? planDetails.get("currentPeriodEnd").toString().split("T")[0] : "--")
                     )).orElse(Collections.emptyList())
             )
         ));
@@ -162,7 +152,144 @@ public class TenantDashboardService {
         } else if (daysLeft == 0) {
             return "Trial ends today";
         } else {
-            return String.valueOf(daysLeft);
+            return daysLeft + " days remaining";
         }
+    }
+    
+    /**
+     * Get user creation trend data for year range (for main dashboard)
+     */
+    private List<Map<String, Object>> getUserCreationTrendData(Long userId, Integer startYear, Integer endYear) {
+        // Get tenant ID from user ID (role 2 = Tenant)
+        Long tenantId = userRepository.findEntityIdByUserAndRole(userId, 2).orElse(null);
+        
+        if (tenantId == null) {
+            return Collections.emptyList();
+        }
+        
+        // Get monthly counts from repository for specified year range
+        List<Object[]> monthlyData = tenantUserRoleRepository.countUsersCreatedMonthlyByTenantIdAndYearRange(tenantId, startYear, endYear);
+        
+        // Convert to bar graph format
+        return convertToBarGraphFormatForYearRange(monthlyData, startYear, endYear);
+    }
+    
+    /**
+     * Get user creation bar graph data for tenant admin
+     */
+    public Map<String, Object> getUserCreationBarGraphData(Long userId, Integer startYear, Integer endYear) {
+        // Get tenant ID from user ID (role 2 = Tenant)
+        Long tenantId = userRepository.findEntityIdByUserAndRole(userId, 2).orElse(null);
+        
+        if (tenantId == null) {
+            return Map.of(
+                "id", "user_creation_trend",
+                "title", "User Creation Trend - " + startYear + "-" + endYear,
+                "xAxis", "month",
+                "yAxis", "users_created",
+                "data", Collections.emptyList()
+            );
+        }
+        
+        // Get monthly counts from repository
+        List<Object[]> monthlyData = tenantUserRoleRepository.countUsersCreatedMonthlyByTenantIdAndYearRange(tenantId, startYear, endYear);
+        
+        // Convert to bar graph format
+        List<Map<String, Object>> barData = convertToBarGraphFormatForYearRange(monthlyData, startYear, endYear);
+        
+        return Map.of(
+            "id", "user_creation_trend",
+            "title", "User Creation Trend - " + startYear + "-" + endYear,
+            "xAxis", "month",
+            "yAxis", "users_created",
+            "data", barData
+        );
+    }
+    
+    /**
+     * Convert monthly data to bar graph format (Apr-Mar financial year)
+     */
+    private List<Map<String, Object>> convertToBarGraphFormat(List<Object[]> monthlyData) {
+        // Create map of month -> count
+        Map<Integer, Long> monthCounts = monthlyData.stream()
+            .collect(Collectors.toMap(
+                arr -> (Integer) arr[0],  // month
+                arr -> (Long) arr[1]      // count
+            ));
+        
+        // Generate 12 months data (Apr=4 to Mar=3 for financial year)
+        String[] months = {"Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar"};
+        int[] monthNumbers = {4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3};
+        
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (int i = 0; i < 12; i++) {
+            result.add(Map.of(
+                "month", months[i],
+                "users_created", monthCounts.getOrDefault(monthNumbers[i], 0L)
+            ));
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Convert monthly data to bar graph format for financial year range (April to March)
+     */
+    private List<Map<String, Object>> convertToBarGraphFormatForYearRange(List<Object[]> monthlyData, Integer startYear, Integer endYear) {
+        // Create map of year-month -> count
+        Map<String, Long> yearMonthCounts = monthlyData.stream()
+            .collect(Collectors.toMap(
+                arr -> (Integer) arr[1] + "-" + String.format("%02d", (Integer) arr[0]),  // year-month
+                arr -> (Long) arr[2]      // count
+            ));
+        
+        // Generate financial year combinations (April to March)
+        List<Map<String, Object>> result = new ArrayList<>();
+        
+        // For start year: April to December
+        for (int month = 4; month <= 12; month++) {
+            String yearMonth = startYear + "-" + String.format("%02d", month);
+            String monthName = getMonthName(month);
+            
+            result.add(Map.of(
+                "month", monthName + " " + startYear,
+                "users_created", yearMonthCounts.getOrDefault(yearMonth, 0L)
+            ));
+        }
+        
+        // For intermediate years: January to December
+        for (int year = startYear + 1; year < endYear; year++) {
+            for (int month = 1; month <= 12; month++) {
+                String yearMonth = year + "-" + String.format("%02d", month);
+                String monthName = getMonthName(month);
+                
+                result.add(Map.of(
+                    "month", monthName + " " + year,
+                    "users_created", yearMonthCounts.getOrDefault(yearMonth, 0L)
+                ));
+            }
+        }
+        
+        // For end year: January to March
+        for (int month = 1; month <= 3; month++) {
+            String yearMonth = endYear + "-" + String.format("%02d", month);
+            String monthName = getMonthName(month);
+            
+            result.add(Map.of(
+                "month", monthName + " " + endYear,
+                "users_created", yearMonthCounts.getOrDefault(yearMonth, 0L)
+            ));
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Get month name from month number
+     */
+    private String getMonthName(int month) {
+        String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+                         "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+        return months[month - 1];
     }
 }

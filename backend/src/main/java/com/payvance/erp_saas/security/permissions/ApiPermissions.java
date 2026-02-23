@@ -30,6 +30,8 @@ public final class ApiPermissions {
                         "/api/vendor/licenses/batches/{id}",
                         "/api/email/otp/**",
                         "/api/users/reset-password",
+                        "/api/vendor/licenses/active/plans",
+                        "/api/admin/plans"
         };
 
         /* ===================== SUPER ADMIN ===================== */
