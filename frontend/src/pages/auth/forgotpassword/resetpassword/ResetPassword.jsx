@@ -107,6 +107,7 @@ const ResetPassword = () => {
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             max={16}
+                            onCopy={(e) => e.preventDefault()}
                             onPaste={(e) => e.preventDefault()}
                         />
                         <i

@@ -56,16 +56,18 @@ const TanentPlansManagement = () => {
                 <PageHeader
                     title="Plan Management"
                     subtitle="Manage your Plans"
-                    button={
-                       <div style={{ paddingTop: '15px' }}> 
-                       <Button 
-                       text="Upgrade Plans"
-                       onClick={() => navigate('/tenantplanss')}
-                       />
-                       </div>
+                     button={
+                          <button
+                            type="button"
+                            className="create-plan-btn"
+                            onClick={() => navigate('/tenantplanss')}
+                            title={"Upgrade Plans"}
+                          >
+                            Upgrade Plans
+                          </button>
                     }
-                />
-
+                  />
+                
                 <div className="license-inventory-table">
                     <DataTable
                         data={tableData}

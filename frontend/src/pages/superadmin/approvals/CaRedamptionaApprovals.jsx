@@ -102,7 +102,6 @@ const CaRedamptionaApprovals = () => {
       <div className="approvals-container">
         <PageHeader
           title="CA Redemption Approvals"
-          subtitle="Review and manage CA redemption requests"
         />
         
         <div className="approvals-content">

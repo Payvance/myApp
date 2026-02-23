@@ -107,7 +107,6 @@ const RejectUsers = () => {
       <div className="user-page">
         <PageHeader
           title="Rejected Users"
-          subtitle="View and manage users in the system"
         />
 
         <div className="user-table-container">

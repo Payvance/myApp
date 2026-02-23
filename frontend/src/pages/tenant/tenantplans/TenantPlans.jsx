@@ -197,7 +197,6 @@ const TenantPlans = () => {
         {/* Page Header Start */}
         <PageHeader
           title="Plans"
-          subtitle="Choose a plan that fits your needs"
         />
         {/* Page Header End */}
 

@@ -338,7 +338,6 @@ const isFormValid = () => {
         {/* Page Header Component */}
         <PageHeader
           title="Offer Management"
-          subtitle="Manage special offers and promotions"
           // button component to create offer
           button={<button className="create-plan-btn" onClick={handleCreateOffer}>Create Offer</button>}
         />

@@ -293,7 +293,6 @@ const isFormValid = () => {
         {/* Page Header Component */}
         <PageHeader
           title="Subscription Plans"
-          subtitle="Manage subscription plans and pricing"
           button={<button className="create-plan-btn" onClick={handleCreatePlan}>Create Plan</button>}
         />
 
@@ -324,7 +323,6 @@ const isFormValid = () => {
         onClose={handleCloseCreatePopup}
         title={isEditMode ? "Update Subscription Plan" : "Create New Subscription Plan"}
         // added subtitle to popup
-        subtitle="Configure subscription plan settings and pricing"
         size="large"
       >
         {/* added input fields */}

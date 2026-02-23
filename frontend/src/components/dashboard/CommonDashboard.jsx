@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { getRoleId } from '../../services/authService';
 import DashboardLayout from './DashboardLayout';
 import DashboardCard from './DashboardCard';
@@ -21,16 +21,29 @@ const CommonDashboard = () => {
   // Get roleId from authService
   const roleId = getRoleId();
   
+  // State for selected year range
+  const [yearRange, setYearRange] = useState({
+    startYear: new Date().getFullYear() - 1, // Default: 2025
+    endYear: new Date().getFullYear() // Default: 2026
+  });
+  
   // Hooks now use getRoleId() internally, no need to pass roleId
-  const { cards, loading: cardsLoading, error: cardsError } = useDashboardCards();
-  const { pieCharts, loading: pieLoading, error: pieError } = useDashboardPieCharts();
-  const { barCharts, loading: barLoading, error: barError } = useDashboardBarCharts();
-  const { dataViews, loading: dataLoading, error: dataError } = useDashboardDataViews();
-  const { referralCode, loading: referralLoading, error: referralError } = useReferralCode();
-  const { transactionHistory, loading: transactionLoading, error: transactionError } = useTransactionHistory();
+  const { cards, loading: cardsLoading, error: cardsError } = useDashboardCards(yearRange);
+  const { pieCharts, loading: pieLoading, error: pieError } = useDashboardPieCharts(yearRange);
+  const { barCharts, loading: barLoading, error: barError } = useDashboardBarCharts(yearRange);
+  const { dataViews, loading: dataLoading, error: dataError } = useDashboardDataViews(yearRange);
+  const { referralCode, loading: referralLoading, error: referralError } = useReferralCode(yearRange);
+  const { transactionHistory, loading: transactionLoading, error: transactionError } = useTransactionHistory(yearRange);
 
   const isLoading = cardsLoading || pieLoading || barLoading || dataLoading || referralLoading || transactionLoading;
   const hasError = cardsError || pieError || barError || dataError || referralError || transactionError;
+
+  // Handle year range change for bar charts
+  const handleYearChange = (range) => {
+    setYearRange(range);
+    console.log('Year range changed:', range);
+    // TODO: Call dashboard API with year range and user ID
+  };
 
   if (hasError) {
     return (
@@ -75,6 +88,7 @@ const CommonDashboard = () => {
                 key={chart.id} 
                 {...chart} 
                 loading={barLoading}
+                onYearChange={handleYearChange}
               />
             ))}
           </div>

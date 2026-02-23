@@ -12,6 +12,7 @@ import formConfig from "../../../config/formConfig";
 import useOtp from "../../../hooks/useOtp";
 import { authServices, tenantServices, userServices } from "../../../services/apiService";
 import { useNavigate } from "react-router-dom";
+import { COMPANY_INFO } from "../../../config/Config";
 
 const TenantUserManagement = () => {
   // ---------------- Popup State ----------------
@@ -36,7 +37,7 @@ const TenantUserManagement = () => {
   });
   const navigate = useNavigate();
   const canCreateUser =
-  planDetails.createdUsers < planDetails.activeUsers;
+  planDetails.createdUsers-1 < planDetails.activeUsers;
   // ---------------- OTP Hook ----------------
   const {
     otp,
@@ -106,38 +107,63 @@ const handleSignup = async () => {
 
 
 const fetchData = useCallback(async (params = {}) => {
-    try {
-      setLoading(true);
-      const p = {
-        page: params.page || 0,
-        size: params.size || 10,
-        sortBy: params.sortField,
-        sortDir: params.sortOrder,
-        search: params.filters?.search,
-      };
-      const tenant_id = localStorage.getItem("tenant_id");
-      
-      // API call for inactive/pending users
-      const response = await tenantServices.getInactiveUsersPagination(p, tenant_id);
-      const data = response?.data || {};
-      // Update table data
-      // ✅ total users created count
-      const totalUsersCreated = data.totalElements || 0;
-      
-      setTableData({
-        content: data.content || [],
-        totalElements: data.totalElements || 0,
-        totalPages: data.totalPages || 0,
-        number: data.number || 0,
-        size: data.size || 10,
-      });
-    } catch (err) {
-      toast.error('Failed to fetch pending users', err);
-      setTableData({ content: [], totalElements: 0, totalPages: 0, number: 0, size: 10 });
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  try {
+    setLoading(true);
+
+    const p = {
+      page: params.page || 0,
+      size: params.size || 10,
+      sortBy: params.sortField,
+      sortDir: params.sortOrder,
+      search: params.filters?.search,
+    };
+
+    const tenant_id = localStorage.getItem("tenant_id");
+
+    const response = await tenantServices.getInactiveUsersPagination(p, tenant_id);
+
+    const data = response?.data || {};
+    const tenantUsers = data.tenantUsers || {};
+
+    // 🔥 Convert tenant admin to same shape as users
+    const adminRow = {
+      userId: data.tenantadmin,
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+      tenantStatus: data.tenantStatus,
+      tenantUserActive: data.adminActive,
+      roleName: data.adminRoleName,
+      isAdmin: true,
+    };
+
+    // 🔥 Merge admin + users
+    const mergedContent = [
+      adminRow,
+      ...(tenantUsers.content || [])
+    ];
+
+    setTableData({
+      content: mergedContent,
+      totalElements: (tenantUsers.totalElements || 0) + 1,
+      totalPages: tenantUsers.totalPages || 0,
+      number: tenantUsers.number || 0,
+      size: tenantUsers.size || 10,
+    });
+
+  } catch (err) {
+    toast.error('Failed to fetch users');
+    setTableData({
+      content: [],
+      totalElements: 0,
+      totalPages: 0,
+      number: 0,
+      size: 10,
+    });
+  } finally {
+    setLoading(false);
+  }
+}, []);
   // Initial data fetch 
   useEffect(() => {
     fetchData({ page: 0, size: 10 });
@@ -177,22 +203,21 @@ const fetchData = useCallback(async (params = {}) => {
       <div className="license-inventory-content">
         <PageHeader
           title="User Management"
-          subtitle="Manage your user accounts"
           button={
-  <button
-    type="button"
-    className="create-plan-btn"
-    onClick={handleOpenCreatePopup}
-    disabled={!canCreateUser}
-    title={
-      !canCreateUser
-        ? "User limit reached. Upgrade plan to add more users."
-        : "Create User"
+              <button
+                type="button"
+                className="create-plan-btn"
+                onClick={handleOpenCreatePopup}
+                disabled={!canCreateUser}
+                title={
+                  !canCreateUser
+                    ? "User limit reached. Upgrade plan to add more users."
+                    : "Create User"
+                }
+              >
+                Create User
+              </button>
     }
-  >
-    Create User
-  </button>
-}
 
         />
 
@@ -205,7 +230,8 @@ const fetchData = useCallback(async (params = {}) => {
             basePath="/usermanagement"
             primaryKeys={["userId"]}
             className="license-table"
-            showEditButton= {true}
+            showEditButton={true}
+            editButtonDisabled={(row) => row.roleName === "TENANT_ADMIN"}
           />
 
         </div>
@@ -216,9 +242,9 @@ const fetchData = useCallback(async (params = {}) => {
           onClose={!showOtpModal ? handleCloseCreatePopup : undefined}
           title="Create New User"
           subtitle="Enter user details to create an account"
-          size="large"
+          size="medium"
         >
-          <div className="signup-panel">
+          <div className="signup-panel pop-pannel">
             <div className="signup-inner">
               {/* Full Name */}
               <InputField
@@ -284,11 +310,6 @@ const fetchData = useCallback(async (params = {}) => {
                   onClick={handleSignup}
                   disabled={!otpVerified || otpLoading || !!validationErrors.signupEmail}
                 />
-              </div>
-
-              {/* Footer */}
-              <div className="signup-back">
-                <Footer>PayVance Innovations Private Limited © 2025</Footer>
               </div>
             </div>
           </div>

@@ -28,7 +28,7 @@
 .checkbox-box {
   width: 18px;
   height: 18px;
-  border: 1.5px solid var(--border-primary);
+  border: 1.5px solid #7E56E4;
   border-radius: 4px;
   display: inline-flex;
   align-items: center;

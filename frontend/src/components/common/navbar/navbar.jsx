@@ -183,27 +183,6 @@ const Navbar = ({ isSidebarCollapsed }) => {
 
       {/* Right section */}
       <div className="navbar-right">
-        <div className="theme-button-container">
-          {/* Theme button */}
-          <button
-            className="navbar-btn theme-btn"
-            onClick={() => setIsThemeDropdownOpen(!isThemeDropdownOpen)}
-          >
-            {isCustom ? (
-              <i className="bi bi-palette-fill"></i>
-            ) : isDark ? (
-              <i className="bi bi-moon-fill"></i>
-            ) : (
-              <i className="bi bi-sun-fill"></i>
-            )}
-          </button>
-
-          <ThemeDropdown
-            isOpen={isThemeDropdownOpen}
-            onClose={() => setIsThemeDropdownOpen(false)}
-            onThemeChange={handleThemeChange}
-          />
-        </div>
       </div>
     </header>
   );

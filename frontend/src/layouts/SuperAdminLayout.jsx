@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import SuperAdminSidebar from '../components/common/sidebar/superadminsidebar/SuperadminSidebar';
-import Navbar from '../components/common/navbar/navbar';
 import PageContainer from '../components/common/pagecontainer/PageContainer';
 // Imported the MainScreenContainer component
 import MainScreenContainer from '../components/common/mainscreencontainer/MainScreenContainer';
@@ -32,7 +31,7 @@ const SuperAdminLayout = ({ children }) => {
       className="layout-grid"
       style={{
         '--sidebar-width': isSidebarCollapsed ? '3.75rem' : '13rem',
-        '--navbar-height': '56px'
+        '--navbar-height': '0px'
       }}
     >
       {/* SuperAdminSidebar - occupies the sidebar area */}
@@ -40,10 +39,9 @@ const SuperAdminLayout = ({ children }) => {
         isCollapsed={isSidebarCollapsed}
         setIsCollapsed={setIsSidebarCollapsed}
       />
-      {/* Navbar - occupies the navbar area */}
-      <Navbar isSidebarCollapsed={isSidebarCollapsed} />
-
-      <MainScreenContainer className={`with-navbar with-sidebar ${isSidebarCollapsed ? 'collapsed' : ''}`}>
+      
+      {/* MainScreenContainer provides the main layout grid structure */}
+      <MainScreenContainer className={`with-sidebar ${isSidebarCollapsed ? 'collapsed' : ''}`}>
         <div className="main-content">
           {children}
         </div>

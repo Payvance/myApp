@@ -14,16 +14,16 @@ export const API_ENDPOINTS = {
     EMAIL_OTP_SEND: "/api/email/otp/send",
     EMAIL_OTP_VERIFY: "/api/email/otp/verify",
     RESETPASSWORD: (email, newPassword) =>
-  `/api/users/reset-password?email=${email}&newPassword=${newPassword}`,
+      `/api/users/reset-password?email=${email}&newPassword=${newPassword}`,
     CHECK_PHONE: "/api/users/phone-exists",
     LOGOUT: "/api/auth/logout"
   },
 
-  
+
   PROFILE: {
-    CREATE: "/api/profile/upsert",  
+    CREATE: "/api/profile/upsert",
   },
-  
+
   // VENDOR LICENSE ENDPOINTS
   VENDOR_LICENSES: {
     BATCHES: "/api/vendor/licenses/batches",
@@ -40,32 +40,32 @@ export const API_ENDPOINTS = {
 
     APPLYREFRAL: "/api/tenants/validate-referral",
 
-  // --------------------------------
-  // ACTIVE PLANS
-  // --------------------------------
-  ACTIVE_PLANS: "/api/vendor/licenses/active/plans",
+    // --------------------------------
+    // ACTIVE PLANS
+    // --------------------------------
+    ACTIVE_PLANS: "/api/vendor/licenses/active/plans",
 
-  // --------------------------------
-  // PLAN PRICE
-  // --------------------------------
-  PLAN_PRICE: "/api/vendor/licenses/plan/price",
+    // --------------------------------
+    // PLAN PRICE
+    // --------------------------------
+    PLAN_PRICE: "/api/vendor/licenses/plan/price",
 
-  // --------------------------------
-  // VENDOR DISCOUNT
-  // --------------------------------
-VENDOR_DISCOUNT: (userId) =>
-  `/api/vendor/licenses/vendor/${userId}/discount`,
+    // --------------------------------
+    // VENDOR DISCOUNT
+    // --------------------------------
+    VENDOR_DISCOUNT: (userId) =>
+      `/api/vendor/licenses/vendor/${userId}/discount`,
 
-  // --------------------------------
-  // GST
-  // --------------------------------
+    // --------------------------------
+    // GST
+    // --------------------------------
 
     KEYS: "/api/vendor/licenses/keys",
     CHECK_ELIGIBILITY: "/api/vendor/licenses/check",
     ISSUE_LICENSE: "/api/vendor/licenses/issue",
     ISSUE_KEY: (id) => `/api/vendor/licenses/keys/${id}/issue`,
     ACTIVATION_KEY_DETAIL: (id) => `/api/activation-keys/${id}`,
-    ACTIVE_PLANS: "/api/vendor/licenses/active/plans", 
+    ACTIVE_PLANS: "/api/vendor/licenses/active/plans",
     PLAN_PRICE: "/api/vendor/licenses/plan/price",
     //  ADD THIS
     VENDOR_DISCOUNT: (userId) =>
@@ -78,15 +78,15 @@ VENDOR_DISCOUNT: (userId) =>
     ISSUE_KEY: (vendorBatchId) => `/api/vendor/licenses/keys/${vendorBatchId}`,
   },
 
-  GST :{
+  GST: {
     LATEST_RATE: "/api/gst/rate/latest",
   },
-  
+
   // ADMIN ENDPOINTS
   PLANS: {
     CREATE: "/api/admin/plans",
-    LIST: "/api/admin/plans",       
-    GET_BY_ID: (id) => `/api/admin/plans/${id}` 
+    LIST: "/api/admin/plans",
+    GET_BY_ID: (id) => `/api/admin/plans/${id}`
   },
 
   // ADD-ON ENDPOINTS
@@ -115,10 +115,10 @@ VENDOR_DISCOUNT: (userId) =>
   COUPONS: {
     UPSERT: "/api/super-admin/coupons",
     LIST: "/api/super-admin/coupons",
-    GETOFFRMANAGMENTBYID : "/api/super-admin/coupons/get"
+    GETOFFRMANAGMENTBYID: "/api/super-admin/coupons/get"
   },
 
-   CA: {
+  CA: {
     REDEMPTION: "/api/ca/referrals/redemptions",
     REDEMPTION_PENDING: "/api/ca/referrals/redemptions",
     TENANTS_PAGINATION: "/api/ca-tenants/pagination",
@@ -130,14 +130,15 @@ VENDOR_DISCOUNT: (userId) =>
     PAGINATION: "/api/tenantca-management/pagination",
   },
 
-AUDIT: {	 
- 	LOGS: "/api/audit/logs",	 
- 	LOG_BY_ID: (id) => `/api/audit/logs/${id}`,	 
- 	},
+  AUDIT: {
+    LOGS: "/api/audit/logs",
+    LOG_BY_ID: (id) => `/api/audit/logs/${id}`,
+  },
   USERS: {
     PAGINATION: "/api/users/pagination",
     INACTIVE_PAGINATION: "/api/users/inactive/pagination",
     REJECTUSERS: "api/users/rejected/pagination",
+    VENDOR_CA_PAGINATION: "api/users/vendor-ca/pagination",
     UPDATE: (id) => `/api/users/${id}/full-details`,
     FULL_DETAILS: (id) => `/api/users/${id}/full-details`,
     GETUSERDATA: (id) => `/api/users/${id}`,
@@ -157,8 +158,8 @@ AUDIT: {
   },
 
   RESET_PASSWORD: {
-      VERIFT_PASSWORD: "/api/auth/verify-password",
-      CHANGE_PASSWORD: "/api/auth/set-password",
+    VERIFT_PASSWORD: "/api/auth/verify-password",
+    CHANGE_PASSWORD: "/api/auth/set-password",
   },
 
 
@@ -167,6 +168,12 @@ AUDIT: {
     BASE: (roleId) => `/api/dashboard/${roleId}`,
   },
 
+  TENANT_USERS: {
+    ALL_TENANTS_NESTED: "/api/tenant-users/all-tenants-nested",
+  },
+  COMPANY_CONFIG: {
+    LIST: "/api/company-config/details/list",
+  },
 };
 
 

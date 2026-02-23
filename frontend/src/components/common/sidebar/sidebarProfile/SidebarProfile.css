@@ -2,155 +2,307 @@
   position: relative;
 }
 
+/* ── Support flyout box ── */
 .support-box {
   position: absolute;
   top: 0;
   z-index: 1000;
-  background: var(--bg-secondary);
+  width: 210px;
+  background: var(--bg-primary);
   border: 1px solid var(--border-primary);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  padding: 12px;
+  opacity: 0;
+  transform: translateX(8px);
+  animation: supportSlideIn 0.18s ease forwards;
 }
 
 .support-right {
   left: 103%;
-  margin-left: 8px;
-  border-radius: 15px;
+  margin-left: 6px;
+  border-radius: 12px;
 }
 
 .support-left {
   right: 103%;
-  margin-right: 8px;
-  border-radius: 15px;
+  margin-right: 6px;
+  border-radius: 12px;
 }
 
-/* Avatar circle */
-.avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--purple-500);
-  color: white;
-  font-weight: bold;
-  font-size: 15px;
-  flex-shrink: 0;
+@keyframes supportSlideIn {
+  to { opacity: 1; transform: translateX(0); }
 }
 
+/* ── Support title ── */
+.support-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin: 0 0 10px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-primary);
+}
 
-
-/* Support item */
+/* ── Support items ── */
 .support-item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-top: 5px;
-  font-size: 12px;
-  font-weight: 500;
+  gap: 8px;
+  padding: 7px 8px;
+  border-radius: 8px;
+  margin-bottom: 4px;
+  background: var(--bg-secondary);
+  transition: background 0.15s ease;
 }
 
-/* Copy icon */
-.copy-icon {
-  font-size: 14px;
+.support-item:hover {
+  background: var(--bg-secondary);
+}
+
+.support-item i:first-child {
+  font-size: 13px;
   color: var(--purple-500);
+  flex-shrink: 0;
+}
+
+.support-item span {
+  flex: 1;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+/* ── Copy icon ── */
+.copy-icon {
+  font-size: 12px;
+  color: var(--text-secondary);
   cursor: pointer;
-  margin-left: 5px;
-  transition: color 0.2s;
+  flex-shrink: 0;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: color 0.15s ease, background 0.15s ease;
 }
 
 .copy-icon:hover {
-  color: var(--purple-600);
+  color: var(--purple-500);
+  background: var(--bg-primary);
 }
 
-/* Popup buttons */
+/* ── Avatar ── */
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--purple-500), var(--purple-600, #7c3aed));
+  color: white;
+  font-weight: 700;
+  font-size: 12px;
+  flex-shrink: 0;
+  letter-spacing: 0.03em;
+}
+
+/* ── User profile row ── */
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 2px;           /* tighter gap between avatar and text */
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.user-profile:hover {
+  background: var(--bg-secondary);
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;           /* name and email sit close together */
+  overflow: hidden;
+  min-width: 0;
+}
+
+.username {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+
+.role {
+  font-size: 10.5px;  /* small enough for long emails to fit */
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+
+/* ── Profile dropdown ── */
+.profile-dropdown {
+  position: absolute;
+  bottom: 70px;
+  left: 14px;
+  width: 220px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: 14px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  padding: 6px;
+  animation: fadeUp 0.16s ease-out;
+  z-index: 2000;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Dropdown items ── */
+.profile-dropdown .dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 10px;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  text-decoration: none;
+  text-align: left;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: inherit;
+  transition: background 0.15s ease, color 0.15s ease;
+  box-sizing: border-box;
+}
+
+.profile-dropdown .dropdown-item i {
+  font-size: 14px;
+  width: 16px;
+  text-align: center;
+  flex-shrink: 0;
+  color: var(--text-secondary);
+  transition: color 0.15s ease;
+}
+
+.profile-dropdown .dropdown-item:hover {
+  background: var(--bg-secondary);
+  color: var(--purple-500);
+}
+
+.profile-dropdown .dropdown-item:hover i {
+  color: var(--purple-500);
+}
+
+/* Help row chevron */
+.profile-dropdown .dropdown-item .ms-auto {
+  margin-left: auto;
+  font-size: 11px;
+}
+
+/* ── Logout ── */
+.dropdown-item.logout {
+  color: var(--error, #ef4444);
+}
+
+.dropdown-item.logout i {
+  color: var(--error, #ef4444) !important;
+}
+
+.dropdown-item.logout:hover {
+  background: var(--error-bg, rgba(239, 68, 68, 0.08));
+  color: var(--error, #ef4444);
+}
+
+/* ── Divider ── */
+.dropdown-divider {
+  height: 1px;
+  background: var(--border-primary);
+  margin: 4px 6px;
+}
+
+/* ── Upgrade glow ── */
+.upgrade-glow {
+  color: var(--purple-500) !important;
+  animation: glowPulse 2s ease-in-out infinite alternate;
+}
+
+.upgrade-glow i {
+  color: var(--purple-500) !important;
+}
+
+@keyframes glowPulse {
+  from { text-shadow: 0 0 2px rgba(128, 0, 255, 0.4); }
+  to   { text-shadow: 0 0 6px rgba(128, 0, 255, 0.6); }
+}
+
+/* ── Popup buttons ── */
 .popup-buttons {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
+  margin-top: 14px;
 }
 
-.support-title{
-  font-weight: 600;
- font-size: medium;
-  margin: 0;
-}
-
-
-.profile-dropdown .dropdown-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: 89%;
-  padding: 10px 12px;
-  background: none;
-  border: none;
-  color: var(--text-primary);
-  /* Ensure no text overflow when collapsed */
-  text-decoration: none;
-  /* important for Link */
-  text-align: left;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-/* Sidebar dropdown items text color change on hover */
-.profile-dropdown .dropdown-item:hover {
-  color: var(--purple-600); /* change this to whatever color you like */
-}
-
-.dropdown-item.logout {
-  color: var(--error);
-  width: 100%;
-}
-
-.dropdown-item.logout:hover {
-  background: var(--error-bg);
-}
-
-/* Upgrade plan glowing effect */
-.upgrade-glow {
-  position: relative;
-  color: var(--purple-500) !important;
-  transition: color 0.3s ease;
-  animation: glowPulse 1.5s infinite alternate;
-}
-
-.upgrade-glow:hover {
-  color: var(--purple-600);
-  
-}
-/* Input field focus styles */
-.reset-password-form-container .input-container input:focus {
+/* ── Reset password form ── */
+.reset-password-form-container .input-container input:focus,
+.reset-password-form-container input:focus {
   border-color: #6366f1 !important;
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
-  outline: none;
-}
-.reset-password-form-container input:focus {
-  border: 1.5px solid #6366f1 !important; /* Matches your New Password border */
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important; /* Matches the glow */
   outline: none !important;
-  transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease;
 }
 
-/* Soft glow animation */
-@keyframes glowPulse {
-  0% {
-    text-shadow: 0 0 2px rgba(128, 0, 255, 0.5), 0 0 2px rgba(128, 0, 255, 0.3);
-  }
-  50% {
-    text-shadow: 0 0 2px rgba(138, 43, 226, 0.5), 0 0 4px rgba(138, 43, 226, 0.3);
-  }
-  100% {
-    text-shadow: 0 0 1px rgba(128, 0, 255, 0.5), 0 0 2px rgba(128, 0, 255, 0.3);
-  }
+/* ── Password note ── */
+.password-note-section {
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  border-left: 3px solid var(--purple-500);
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
 }
 
-
-.password-note-section{
-  margin-top: 0px;
-  padding: 10px;
-  background: var(--bg-primary);
-  font-size: 13px;
+.password-note-section strong {
   color: var(--text-primary);
+  font-size: 12px;
+}
+
+.password-note-section ul {
+  margin: 5px 0 0 0;
+  padding-left: 16px;
+}
+
+.password-note-section li {
+  margin-bottom: 3px;
+}
+
+/* ── Double-tick after copy ── */
+.copy-icon--done {
+  color: #22c55e !important;
+  cursor: default;
+  animation: tickPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes tickPop {
+  from { transform: scale(0.5); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
 }

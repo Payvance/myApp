@@ -8,13 +8,11 @@
   flex-direction: column;
   border-right: 1px solid var(--sidebar-border);
   z-index: 1000;
-  /* transition removed - handled by grid */
-  /* Prevent horizontal overflow and enable vertical scrolling */
   overflow-x: hidden;
   overflow-y: auto;
 }
 
-/* Header */
+/* ── Header ── */
 .sidebar-header {
   padding: 15px 18px;
   display: flex;
@@ -22,7 +20,6 @@
   align-items: center;
 }
 
-/* Professional logo styling for sidebar header */
 .header-content {
   display: flex;
   flex-direction: row;
@@ -50,7 +47,6 @@
   transform: scale(1.1);
 }
 
-/* Collapsed logo container, Users see layout-sidebar-reverse icon */
 .collapsed-logo-container {
   position: relative;
   display: flex;
@@ -108,12 +104,11 @@
   margin-top: 4px;
 }
 
-/* Navigation */
+/* ── Navigation ── */
 .sidebar-nav {
   flex: 1;
   padding: 12px 8px;
   overflow-y: auto;
-  /* Ensure no horizontal overflow in navigation - prevents horizontal scrollbars */
   overflow-x: hidden;
 }
 
@@ -123,15 +118,15 @@
   padding: 0;
 }
 
-/* Item */
-.sidebar-nav li {
-  margin-bottom: 4px;
+/* Parent nav item */
+.sidebar-nav > ul > li {   /* only top-level li */
+  margin-bottom: 2px;
   border-radius: 8px;
   position: relative;
 }
 
-/* Active indicator (SignIn page style) */
-.sidebar-nav li.active::before {
+/* Active left bar — only on top-level items, not submenu-wrapper */
+.sidebar-nav > ul > li.active::before {
   content: '';
   position: absolute;
   left: 0;
@@ -140,8 +135,10 @@
   width: 3px;
   background-color: var(--purple-500);
   border-radius: 2px;
+  z-index: 1;
 }
 
+/* Shared link styles */
 .sidebar-nav a {
   display: flex;
   align-items: center;
@@ -158,16 +155,225 @@
   color: var(--text-primary);
 }
 
-.sidebar-nav li.active a {
+.sidebar-nav li.active > a {
   background-color: var(--bg-secondary);
   color: var(--purple-500);
 }
 
-/* Icons & labels */
+/* ── Submenu trigger button — looks identical to a link ── */
+.submenu-trigger {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 14px 10px 18px;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.2s ease, color 0.2s ease;
+  font-size: inherit;
+  font-family: inherit;
+}
+
+.submenu-trigger:hover {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+/* Active state for Users parent when on a user route */
+.sidebar-nav li.has-submenu.active .submenu-trigger {
+  background-color: var(--bg-secondary);
+  color: var(--purple-500);
+}
+
+/* ── Chevron ── */
+.submenu-chevron {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  color: var(--text-secondary);
+  font-size: 12px;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s ease;
+}
+
+.submenu-chevron.open {
+  transform: rotate(180deg);
+  color: var(--purple-500);
+}
+
+.submenu-trigger:hover .submenu-chevron {
+  color: var(--purple-500);
+}
+
+/* ── Submenu drawer (div, not li — avoids ::before conflicts) ── */
+.submenu-wrapper {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  /* No margin/padding so it sits flush under the parent */
+  transition:
+    max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.25s ease;
+}
+
+.submenu-wrapper.expanded {
+  max-height: 300px;
+  opacity: 1;
+}
+
+/* ── Submenu list ── */
+.submenu {
+  list-style: none;
+  margin: 0 0 6px 0;
+  padding: 0;
+  position: relative;
+}
+
+/* Connecting vertical line */
+.submenu::before {
+  content: '';
+  position: absolute;
+  left: 28px;
+  top: 6px;
+  bottom: 6px;
+  width: 1.5px;
+  background: var(--border-primary, rgba(120, 80, 200, 0.2));
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+.submenu li {
+  margin-bottom: 2px;
+  border-radius: 8px;
+  position: relative;
+}
+
+/* Active indicator for sub-items */
+.submenu li.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 3px;
+  background-color: var(--purple-500);
+  border-radius: 2px;
+}
+
+.submenu a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px 8px 38px;
+  text-decoration: none;
+  color: var(--text-secondary);
+  border-radius: 8px;
+  font-size: 13px;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.submenu a:hover {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.submenu li.active a {
+  background-color: var(--bg-secondary);
+  color: var(--purple-500);
+}
+
+.sub-icon {
+  font-size: 14px !important;
+  width: 16px !important;
+}
+
+/* ── Badges ── */
+.sub-badge {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+.sub-badge.badge-warning {
+  background-color: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  animation: subtlePulse 3s ease-in-out infinite;
+}
+
+.sub-badge.badge-danger {
+  background-color: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+.submenu li:hover .sub-badge {
+  transform: scale(1.1);
+}
+
+/* ── Staggered entrance ── */
+.submenu-wrapper.expanded .submenu li {
+  animation: slideInItem 0.2s ease both;
+}
+
+.submenu-wrapper.expanded .submenu li:nth-child(1) { animation-delay: 0.03s; }
+.submenu-wrapper.expanded .submenu li:nth-child(2) { animation-delay: 0.08s; }
+.submenu-wrapper.expanded .submenu li:nth-child(3) { animation-delay: 0.13s; }
+
+@keyframes slideInItem {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ── Collapsed badge on Users icon ── */
+.collapsed-badge {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background-color: #f59e0b;
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  animation: badgePop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes badgePop {
+  from { transform: scale(0); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+@keyframes subtlePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+  50%       { box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.15); }
+}
+
+/* ── Icons & labels ── */
 .icon {
   font-size: 16px;
   width: 20px;
   text-align: center;
+  flex-shrink: 0;
 }
 
 .label {
@@ -175,7 +381,7 @@
   font-weight: 500;
 }
 
-/* Footer */
+/* ── Footer ── */
 .sidebar-footer {
   padding: 14px;
 }
@@ -195,10 +401,10 @@
 }
 
 .avatar {
-  width: 40px;          /* fixed width */
-  height: 40px;         /* fixed height to make it a circle */
-  border-radius: 50%;   /* makes it perfectly circular */
-  background-color: var(--purple-500); /* choose your color */
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--purple-500);
   color: white;
   display: flex;
   align-items: center;
@@ -212,20 +418,32 @@
 .user-info {
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  margin-left: 10px;
 }
 
 .username {
   font-size: 14px;
   font-weight: 500;
   color: var(--text-primary);
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
 }
 
 .role {
   font-size: 12px;
   color: var(--text-secondary);
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
 }
 
-/* Footer dropdown */
+/* ── Profile dropdown ── */
 .profile-dropdown {
   position: absolute;
   bottom: 72px;
@@ -238,58 +456,6 @@
   padding: 8px;
   animation: fadeUp 0.15s ease-out;
   z-index: 2000;
-}
-
-/* Custom tooltips for collapsed sidebar */
-.sidebar.collapsed .sidebar-nav li {
-  position: relative;
-}
-
-.sidebar.collapsed .sidebar-nav li::before {
-  content: attr(title);
-  position: absolute;
-  left: 100%;
-  top: 50%;
-  transform: translateY(-50%);
-  margin-left: 10px;
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  padding: 6px 12px;
-  border-radius: 6px;
-  border: 1px solid var(--border-primary);
-  box-shadow: var(--shadow-md);
-  font-size: 12px;
-  white-space: nowrap;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.2s ease, visibility 0.2s ease;
-  z-index: 4000;
-  pointer-events: none;
-}
-
-.sidebar.collapsed .sidebar-nav li:hover::before {
-  opacity: 1;
-  visibility: visible;
-}
-
-/* Collapsed state dropdown positioning in sidebar */
-.sidebar.collapsed .profile-dropdown {
-  left: 15px;
-  bottom: 80px;
-  z-index: 3000;
-  position: fixed;
-}
-
-@keyframes fadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 .dropdown-item {
@@ -315,25 +481,49 @@
   margin: 6px 0;
 }
 
+/* ── Collapsed tooltips ── */
+.sidebar.collapsed .sidebar-nav > ul > li {
+  position: relative;
+}
 
+/* Tooltip via ::before — only on top-level li */
+.sidebar.collapsed .sidebar-nav > ul > li::before {
+  content: attr(title);
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-left: 10px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border-primary);
+  box-shadow: var(--shadow-md);
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  z-index: 4000;
+  pointer-events: none;
+}
 
-/* Mobile */
-/* @media (max-width: 768px) {
-  .sidebar {
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
-  }
+.sidebar.collapsed .sidebar-nav > ul > li:hover::before {
+  opacity: 1;
+  visibility: visible;
+}
 
-  .sidebar.open {
-    transform: translateX(0);
-  }
-} */
+.sidebar.collapsed .profile-dropdown {
+  left: 15px;
+  bottom: 80px;
+  z-index: 3000;
+  position: fixed;
+}
 
-/* Collapsed State */
+/* ── Collapsed state ── */
 .sidebar.collapsed {
-  /* Set the width to the collapsed state width */
   width: var(--sidebar-width, 3.75rem);
-  /* Ensure no horizontal overflow when collapsed */
   overflow-x: hidden;
 }
 
@@ -364,19 +554,17 @@
 .sidebar.collapsed .sidebar-nav a {
   justify-content: center;
   padding: 10px 14px;
-  /* Ensure consistent spacing and prevent text overflow when collapsed */
   white-space: nowrap;
   overflow: hidden;
 }
 
-.sidebar.collapsed .sidebar-nav li.active::before {
+.sidebar.collapsed .sidebar-nav > ul > li.active::before {
   display: none;
 }
 
 .sidebar.collapsed .user-profile {
   justify-content: center;
   padding: 10px;
-  /* Ensure consistent spacing and prevent text overflow when collapsed */
   white-space: nowrap;
   overflow: hidden;
 }
@@ -389,28 +577,13 @@
   margin: 0 auto;
 }
 
-
-
-
-
-
-
-/* User info */
-.user-info {
-  overflow: hidden;
-  margin-left: 10px;
+/* ── Animations ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-.username,
-.role {
-  display: block;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 150px;
-}
-
-/* Dropdown support box */
+/* ── Support box ── */
 .support-box {
   position: absolute;
   top: 0;
@@ -426,9 +599,14 @@
   transition: all 0.3s ease;
 }
 
-/* Slide/fade animation */
 .slide-fade {
   opacity: 1;
   transform: translateX(0);
+}
+
+/* Sub-item labels — 12px */
+.submenu a .label {
+  font-size: 12px;
+  font-weight: 400;
 }
 

@@ -143,7 +143,6 @@ const TenantRequests = () => {
       <div className="license-inventory-content">
         <PageHeader
           title="Tenant Requests"
-          subtitle="Manage your tenant requests"
         />
         
         <DataTable

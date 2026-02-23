@@ -3,7 +3,7 @@ import { dashboardServices } from '../../../services/apiService';
 import { getRoleId, getUserId } from '../../../services/authService';
 
 // Single API call hook to fetch all dashboard data
-export const useDashboardData = () => {
+export const useDashboardData = (yearRange = null) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -23,6 +23,12 @@ export const useDashboardData = () => {
           userId
         };
 
+        // Add year range to payload if provided
+        if (yearRange && yearRange.startYear && yearRange.endYear) {
+          payload.startYear = yearRange.startYear;
+          payload.endYear = yearRange.endYear;
+        }
+
         const response = await dashboardServices.getDashboardData(roleId, payload);
         setData(response.data);
         setError(null);
@@ -36,14 +42,14 @@ export const useDashboardData = () => {
     };
 
     fetchDashboardData();
-  }, []);
+  }, [yearRange]); // Re-fetch when yearRange changes
 
   return { data, loading, error };
 };
 
-// Individual hooks that use the single data source
-export const useDashboardCards = () => {
-  const { data, loading, error } = useDashboardData();
+// Individual hooks that use single data source
+export const useDashboardCards = (yearRange = null) => {
+  const { data, loading, error } = useDashboardData(yearRange);
   return { 
     cards: data?.cards || [], 
     loading, 
@@ -51,8 +57,8 @@ export const useDashboardCards = () => {
   };
 };
 
-export const useDashboardPieCharts = () => {
-  const { data, loading, error } = useDashboardData();
+export const useDashboardPieCharts = (yearRange = null) => {
+  const { data, loading, error } = useDashboardData(yearRange);
   return { 
     pieCharts: data?.pieCharts || [], 
     loading, 
@@ -60,8 +66,8 @@ export const useDashboardPieCharts = () => {
   };
 };
 
-export const useDashboardBarCharts = () => {
-  const { data, loading, error } = useDashboardData();
+export const useDashboardBarCharts = (yearRange = null) => {
+  const { data, loading, error } = useDashboardData(yearRange);
   return { 
     barCharts: data?.barCharts || [], 
     loading, 
@@ -69,8 +75,8 @@ export const useDashboardBarCharts = () => {
   };
 };
 
-export const useDashboardDataViews = () => {
-  const { data, loading, error } = useDashboardData();
+export const useDashboardDataViews = (yearRange = null) => {
+  const { data, loading, error } = useDashboardData(yearRange);
   return { 
     dataViews: data?.dataViews || [], 
     loading, 
@@ -78,8 +84,8 @@ export const useDashboardDataViews = () => {
   };
 };
 
-export const useReferralCode = () => {
-  const { data, loading, error } = useDashboardData();
+export const useReferralCode = (yearRange = null) => {
+  const { data, loading, error } = useDashboardData(yearRange);
   return { 
     referralCode: data?.referralCode || null, 
     loading, 
@@ -87,8 +93,8 @@ export const useReferralCode = () => {
   };
 };
 
-export const useTransactionHistory = () => {
-  const { data, loading, error } = useDashboardData();
+export const useTransactionHistory = (yearRange = null) => {
+  const { data, loading, error } = useDashboardData(yearRange);
   return { 
     transactionHistory: data?.transactionHistory || [], 
     loading, 
