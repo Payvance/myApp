@@ -23,13 +23,25 @@ public class DashboardController {
     @PostMapping("/{roleId}")
     public ResponseEntity<Map<String, Object>> getDashboardData(
             @PathVariable Long roleId, 
-            @RequestBody Map<String, Long> payload) {
-        Long userId = payload.get("userId");
-        Map<String, Object> dashboardData = getDashboardDataByRole(roleId, userId);
+            @RequestBody Map<String, Object> payload) {
+        Object userIdObj = payload.get("userId");
+        Long userId;
+        if (userIdObj instanceof String) {
+            userId = Long.valueOf((String) userIdObj);
+        } else if (userIdObj instanceof Number) {
+            userId = ((Number) userIdObj).longValue();
+        } else {
+            throw new IllegalArgumentException("Invalid userId type");
+        }
+        
+        Integer startYear = (Integer) payload.get("startYear");
+        Integer endYear = (Integer) payload.get("endYear");
+        
+        Map<String, Object> dashboardData = getDashboardDataByRole(roleId, userId, startYear, endYear);
         return ResponseEntity.ok(dashboardData);
     }
 
-    private Map<String, Object> getDashboardDataByRole(Long roleId, Long userId) {
+    private Map<String, Object> getDashboardDataByRole(Long roleId, Long userId, Integer startYear, Integer endYear) {
         int roleIdInt = roleId.intValue();
         switch (roleIdInt) {
             case 1: // Superadmin
@@ -37,7 +49,7 @@ public class DashboardController {
             case 4: // Vendor
                 return vendorDashboardService.getDashboardData(userId);
             case 2: // Tenant
-                return tenantDashboardService.getDashboardData(userId);
+                return tenantDashboardService.getDashboardData(userId, startYear, endYear);
             case 5: // CA
                 return caDashboardService.getDashboardData(userId);
             default: // Default response for unknown roles

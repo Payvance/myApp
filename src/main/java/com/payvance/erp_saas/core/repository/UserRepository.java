@@ -238,7 +238,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     	        u.phone,
     	        tur.isActive,
     	        tur.tenantId,
-    	        t.status
+    	        t.status,
+    	        tur.roleId
     	    )
     	    FROM User u
     	    JOIN TenantUserRole tur ON u.id = tur.userId
@@ -256,12 +257,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
     	        u.phone,
     	        tur.isActive,
     	        tur.tenantId,
-    	        t.status
+    	        t.status,
+    	        tur.roleId
     	    )
     	    FROM User u
     	    JOIN TenantUserRole tur ON u.id = tur.userId
     	    JOIN Tenant t ON t.id = tur.tenantId
-    	    WHERE tur.roleId = 3
+    	    WHERE tur.roleId IN (2, 3)
     	      AND tur.tenantId = :tenantId
     	      AND u.id = :userId
     	""")
