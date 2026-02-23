@@ -32,6 +32,7 @@ public interface TenantUsageRepository extends JpaRepository<TenantUsage, Long> 
      * Get companies count directly from companies_count column
      */
     @Query("SELECT tu.companiesCount FROM TenantUsage tu WHERE tu.tenantId = :tenantId")
-    Integer findCompaniesCountByTenantId(@Param("tenantId") Long tenantId);
+    Long findCompaniesCountByTenantId(@Param("tenantId") Long tenantId);
     boolean existsByTenantId(Long tenantId);
+    
 }

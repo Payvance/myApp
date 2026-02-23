@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class TenantUserNestedResponse {
     
-    private Long tenantId;
+    private Long userId;
     private String name;
     private String email;
     private String phone;

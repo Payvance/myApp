@@ -13,7 +13,7 @@ public class UserNestedData {
     private String email;
     private String phone;
     private Long roleId;
-    private Boolean isactive;
+    private Boolean active;
     public UserNestedData(Long tenantId,Long userId,String name,String email,String phone,Long roleId,Boolean active) {
         this.tenantId = tenantId;
         this.userId = userId;
@@ -21,6 +21,6 @@ public class UserNestedData {
         this.email = email;
         this.phone = phone;
         this.roleId = roleId;
-        this.isactive = active;
+        this.active = active;
     }
 }

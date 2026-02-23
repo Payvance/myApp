@@ -123,12 +123,12 @@ public class TenantUserRoleService {
 	                             .skip(1)
 	                             .toList();
 	                return new TenantUserNestedResponse(
-	                        tenantId,
+	                        mainUser.getUserId(),
 	                        mainUser.getName(),
 	                        mainUser.getEmail(),
 	                        mainUser.getPhone(),
 	                        mainUser.getRoleId(),
-	                        mainUser.getIsactive(),
+	                        mainUser.getActive(),
 	                        nested
 	                );
 	            })

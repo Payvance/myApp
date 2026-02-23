@@ -1,9 +1,12 @@
 package com.payvance.erp_saas.core.repository;
 
-import com.payvance.erp_saas.core.entity.Plan;
-import com.payvance.erp_saas.core.entity.PlanLimitation;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import com.payvance.erp_saas.core.entity.Plan;
+import com.payvance.erp_saas.core.entity.PlanLimitation;
 
 /**
  * Repository interface for PlanLimitation entity operations.
@@ -17,4 +20,5 @@ public interface PlanLimitationRepository extends JpaRepository<PlanLimitation, 
      * Find plan limitation by plan
      */
     PlanLimitation findByPlan(Plan plan);
+    Optional<PlanLimitation> findByPlanId(Long planId);
 }

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.payvance.erp_saas.core.entity.AddOn;
@@ -18,4 +19,11 @@ public interface AddOnRepository extends JpaRepository<AddOn, Long> {
     Optional<AddOn> findByCode(String code);
     
     List<AddOn> findByPlanIdAndStatus(Long planId, String status);
+    @Query("""
+    	    SELECT COUNT(a)
+    	    FROM AddOn a
+    	    WHERE a.plan.id = :planId
+    	    AND a.status = 'active'
+    	""")
+    	Long countActiveAddonsByPlanId(Long planId);
 }

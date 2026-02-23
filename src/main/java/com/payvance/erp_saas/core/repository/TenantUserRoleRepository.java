@@ -83,7 +83,8 @@ public interface TenantUserRoleRepository
             u.name as userName,
             u.email as userEmail,
             tur.createdAt as createdAt,
-            tur.isActive as isActive
+            tur.isActive as isActive,
+            u.phone as userPhone
         )
         FROM TenantUserRole tur
         JOIN User u ON tur.userId = u.id
@@ -91,6 +92,18 @@ public interface TenantUserRoleRepository
         ORDER BY tur.createdAt DESC
         """)
     List<Map<String, Object>> findRecentUsersByTenantId(@Param("tenantId") Long tenantId);
+    
+
+
+    	@Query("""
+    	    SELECT COUNT(tur)
+    	    FROM TenantUserRole tur
+    	    WHERE tur.tenantId = :tenantId
+    	    AND tur.isActive = true
+    	""")
+    	Long countActiveUsersByTenantId(Long tenantId);
+    	
+    	
 
     /*
      * Count users created monthly by tenant admin for financial year (April to March)
@@ -126,7 +139,7 @@ public interface TenantUserRoleRepository
     	        u.email,
     	        u.phone,
     	        tur.roleId,
-    	        tur.isActive
+    	        u.isActive
     	    )
     	    FROM TenantUserRole tur
     	    JOIN User u ON tur.userId = u.id
