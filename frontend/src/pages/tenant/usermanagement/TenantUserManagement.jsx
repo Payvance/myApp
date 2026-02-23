@@ -37,7 +37,7 @@ const TenantUserManagement = () => {
   });
   const navigate = useNavigate();
   const canCreateUser =
-  planDetails.createdUsers-1 < planDetails.activeUsers;
+  planDetails.createdUsers < planDetails.activeUsers;
   // ---------------- OTP Hook ----------------
   const {
     otp,
@@ -72,7 +72,6 @@ const TenantUserManagement = () => {
     resetForm(); // reset everything when popup closes
   };
 
-  // ---------------- Signup Handler ----------------
   // ---------------- Signup Handler ----------------
 const handleSignup = async () => {
   if (!otpVerified) {
@@ -241,8 +240,7 @@ const fetchData = useCallback(async (params = {}) => {
           isOpen={isCreatePopupOpen}
           onClose={!showOtpModal ? handleCloseCreatePopup : undefined}
           title="Create New User"
-          subtitle="Enter user details to create an account"
-          size="medium"
+          size="small"
         >
           <div className="signup-panel pop-pannel">
             <div className="signup-inner">
@@ -257,7 +255,7 @@ const fetchData = useCallback(async (params = {}) => {
                 max={50}
                 required={true}
               />
-
+ 
               {/* Mobile + OTP */}
               <div className="form-group otp-row">
                 <div className="otp-input-col">
@@ -288,7 +286,7 @@ const fetchData = useCallback(async (params = {}) => {
                   )}
                 </div>
               </div>
-
+ 
               {/* Email */}
               <InputField
                 label={formConfig.signin.email.label}
@@ -302,7 +300,7 @@ const fetchData = useCallback(async (params = {}) => {
                 validationErrors={validationErrors}
                 setValidationErrors={setValidationErrors}
               />
-
+ 
               {/* Submit */}
               <div className="signin-submit">
                 <Button
@@ -313,7 +311,7 @@ const fetchData = useCallback(async (params = {}) => {
               </div>
             </div>
           </div>
-
+ 
           {/* OTP Modal */}
           {showOtpModal && (
             <div className="otp-modal-overlay">
@@ -321,7 +319,7 @@ const fetchData = useCallback(async (params = {}) => {
                 <h3>Verify OTP</h3>
                 <p>Enter the 6-digit OTP sent to</p>
                 <strong>+91 {mobileNumber}</strong>
-
+ 
                 <div className="otp-box-wrapper">
                   {otp.map((digit, index) => (
                     <input
@@ -336,7 +334,7 @@ const fetchData = useCallback(async (params = {}) => {
                     />
                   ))}
                 </div>
-
+ 
                 <div className="otp-actions">
                   <Button
                     text="Verify OTP"
@@ -358,13 +356,13 @@ const fetchData = useCallback(async (params = {}) => {
             </div>
           )}
         </PopUp>
+ 
 
 
         <PopUp
          isOpen={isSuccessPopupOpen}
          onClose={() => setIsSuccessPopupOpen(false)}
          title="Success"
-         subtitle="User Created Successfully"
          size="small"
         >
         <div style={{ textAlign: "center" }}>

@@ -1,11 +1,11 @@
 // src/config/config.js
 
 // App-related constants
-export const APP_NAME = "Finalyst";
+export const APP_NAME = "FinlyticZ";
 
 // Company-related info grouped in an object
 export const COMPANY_INFO = {
-  name: "PayVance Innovation Private Limited © 2025",
+  name: "PayVance Innovation Private Limited",
   address: "123 Main St, City, Country"
 };
 

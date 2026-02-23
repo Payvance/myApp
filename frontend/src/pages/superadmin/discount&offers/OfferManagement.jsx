@@ -366,12 +366,6 @@ const isFormValid = () => {
         isOpen={isCreatePopupOpen}
         onClose={handleCloseCreatePopup}
         title={isEditMode ? 'Update Offer' : 'Create Offer'}
-        // added subtitle to popup
-        subtitle={
-          isEditMode
-            ? 'Modify existing offer details'
-            : 'Configure offer settings and offers'
-          }
         size="large"
       >
         {/* create offer form div start */}

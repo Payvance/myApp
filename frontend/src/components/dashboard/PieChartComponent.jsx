@@ -1,105 +1,58 @@
-import React from 'react';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Pie } from 'react-chartjs-2';
-import './PieChartComponent.css';
+import React from "react";
+import Highcharts from "highcharts";
+import HighchartsReact from "highcharts-react-official";
 
-ChartJS.register(ArcElement, Tooltip, Legend);
+const PieChartComponent = ({ title, data, loading }) => {
+  if (loading) return <div className="chart-loader">Loading...</div>;
 
-// Color palette for pie charts
-const COLOR_PALETTE = [
-  '#667eea', // Primary blue
-  '#4ecdc4', // Teal
-  '#ffa726', // Orange
-  '#ff6b6b', // Red
-  '#48bb78', // Green
-  '#9f7aea', // Purple
-  '#f6ad55', // Yellow
-  '#fc8181', // Pink
-  '#63b3ed', // Light blue
-  '#68d391', // Light green
-];
-
-const PieChartComponent = ({ title, data, size = 'medium', loading }) => {
-  if (loading) {
-    return (
-      <div className={`pie-chart-card pie-chart-card--${size}`}>
-        <div className="pie-chart__skeleton-title"></div>
-        <div className="pie-chart__skeleton-chart"></div>
-      </div>
-    );
-  }
-
-  const chartData = {
-    labels: data.map(item => item.name),
-    datasets: [
+  const options = {
+    chart: {
+      type: "pie",
+      backgroundColor: "transparent",
+      height: 260   // 🔥 smaller
+    },
+    title: {
+      text: title,
+      align: "left",
+      verticalAlign: "top",
+      x: 0,
+      y: 10,
+      style: { fontSize: "14px", fontWeight: 600 }
+    },
+    plotOptions: {
+      pie: {
+        innerSize: "65%",
+        size: "100%",   // 🔥 reduce pie size
+        showInLegend: true, 
+        borderWidth: 0,
+        dataLabels: {
+          enabled: true,
+          style: { fontSize: "11px" },
+          format: "{point.name}"
+        }
+      }
+    },
+    tooltip: {
+      pointFormat: "<b>{point.percentage:.1f}%</b>"
+    },
+    legend: {
+      align: "center",
+      verticalAlign: "bottom",
+      itemStyle: { fontSize: "11px" }
+    },
+    credits: { enabled: false },
+    series: [
       {
-        data: data.map(item => item.value),
-        backgroundColor: data.map((_, index) => COLOR_PALETTE[index % COLOR_PALETTE.length]),
-        borderColor: '#ffffff',
-        borderWidth: 2,
-        hoverOffset: 4,
-        cutout: '40%'  // Creates donut chart with 60% hollow center
+        name: "Users",
+        data: data?.map(item => ({
+          name: item.name,
+          y: Number(item.value || item.y)
+        }))
       }
     ]
   };
 
-  const options = {
-    responsive: true,
-    maintainAspectRatio: true,
-    plugins: {
-      legend: {
-        position: 'right',
-        labels: {
-          padding: 5,
-          usePointStyle: true,
-          pointStyle: 'circle',
-          font: {
-            size: 8
-          },
-          generateLabels: function(chart) {
-            const data = chart.data;
-            if (data.labels.length && data.datasets.length) {
-              const dataset = data.datasets[0];
-              return data.labels.map((label, i) => {
-                const value = dataset.data[i];
-                const total = dataset.data.reduce((a, b) => a + b, 0);
-                const percentage = ((value / total) * 100).toFixed(1);
-                
-                return {
-                  text: `${label}`,
-                  fillStyle: dataset.backgroundColor[i],
-                  hidden: false,
-                  index: i,
-                  pointStyle: 'circle'
-                };
-              });
-            }
-            return [];
-          }
-        }
-      },
-      tooltip: {
-        callbacks: {
-          label: function(context) {
-            const label = context.label || '';
-            const value = context.parsed;
-            const total = context.dataset.data.reduce((a, b) => a + b, 0);
-            const percentage = ((value / total) * 100).toFixed(1);
-            return `${label}: ${value} (${percentage}%)`;
-          }
-        }
-      }
-    }
-  };
-
-  return (
-    <div className={`pie-chart-card pie-chart-card--${size}`}>
-      <h3 className="pie-chart__title">{title}</h3>
-      <div className="pie-chart__container">
-        <Pie data={chartData} options={options} />
-      </div>
-    </div>
-  );
+  return <HighchartsReact highcharts={Highcharts} options={options} />;
 };
 
 export default PieChartComponent;

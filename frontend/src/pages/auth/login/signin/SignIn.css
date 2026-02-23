@@ -238,6 +238,7 @@ background: linear-gradient(
 
 .pop-pannel{
   background: var(--primary-50) !important;
+  padding: 0px !important;
 }
 
 .signup-inner { width: 100%; max-width: 320px; margin-top: 0px;}

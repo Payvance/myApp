@@ -103,7 +103,7 @@ const TenantManagement = () => {
             loading={loading}
             basePath="/users"
             expandableRows={true}
-            primaryKeys={['tenantId']}
+            primaryKeys={['userId']}
             showActions={true}
             showEditButton={true}
             showViewButton={true}

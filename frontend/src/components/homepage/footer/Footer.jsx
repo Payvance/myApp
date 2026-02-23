@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Footer.css';
 import CommonFooter from '../../common/footer/Footer';
+import { companyConfigServices } from '../../../services/apiService'; // ✅ adjust path if needed
 
 const quickLinks = [
     { label: 'Home', href: '#home' },
@@ -12,27 +13,57 @@ const quickLinks = [
 ];
 
 const supportLinks = [
-    { label: 'Terms &amp; Conditions', },
-    { label: 'Privacy Policy', },
+    { label: 'Terms & Conditions' },
+    { label: 'Privacy Policy' },
 ];
 
 const socialLinks = [
-    { icon: 'bi-linkedin', href: 'https://linkedin.com', label: 'LinkedIn' },
-    { icon: 'bi-instagram', href: 'https://instagram.com', label: 'Instagram' },
+    { icon: 'bi-linkedin', href: 'https://www.linkedin.com/company/payvance', label: 'LinkedIn' },
+    { icon: 'bi-instagram', href: 'https://www.instagram.com/payvanceinnovations?igsh=eTVtMjg3bTE5NDBt', label: 'Instagram' },
 ];
 
 const Footer = () => {
     const navigate = useNavigate();
+
+    // ✅ Company details state
+    const [companyDetails, setCompanyDetails] = useState({
+        companyName: '',
+        email: '',
+        phone: '',
+        address: '',
+    });
+
+    // ✅ Fetch company config
+    useEffect(() => {
+        const fetchCompanyDetails = async () => {
+            try {
+                const res = await companyConfigServices.getCompanyDetails();
+
+                const configObj = res.data.reduce((acc, item) => {
+                    acc[item.code] = item.value;
+                    return acc;
+                }, {});
+
+                setCompanyDetails({
+                    companyName: configObj.companyName,
+                    email: configObj.email,
+                    phone: configObj.phone,
+                    address: configObj.address,
+                });
+
+            } catch (error) {
+                console.error('Error fetching company details:', error);
+            }
+        };
+
+        fetchCompanyDetails();
+    }, []);
 
     const scrollTo = (href) => {
         if (href.startsWith('#')) {
             const el = document.querySelector(href);
             if (el) el.scrollIntoView({ behavior: 'smooth' });
         }
-    };
-
-    const openPDF = (path) => {
-        window.open(path, '_blank', 'noopener,noreferrer');
     };
 
     return (
@@ -43,18 +74,35 @@ const Footer = () => {
 
                 {/* 1 — Company Info */}
                 <div className="ft-col ft-brand-col">
-                    <div className="ft-logo">FinlyticZ</div>
+                    <div className="ft-logo">
+                        {companyDetails.companyName}
+                    </div>
+
                     <p className="ft-tagline">
-                        Empowering businesses with smarter finance — invoicing, GST, analytics,
-                        and payments in one beautiful platform.
+                        Designed for smarter financial management.
+                        Streamlined invoicing and tax compliance.
+                        Actionable analytics at your fingertips.
                     </p>
-                    <div className="ft-address">
-                        <i className="bi bi-geo-alt-fill"></i>
-                        <span>
-                            PayVance Innovation Pvt. Ltd.<br />
-                            A112 Centrum Business Square, Wagle Estate,<br />
-                            Thane , Mumbai-400604<br />
-                        </span>
+
+                    <div className="ft-brand-details">
+                        <div className="ft-address">
+                            <i className="bi bi-geo-alt-fill"></i>
+                            <span style={{ whiteSpace: 'pre-line' }}>
+                                {companyDetails.address}
+                            </span>
+                        </div>
+                        <div className="ft-map-square">
+                            <iframe
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3767.8967406240217!2d72.95159107598!3d19.20015568703491!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7b913619a970d%3A0x3565e06495db1670!2sCentrum%20Business%20Square!5e0!3m2!1sen!2sin!4v1740304033306!5m2!1sen!2sin"
+                                width="100%"
+                                height="100%"
+                                style={{ border: 0 }}
+                                allowFullScreen=""
+                                loading="lazy"
+                                referrerPolicy="no-referrer-when-downgrade"
+                                title="Office Location"
+                            ></iframe>
+                        </div>
                     </div>
                 </div>
 
@@ -66,7 +114,10 @@ const Footer = () => {
                             <li key={i}>
                                 <a
                                     href={l.href}
-                                    onClick={(e) => { e.preventDefault(); scrollTo(l.href); }}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        scrollTo(l.href);
+                                    }}
                                 >
                                     <i className="bi bi-chevron-right"></i> {l.label}
                                 </a>
@@ -75,7 +126,10 @@ const Footer = () => {
                         <li>
                             <a
                                 href="/partnerwithus"
-                                onClick={(e) => { e.preventDefault(); navigate('/partnerwithus'); }}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    navigate('/partnerwithus');
+                                }}
                             >
                                 <i className="bi bi-chevron-right"></i> Partner With Us
                             </a>
@@ -85,16 +139,12 @@ const Footer = () => {
 
                 {/* 3 — Product & Support */}
                 <div className="ft-col">
-                    <h4 className="ft-col-title">Product &amp; Support</h4>
+                    <h4 className="ft-col-title">Product & Support</h4>
                     <ul className="ft-link-list">
                         {supportLinks.map((l, i) => (
                             <li key={i}>
-                                <a
-                                    href={l.pdf}
-                                    onClick={(e) => { e.preventDefault(); openPDF(l.pdf); }}
-                                >
-                                    <i className="bi bi-file-earmark-text"></i>
-                                    <span dangerouslySetInnerHTML={{ __html: l.label }} />
+                                <a href="#">
+                                    <i className="bi bi-file-earmark-text"></i> {l.label}
                                 </a>
                             </li>
                         ))}
@@ -108,20 +158,19 @@ const Footer = () => {
                         <li>
                             <i className="bi bi-telephone-fill"></i>
                             <div>
-                                <span>+91- 22- 45070723</span>
+                                <span>{companyDetails.phone}</span>
                             </div>
                         </li>
                         <li>
                             <i className="bi bi-envelope-fill"></i>
                             <div>
-                                <span>info@payvance.co.in</span>
+                                <span>{companyDetails.email}</span>
                             </div>
                         </li>
                         <li>
                             <i className="bi bi-clock-fill"></i>
                             <div>
-                                <span>Mon–Fri: 9 AM – 6 PM</span>
-                                <span className="cu-closed">Sat-Sun: Closed</span>
+                                <span>24/7 Available</span>
                             </div>
                         </li>
                     </ul>
@@ -148,10 +197,9 @@ const Footer = () => {
                 </div>
             </div>
 
-            {/* ── Divider ── */}
             <div className="ft-divider"></div>
 
-            {/* ── Common Footer (Copyright & Version) ── */}
+            {/* Copyright */}
             <CommonFooter />
 
         </footer>

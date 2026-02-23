@@ -89,7 +89,7 @@ const Hero = () => {
                         <i className="bi bi-check2"></i>
                         <span className="how-icon-badge"><i className="bi bi-star-fill"></i></span>
                     </div>
-                    <h4>It's Done, Enjoy the App!</h4>
+                    <h4>Download completed, Enjoy the App!</h4>
                     <p>Scan the QR code from your mobile app on the Desktop app and you're live instantly.</p>
                     <div className="how-pill"><i className="bi bi-check-lg"></i> Instant activation</div>
                 </div>

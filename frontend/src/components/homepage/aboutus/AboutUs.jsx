@@ -52,8 +52,8 @@ const storyMilestones = [
 ];
 
 const teamMembers = [
-    { initials: 'FD', name: 'Falgun Dharamshi', role: 'CEO & Co-founder', linkedin: '#', twitter: '#' },
-    { initials: 'ND', name: 'Needhi Dharmashi', role: 'CTO & Co-founder', linkedin: '#', twitter: '#' },
+    { initials: 'FD', name: 'Falgun Dharmshi', role: 'CEO & Co-founder', linkedin: '#', twitter: '#' },
+    { initials: 'ND', name: 'Nidhi Dharmshi', role: 'CTO & Co-founder', linkedin: '#', twitter: '#' },
     { initials: 'AS', name: 'Akash Singh', role: 'Head of Product', linkedin: '#', twitter: '#' },
     { initials: 'AD', name: 'Aniket Desai', role: 'Head of Product', linkedin: '#', twitter: '#' },
 ];
@@ -73,7 +73,7 @@ const AboutUs = () => {
             {/* ── 1. Who We Are — Two Column Intro ── */}
             <div className="about-intro-wrap">
                 <div className="about-intro-text">
-                    <span className="about-eyebrow">WHO WE ARE</span>
+                    <span className="about-eyebrow">WHO ARE WE</span>
                     <h2>A dedicated team for your digital finance journey</h2>
                     <p>
                         Welcome to FinlyticZ, your ultimate resource for digital finance and payments.
@@ -90,7 +90,7 @@ const AboutUs = () => {
                     <div className="about-circle">
                         <div className="about-circle-inner">
                             <span className="about-circle-brand">FinlyticZ</span>
-                            <span className="about-circle-tagline">Ab Hisab Ungliyon Pe</span>
+                            <span className="about-circle-tagline">Phone nikalo, business sambhalo</span>
                         </div>
                     </div>
                 </div>

@@ -306,3 +306,45 @@
   from { transform: scale(0.5); opacity: 0; }
   to   { transform: scale(1);   opacity: 1; }
 }
+
+/* ══════════════════════════════════════════════════
+   Theme flyout rows — sp-theme-* (reuses support-box)
+   ══════════════════════════════════════════════════ */
+
+.sp-theme-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 7px 8px;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--text-primary);
+  transition: background 0.15s;
+  text-align: left;
+}
+.sp-theme-row:hover { background: var(--bg-secondary); }
+
+.sp-theme-row--active {
+  color: var(--purple-500);
+  background: var(--purple-100, rgba(126, 86, 228, 0.07));
+}
+.sp-theme-row--active:hover {
+  background: var(--purple-100, rgba(126, 86, 228, 0.07));
+}
+
+.sp-theme-row__icon {
+  font-size: 13px;
+  width: 16px;
+  text-align: center;
+  flex-shrink: 0;
+  color: var(--text-secondary);
+}
+.sp-theme-row--active .sp-theme-row__icon { color: var(--purple-500); }
+
+.sp-theme-row__name { flex: 1; font-weight: 500; }
+.sp-theme-row--active .sp-theme-row__name { font-weight: 700; }

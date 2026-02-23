@@ -1,19 +1,33 @@
-import React, { useState } from 'react';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
-import { Bar } from 'react-chartjs-2';
-import './BarChartComponent.css';
+import React, { useState } from "react";
+import Highcharts from "highcharts";
+import HighchartsReact from "highcharts-react-official";
+import "./BarChartComponent.css";
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+const BarChartComponent = ({
+  title,
+  data = [],
+  xAxis,
+  yAxis,
+  size = "medium",
+  loading,
+  onYearChange
+}) => {
 
-const BarChartComponent = ({ title, data, xAxis, yAxis, size = 'medium', loading, onYearChange }) => {
   const currentYear = new Date().getFullYear();
-  const defaultPair = `${currentYear}-${currentYear + 1}`;
-  const [selectedPair, setSelectedPair] = useState(defaultPair); // Default: 2026-2027
-  
-  // Generate year pairs (current year + next 10 years)
+  let firstYear = currentYear;
+  if (data && data.length > 0 && data[0][xAxis]) {
+    const firstLabel = data[0][xAxis];
+    const match = firstLabel.match(/(\d{4})/);
+    if (match) firstYear = parseInt(match[1]);
+  }
+
+  const defaultPair = `${firstYear}-${firstYear + 1}`;
+  const [selectedPair, setSelectedPair] = useState(defaultPair);
+
+  // Generate year pairs
   const yearPairs = [];
   for (let i = 0; i <= 10; i++) {
-    const startYear = currentYear + i;
+    const startYear = firstYear + i;
     const endYear = startYear + 1;
     yearPairs.push(`${startYear}-${endYear}`);
   }
@@ -21,17 +35,14 @@ const BarChartComponent = ({ title, data, xAxis, yAxis, size = 'medium', loading
   const handleYearChange = (e) => {
     const pair = e.target.value;
     setSelectedPair(pair);
-    
-    // Parse the pair to get start and end years
-    const [startYear, endYear] = pair.split('-').map(year => parseInt(year));
-    
+
+    const [startYear, endYear] = pair.split("-").map(Number);
+
     if (onYearChange) {
-      onYearChange({
-        startYear,
-        endYear
-      });
+      onYearChange({ startYear, endYear });
     }
   };
+
   if (loading) {
     return (
       <div className={`bar-chart-card bar-chart-card--${size}`}>
@@ -41,84 +52,61 @@ const BarChartComponent = ({ title, data, xAxis, yAxis, size = 'medium', loading
     );
   }
 
-  const chartData = {
-    labels: data.map(item => item[xAxis]),
-    datasets: [
-      {
-        label: title,
-        data: data.map(item => item[yAxis]),
-        backgroundColor: 'rgba(0, 145, 255, 0.8)',
-        borderColor: 'rgba(232, 251, 255, 1)',
-        borderWidth: 2,
-        borderRadius: 8,
-        hoverBackgroundColor: 'rgba(251, 255, 220, 1)',
-      }
-    ]
-  };
+  const categories = data.map(item => item[xAxis]);
+  const values = data.map(item => Number(item[yAxis]));
 
   const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: false
-      },
-      tooltip: {
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-        padding: 12,
-        cornerRadius: 8,
-        titleFont: {
-          size: 14,
-          weight: 'bold'
-        },
-        bodyFont: {
-          size: 13
-        },
-        callbacks: {
-          label: function(context) {
-            const label = context.dataset.label || '';
-            const value = context.parsed.y;
-            return `${label}: ${value}`;
-          }
+    chart: {
+      type: "column",
+      height: 200
+    },
+
+    title: {
+      text: null
+    },
+
+    xAxis: {
+      categories
+    },
+
+    yAxis: {
+      min: 0,
+      title: { text: null }
+    },
+
+    plotOptions: {
+      column: {
+        borderRadius: 8,
+        dataLabels: {
+          enabled: true
         }
       }
     },
-    scales: {
-      x: {
-        grid: {
-          display: false
-        },
-        ticks: {
-          font: {
-            size: 12
-          },
-          color: '#6c757d'
-        }
-      },
-      y: {
-        beginAtZero: true,
-        grid: {
-          borderDash: [5, 5],
-          color: 'rgba(0, 0, 0, 0.05)'
-        },
-        ticks: {
-          font: {
-            size: 12
-          },
-          color: '#6c757d'
-        }
+
+    tooltip: {
+      formatter: function () {
+        return `<b>${this.x}</b><br/>${title}: ${this.y}`;
       }
-    }
+    },
+
+    legend: { enabled: false },
+
+    series: [
+      {
+        name: title,
+        data: values
+      }
+    ]
   };
 
   return (
     <div className={`bar-chart-card bar-chart-card--${size}`}>
       <div className="bar-chart__header">
         <h3 className="bar-chart__title">{title}</h3>
+
         <div className="bar-chart__year-selector">
-          <label htmlFor={`year-pair-${title}`}>Year Range:</label>
+          <label>Year Range:</label>
           <select
-            id={`year-pair-${title}`}
             value={selectedPair}
             onChange={handleYearChange}
             className="bar-chart__year-select"
@@ -131,8 +119,9 @@ const BarChartComponent = ({ title, data, xAxis, yAxis, size = 'medium', loading
           </select>
         </div>
       </div>
+
       <div className="bar-chart__container">
-        <Bar data={chartData} options={options} />
+        <HighchartsReact highcharts={Highcharts} options={options} />
       </div>
     </div>
   );

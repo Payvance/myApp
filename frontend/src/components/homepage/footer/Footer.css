@@ -15,12 +15,12 @@
     display: grid;
     grid-template-columns: 1.6fr 1fr 1fr 1.1fr;
     gap: 3rem;
-    padding-bottom: 3rem;
+    padding-bottom: 1rem;
 }
 
 /* ── Brand column ── */
 .ft-logo {
-    font-size: 1.9rem;
+    font-size: 1.5rem;
     font-weight: 900;
     background: linear-gradient(135deg, #c084fc, #a855f7);
     -webkit-background-clip: text;
@@ -38,6 +38,15 @@
     max-width: 280px;
 }
 
+/* ── Brand details (Address + Map) ── */
+.ft-brand-details {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 1.5rem;
+    margin-top: 0.5rem;
+}
+
 .ft-address {
     display: flex;
     align-items: flex-start;
@@ -45,7 +54,6 @@
     font-size: 0.83rem;
     color: rgba(255, 255, 255, 0.6);
     line-height: 1.75;
-    margin-bottom: 1rem;
 }
 
 .ft-address i {
@@ -53,6 +61,19 @@
     font-size: 1rem;
     margin-top: 2px;
     flex-shrink: 0;
+}
+
+.ft-map-square {
+    width: 90px;
+    height: 90px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid rgba(168, 85, 247, 0.3);
+}
+
+.ft-map-square iframe {
+    width: 100%;
+    height: 100%;
 }
 
 .ft-reg {
@@ -70,7 +91,7 @@
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: #c084fc;
-    margin: 0 0 1.2rem;
+    margin: 0.8rem 0 1.2rem;
 }
 
 /* ── Link list ── */
@@ -145,7 +166,7 @@
     align-items: center;
     gap: 1.5rem;
     flex-wrap: wrap;
-    padding: 1.75rem 0;
+    padding: 0.75rem 0;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -256,5 +277,10 @@
     .ft-copyright {
         flex-direction: column;
         text-align: center;
+    }
+
+    .ft-brand-details {
+        flex-direction: column;
+        gap: 1.25rem;
     }
 }
