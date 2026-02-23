@@ -13,7 +13,7 @@ const TenantLayout = ({ children }) => {
       className="layout-grid"
       style={{
         '--sidebar-width': isSidebarCollapsed ? '3.75rem' : '13rem',
-        '--navbar-height': '56px'
+        '--navbar-height': '0px'
       }}
     >
         <TenantSidebar
@@ -21,12 +21,10 @@ const TenantLayout = ({ children }) => {
         setIsCollapsed={setIsSidebarCollapsed}
         />
 
-        {/* Navbar - occupies the navbar area */}
-      <Navbar isSidebarCollapsed={isSidebarCollapsed} />
 
       {/* Main content area */}
       {/* Using the MainScreenContainer component */}
-      <MainScreenContainer className={`with-navbar with-sidebar ${isSidebarCollapsed ? 'collapsed' : ''}`}>
+      <MainScreenContainer className={`with-sidebar ${isSidebarCollapsed ? 'collapsed' : ''}`}>
         <div className="main-content">
           {children}
         </div>

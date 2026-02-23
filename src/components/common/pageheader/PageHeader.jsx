@@ -15,7 +15,7 @@ const PageHeader = ({ title, subtitle, button }) => {
           {/* // page header title */}
           <h1 className="page-header-title">{title}</h1>
           {/* // page header subtitle */}
-          <p className="page-header-subtitle">{subtitle}</p>
+          {/* <p className="page-header-subtitle">{subtitle}</p> */}
         </div>
         {button && (
           // page header action div

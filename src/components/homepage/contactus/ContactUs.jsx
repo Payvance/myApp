@@ -14,6 +14,7 @@ const ContactUs = () => {
     const [sent, setSent] = useState(false);
     const [companyData, setCompanyData] = useState({});
 
+
     const handleChange = (e) =>
         setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -125,6 +126,7 @@ const ContactUs = () => {
                                         type="text"
                                         placeholder="Enter your full name"
                                         value={form.name}
+                                        validationType="TEXT_ONLY"
                                         onChange={handleChange}
                                         required
                                     />
@@ -138,6 +140,7 @@ const ContactUs = () => {
                                         placeholder="you@company.com"
                                         value={form.email}
                                         onChange={handleChange}
+                                        validationType="EMAIL"
                                         required
                                     />
                                 </div>
@@ -152,6 +155,7 @@ const ContactUs = () => {
                                         type="tel"
                                         placeholder="Enter your phone number"
                                         value={form.phone}
+                                        validationType="NUMBER_ONLY"
                                         onChange={handleChange}
                                     />
                                 </div>

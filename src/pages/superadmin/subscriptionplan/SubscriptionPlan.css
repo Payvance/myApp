@@ -56,7 +56,7 @@
     transition: all 0.2s ease;
     box-shadow: var(--shadow-sm, 0 2px 4px rgba(126, 86, 228, 0.2));
     margin-top: 18px;
-    margin-right: 40px;
+    margin-right: 0px;
 }
 
 /* create plan button hover */

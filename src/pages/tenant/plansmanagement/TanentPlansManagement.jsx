@@ -55,7 +55,6 @@ const TanentPlansManagement = () => {
             <div className="license-inventory-content">
                 <PageHeader
                     title="Plan Management"
-                    subtitle="Manage your Plans"
                      button={
                           <button
                             type="button"

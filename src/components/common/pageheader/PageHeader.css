@@ -5,9 +5,10 @@
 .page-header-content {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: end;
   gap: 16px;
   padding: 8px 0;
+  height: 37px;
 }
 /* page header text */
 .page-header-text {

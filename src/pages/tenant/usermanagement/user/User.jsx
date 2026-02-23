@@ -57,8 +57,9 @@ const User = () => {
       userName: response.data.name,
       userEmail: response.data.email,
         userPhone: response.data.phone,
+        userRole: response.data.roleId,
     };
-    setPersonalData(newParsonalData);
+      setPersonalData(newParsonalData);
     setIsActive(response.data.tenantUserActive);  
   }
 
@@ -135,7 +136,7 @@ const User = () => {
                 labelOn="Tenant User Status Active"
                 labelOff="Tenant User Status Inactive"
                 size="small"
-                disabled={isActive ? false :   !canToggleUser} 
+                disabled={(isActive ? false :   !canToggleUser) || personalData.userRole == 2} 
               />
             </div>
             

@@ -47,6 +47,12 @@ const UserProfileMenu = ({
   const [isPasswordValid, setIsPasswordValid] = useState(false);
   const [copiedField, setCopiedField] = useState(null);
   const [isThemeDropdownOpen, setIsThemeDropdownOpen] = useState(false);
+   const [openTheme, setOpenTheme] = useState(false);
+  const THEMES = [
+  { name: "Light",    value: "light",  icon: "bi-sun-fill"    },
+  { name: "Dark",     value: "dark",   icon: "bi-moon-fill"   },
+  { name: "PayVance", value: "custom", icon: "bi-palette-fill" },
+];
 
   // -------------------- THEME CONTEXT --------------------
   const { theme, setTheme, isDark, isCustom } = useTheme();
@@ -187,26 +193,38 @@ const UserProfileMenu = ({
         {/* ── Dropdown ── */}
         {openMenu && (
           <div className="profile-dropdown">
-            {/* ── Theme ── */}
-            <div className="theme-button-container">
-              <button 
-                className="navbar-btn theme-btn"
-                onClick={() => setIsThemeDropdownOpen(!isThemeDropdownOpen)}
+             {/* ── Theme (Help-style) ── */}
+            <div className="help-wrapper">
+              <div
+                className="dropdown-item"
+                onClick={() => setOpenTheme((prev) => !prev)}
               >
-                {isCustom ? (
-                  <i className="bi bi-palette-fill"></i>
-                ) : isDark ? (
-                  <i className="bi bi-moon-fill"></i>
-                ) : (
-                  <i className="bi bi-sun-fill"></i>
-                )}
-              </button>
-              <ThemeDropdown 
-                isOpen={isThemeDropdownOpen}
-                onClose={() => setIsThemeDropdownOpen(false)}
-                onThemeChange={handleThemeChange}
-              />
+                <i className={`bi ${THEMES.find(t => t.value === theme)?.icon || 'bi-circle-half'}`} />
+                <span>Appearance</span>
+                <i className={`bi bi-chevron-${openTheme ? "left" : "right"} ms-auto`} style={{ fontSize: 11 }} />
+              </div>
+
+              {openTheme && (
+                <div className="support-box sp-theme-panel support-right">
+                  <p className="support-title">Appearance</p>
+                  {THEMES.map((t) => {
+                    const isActive = theme === t.value;
+                    return (
+                      <button
+                        key={t.value}
+                        className={`sp-theme-row${isActive ? " sp-theme-row--active" : ""}`}
+                        onClick={() => { setTheme(t.value); setOpenTheme(false); }}
+                      >
+                        <i className={`bi ${t.icon} sp-theme-row__icon`} />
+                        <span className="sp-theme-row__name">{t.name}</span>
+                        {isActive && <i className="bi bi-check2 sp-theme-row__check" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
+
 
             <div className="dropdown-divider" />
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { getRoleId } from '../../services/authService';
 import DashboardLayout from './DashboardLayout';
 import DashboardCard from './DashboardCard';
@@ -7,26 +7,35 @@ import BarChartComponent from './BarChartComponent';
 import DataViewComponent from './DataViewComponent';
 import ReferralCode from './ReferralCode';
 import TransactionHistory from './TransactionHistory';
-import { 
-  useDashboardCards, 
-  useDashboardPieCharts, 
-  useDashboardBarCharts, 
+import {
+  useDashboardCards,
+  useDashboardPieCharts,
+  useDashboardBarCharts,
   useDashboardDataViews,
   useReferralCode,
   useTransactionHistory
 } from './hooks/useDashboardData';
 import './CommonDashboard.css';
+import { applyHighchartsTheme } from '../../theme/highchartsTheme';
+import RecentUsersTable from './hooks/RecentUsersTable';
+
 
 const CommonDashboard = () => {
+
+  useEffect(() => {
+    applyHighchartsTheme();
+  }, []);
+
+
   // Get roleId from authService
   const roleId = getRoleId();
-  
+
   // State for selected year range
   const [yearRange, setYearRange] = useState({
     startYear: new Date().getFullYear() - 1, // Default: 2025
     endYear: new Date().getFullYear() // Default: 2026
   });
-  
+
   // Hooks now use getRoleId() internally, no need to pass roleId
   const { cards, loading: cardsLoading, error: cardsError } = useDashboardCards(yearRange);
   const { pieCharts, loading: pieLoading, error: pieError } = useDashboardPieCharts(yearRange);
@@ -75,18 +84,18 @@ const CommonDashboard = () => {
         <div className="dashboard-charts-section">
           <div className="charts-left">
             {pieCharts.map((chart) => (
-              <PieChartComponent 
-                key={chart.id} 
-                {...chart} 
+              <PieChartComponent
+                key={chart.id}
+                {...chart}
                 loading={pieLoading}
               />
             ))}
           </div>
           <div className="charts-right">
             {barCharts.map((chart) => (
-              <BarChartComponent 
-                key={chart.id} 
-                {...chart} 
+              <BarChartComponent
+                key={chart.id}
+                {...chart}
                 loading={barLoading}
                 onYearChange={handleYearChange}
               />
@@ -99,23 +108,32 @@ const CommonDashboard = () => {
       <div className="dashboard-section">
         {Number(roleId) === 5 ? (
           <div className="dashboard-ca-section">
-            <ReferralCode 
+            <ReferralCode
               data={referralCode}
               loading={referralLoading}
             />
-            <TransactionHistory 
+            <TransactionHistory
               data={transactionHistory}
               loading={transactionLoading}
             />
           </div>
         ) : (
-          <div className="dashboard-data-grid">
+          <div className="dashboard-ca-section">
             {dataViews.map((view) => (
-              <DataViewComponent 
-                key={view.id} 
-                {...view} 
-                loading={dataLoading}
-              />
+              view.id === "recent_users" ? (
+                <RecentUsersTable
+                  key={view.id}
+                  title={view.title}
+                  data={view.data}
+                  loading={dataLoading}
+                />
+              ) : (
+                <DataViewComponent
+                  key={view.id}
+                  {...view}
+                  loading={dataLoading}
+                />
+              )
             ))}
           </div>
         )}
