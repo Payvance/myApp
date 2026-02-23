@@ -58,4 +58,30 @@ public class MobileReportsController {
             @RequestParam Long tenantId) {
         return ResponseEntity.ok(reportService.getVoucherDetail(voucherId, tenantId));
     }
+
+    @GetMapping("/saved/{reportName}")
+    public ResponseEntity<String> getSavedReport(
+            @PathVariable String reportName,
+            @RequestParam Long tenantId,
+            @RequestParam String companyId) {
+        return ResponseEntity.ok(reportService.getSavedReport(tenantId, companyId, reportName));
+    }
+
+    @GetMapping("/analytics/top-ledgers/{type}")
+    public ResponseEntity<List<VoucherReportDTO>> getTopLedgers(
+            @PathVariable String type,
+            @RequestParam Long tenantId,
+            @RequestParam String companyId,
+            @RequestParam(defaultValue = "5") int limit) {
+        return ResponseEntity.ok(reportService.getTopLedgers(tenantId, companyId, type, limit));
+    }
+
+    @GetMapping("/analytics/top-items/{type}")
+    public ResponseEntity<List<VoucherReportDTO>> getTopItems(
+            @PathVariable String type,
+            @RequestParam Long tenantId,
+            @RequestParam String companyId,
+            @RequestParam(defaultValue = "5") int limit) {
+        return ResponseEntity.ok(reportService.getTopItems(tenantId, companyId, type, limit));
+    }
 }

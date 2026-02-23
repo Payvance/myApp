@@ -22,6 +22,8 @@ public class ReportService {
 
     private final VoucherReportRepositoryCustom voucherReportRepository;
     private final VoucherRepository voucherRepository;
+    private final com.payvance.erp_saas.erp.repository.TallyLedgerRepository tallyLedgerRepository;
+    private final com.payvance.erp_saas.erp.repository.ReportDataRepository reportDataRepository;
 
     public List<VoucherReportDTO> getVoucherReport(
             Long tenantId,
@@ -35,6 +37,51 @@ public class ReportService {
             Map<String, String> filters) {
         return voucherReportRepository.getVoucherReport(tenantId, companyId, voucherType, fromDate, toDate, groupBy,
                 isGross, isReturn, filters);
+    }
+
+    public String getSavedReport(Long tenantId, String companyId, String reportName) {
+        return reportDataRepository.findByTenantIdAndCompanyIdAndReportName(tenantId, companyId, reportName)
+                .map(com.payvance.erp_saas.erp.entity.ReportData::getPayload)
+                .orElse("{}");
+    }
+
+    public List<VoucherReportDTO> getTopLedgers(Long tenantId, String companyId, String type, int limit) {
+        if ("sales".equalsIgnoreCase(type) || "purchase".equalsIgnoreCase(type)) {
+            String vt = "sales".equalsIgnoreCase(type) ? "Sales" : "Purchase";
+            List<VoucherReportDTO> reports = getVoucherReport(tenantId, companyId, vt, null, null, "ledger", true, true,
+                    null);
+            return reports.stream()
+                    .sorted((a, b) -> b.getAmount().abs().compareTo(a.getAmount().abs()))
+                    .limit(limit)
+                    .collect(Collectors.toList());
+        } else if ("debtors".equalsIgnoreCase(type) || "creditors".equalsIgnoreCase(type)) {
+            String rootGroup = "debtors".equalsIgnoreCase(type) ? "Sundry Debtors" : "Sundry Creditors";
+            org.springframework.data.domain.Page<com.payvance.erp_saas.erp.entity.TallyLedger> page = tallyLedgerRepository
+                    .findTopLedgersByRootGroup(tenantId, companyId, rootGroup,
+                            org.springframework.data.domain.PageRequest.of(0, limit));
+            return page.getContent().stream()
+                    .map(l -> new VoucherReportDTO(l.getName(), java.math.BigDecimal.ZERO, l.getClosingBalance()))
+                    .collect(Collectors.toList());
+        }
+        return List.of();
+    }
+
+    public List<VoucherReportDTO> getTopItems(Long tenantId, String companyId, String type, int limit) {
+        List<VoucherReportDTO> reports = getVoucherReport(tenantId, companyId, "Sales", null, null, "stockItem", false,
+                true, null);
+        if ("highest".equalsIgnoreCase(type)) {
+            return reports.stream()
+                    .sorted((a, b) -> b.getQuantity().compareTo(a.getQuantity()))
+                    .limit(limit)
+                    .collect(Collectors.toList());
+        } else if ("slowest".equalsIgnoreCase(type)) {
+            return reports.stream()
+                    .filter(r -> r.getQuantity().compareTo(java.math.BigDecimal.ZERO) > 0)
+                    .sorted((a, b) -> a.getQuantity().compareTo(b.getQuantity()))
+                    .limit(limit)
+                    .collect(Collectors.toList());
+        }
+        return List.of();
     }
 
     public VoucherDetailDTO getVoucherDetail(Long voucherId, Long tenantId) {

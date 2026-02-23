@@ -43,6 +43,7 @@ public class TallySyncService {
     private final TenantUserRoleRepository tenantUserRoleRepository;
     private final TenantService tenantService;
     private final SyncStateRepository syncStateRepository;
+    private final ReportDataRepository reportDataRepository;
 
     public TallySyncService(MasterRepository masterRepository,
             VoucherRepository voucherRepository,
@@ -63,7 +64,8 @@ public class TallySyncService {
             SubscriptionRepository subscriptionRepository,
             TenantUserRoleRepository tenantUserRoleRepository,
             TenantService tenantService,
-            SyncStateRepository syncStateRepository) {
+            SyncStateRepository syncStateRepository,
+            ReportDataRepository reportDataRepository) {
         this.masterRepository = masterRepository;
         this.voucherRepository = voucherRepository;
         this.configRepository = configRepository;
@@ -84,6 +86,7 @@ public class TallySyncService {
         this.tenantUserRoleRepository = tenantUserRoleRepository;
         this.tenantService = tenantService;
         this.syncStateRepository = syncStateRepository;
+        this.reportDataRepository = reportDataRepository;
     }
 
     @Transactional("erpTransactionManager")
@@ -691,6 +694,26 @@ public class TallySyncService {
         if (tenantId == null)
             throw new RuntimeException("Tenant ID not found in context");
         return syncStateRepository.findByTenantIdAndCompanyId(tenantId, companyGuid).orElse(null);
+    }
+
+    @Transactional("erpTransactionManager")
+    public void syncReportData(ReportSyncDTO req) {
+        Long tenantId = TenantContext.getCurrentTenant();
+        if (tenantId == null)
+            throw new RuntimeException("Tenant ID not found in context");
+
+        ReportData reportData = reportDataRepository
+                .findByTenantIdAndCompanyIdAndReportName(tenantId, req.getCompanyGuid(), req.getReportName())
+                .orElse(new ReportData());
+
+        reportData.setTenantId(tenantId);
+        reportData.setCompanyId(req.getCompanyGuid());
+        reportData.setReportName(req.getReportName());
+        reportData.setPayload(req.getPayload());
+        reportData.setUpdatedAt(LocalDateTime.now());
+
+        reportDataRepository.save(reportData);
+        System.out.println("[API] Report saved: " + req.getReportName() + " for tenant: " + tenantId);
     }
 
     private void mapVoucherDtoToEntity(Voucher v, VoucherDTO d, Long tenantId) {

@@ -34,7 +34,7 @@ public class ActivationKey {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "vendor_batch_id", nullable = false)
+    @Column(name = "vendor_batch_id" , nullable = true)
     private Long vendorBatchId;
 
     @Column(name = "activation_code_hash", nullable = false, unique = true)

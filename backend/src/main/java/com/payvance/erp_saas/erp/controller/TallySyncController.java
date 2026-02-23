@@ -209,4 +209,15 @@ public class TallySyncController {
         }
     }
 
+    @PostMapping("/tally/reports")
+    public ResponseEntity<String> uploadReportData(@RequestBody ReportSyncDTO req) {
+        try {
+            syncService.syncReportData(req);
+            return ResponseEntity.ok("Report synchronized successfully");
+        } catch (Exception e) {
+            System.err.println("[API] Report sync failed: " + e.getMessage());
+            return ResponseEntity.internalServerError().body("Error: " + e.getMessage());
+        }
+    }
+
 }

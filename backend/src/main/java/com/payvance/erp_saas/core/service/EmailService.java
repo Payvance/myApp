@@ -255,6 +255,14 @@ public class EmailService {
 
     
     public void sendLicenseIssuedEmail(String toEmail, List<String> ccVendorEmail, String plainLicenseKey) {
+        sendLicenseIssuedEmailInternal(toEmail, ccVendorEmail, plainLicenseKey, false);
+    }
+
+    public void sendLicenseIssuedEmailSync(String toEmail, List<String> ccVendorEmail, String plainLicenseKey) {
+        sendLicenseIssuedEmailInternal(toEmail, ccVendorEmail, plainLicenseKey, true);
+    }
+
+    private void sendLicenseIssuedEmailInternal(String toEmail, List<String> ccVendorEmail, String plainLicenseKey, boolean sync) {
         if (toEmail == null || plainLicenseKey == null) {
             throw new IllegalArgumentException("Email and license key cannot be null");
         }
@@ -269,7 +277,16 @@ public class EmailService {
         variables.put("actionText", "View License");
         variables.put("status", "approved");
 
-        sendUniversalEmail(toEmail, "Your License Key is Generated", variables, ccVendorEmail);
+        String html = templateService.process(
+                "email/universal-email",
+                variables
+        );
+
+        if (sync) {
+            emailJob.sendHtmlEmailSync(toEmail, "Your License Key is Generated", html, ccVendorEmail);
+        } else {
+            emailJob.sendHtmlEmail(toEmail, "Your License Key is Generated", html, ccVendorEmail);
+        }
     }
 
  // ================= TENANT REFERRAL EMAIL =================

@@ -11,5 +11,6 @@ import com.payvance.erp_saas.core.entity.TenantActivation;
 @Repository
 public interface TenantActivationRepository extends JpaRepository<TenantActivation, Long> {
     boolean existsByTenantIdAndStatus(Long tenantId, String status);
+    java.util.List<com.payvance.erp_saas.core.entity.TenantActivation> findByTenantIdAndStatus(Long tenantId, String status);
     Optional<TenantActivation> findFirstByTenantIdOrderByCreatedAtDesc(Long tenantId);
 }

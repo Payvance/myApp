@@ -1,11 +1,16 @@
 package com.payvance.erp_saas.core.service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import com.payvance.erp_saas.core.dto.TenantRoleResponse;
 import com.payvance.erp_saas.core.dto.TenantUsageAndRolesResponse;
+import com.payvance.erp_saas.core.dto.TenantUserNestedResponse;
+import com.payvance.erp_saas.core.dto.UserNestedData;
+import com.payvance.erp_saas.core.dto.AllTenantsNestedResponse;
 import com.payvance.erp_saas.core.entity.TenantUsage;
 import com.payvance.erp_saas.core.entity.TenantUserRole;
 import com.payvance.erp_saas.core.entity.User;
@@ -54,6 +59,7 @@ public class TenantUserRoleService {
 	                .orElseThrow(() -> new EntityNotFoundException(
 	                        "User not found with id " + userId
 	                ));
+	        user.setActive(active);
 	        user.setName(name.trim());
 	        userRepository.save(user);
 	    }
@@ -89,6 +95,46 @@ public class TenantUserRoleService {
 	            usage.getCompaniesCount(),     
 	            roleResponses
 	    );
+	}
+
+
+	public AllTenantsNestedResponse getAllTenantsWithUsers() {
+
+	    List<UserNestedData> allUsers =
+	            tenantUserRoleRepository.getAllTenantUsers();
+
+	    Map<Long, List<UserNestedData>> grouped =
+	            allUsers.stream()
+	                    .collect(Collectors.groupingBy(
+	                            UserNestedData::getTenantId
+	                    ));
+
+	    List<TenantUserNestedResponse> tenants = grouped.entrySet()
+	            .stream()
+	            .map(entry -> {
+
+	                Long tenantId = entry.getKey();
+	                List<UserNestedData> users = entry.getValue();
+
+	                UserNestedData mainUser = users.get(0);
+
+	                List<UserNestedData> nested =
+	                        users.stream()
+	                             .skip(1)
+	                             .toList();
+	                return new TenantUserNestedResponse(
+	                        tenantId,
+	                        mainUser.getName(),
+	                        mainUser.getEmail(),
+	                        mainUser.getPhone(),
+	                        mainUser.getRoleId(),
+	                        mainUser.getIsactive(),
+	                        nested
+	                );
+	            })
+	            .toList();
+
+	    return new AllTenantsNestedResponse(tenants);
 	}
 
 }
