@@ -17,6 +17,7 @@
 package com.payvance.erp_saas.core.service;
 
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.data.domain.Page;
@@ -35,6 +36,7 @@ import com.payvance.erp_saas.core.entity.Ca;
 import com.payvance.erp_saas.core.entity.ReferralCode;
 import com.payvance.erp_saas.core.entity.ReferralProgram;
 import com.payvance.erp_saas.core.entity.Role;
+import com.payvance.erp_saas.core.entity.TenantUserRole;
 import com.payvance.erp_saas.core.entity.User;
 import com.payvance.erp_saas.core.entity.Vendor;
 import com.payvance.erp_saas.core.repository.BankDetailsRepository;
@@ -42,6 +44,7 @@ import com.payvance.erp_saas.core.repository.CaRepository;
 import com.payvance.erp_saas.core.repository.ReferralCodeRepository;
 import com.payvance.erp_saas.core.repository.ReferralProgramRepository;
 import com.payvance.erp_saas.core.repository.RoleRepository;
+import com.payvance.erp_saas.core.repository.TenantUserRoleRepository;
 import com.payvance.erp_saas.core.repository.UserAddressRepository;
 import com.payvance.erp_saas.core.repository.UserRepository;
 import com.payvance.erp_saas.core.repository.VendorRepository;
@@ -74,6 +77,7 @@ public class UserService {
     
     private final ReferralCodeRepository referralCodeRepository;
     private final RoleRepository roleRepository;
+    private final TenantUserRoleRepository tenantUserRoleRepository;
     
     private final WalletService walletService;
 
@@ -138,7 +142,14 @@ public class UserService {
         if (dto.getName() != null) user.setName(dto.getName());
         if (dto.getEmail() != null) user.setEmail(dto.getEmail());
         if (dto.getPhone() != null) user.setPhone(dto.getPhone());
-        if (dto.getIsActive() != null) user.setActive(dto.getIsActive());
+        if (dto.getIsActive() != null) {
+            user.setActive(dto.getIsActive());
+            
+            // If user is being deactivated and is a tenant admin, deactivate all tenant users
+            if (!dto.getIsActive()) {
+                deactivateTenantUsersForAdmin(userId);
+            }
+        }
 
         userRepository.save(user);
 
@@ -383,4 +394,38 @@ public class UserService {
 	 public Page<Map<String, Object>> getVendorAndCaUsers(Pageable pageable) {
 		    return userRepository.findVendorAndCaUsers(pageable);
 		}
+    
+    /**
+     * Deactivate all tenant users when a tenant admin is deactivated
+     */
+    private void deactivateTenantUsersForAdmin(Long adminUserId) {
+        // Find all tenant user roles for this admin
+        List<TenantUserRole> adminRoles = tenantUserRoleRepository.findByUserId(adminUserId);
+        
+        for (TenantUserRole adminRole : adminRoles) {
+            Long tenantId = adminRole.getTenantId();
+            
+            // Find all tenant users for this tenant 
+            List<TenantUserRole> allTenantRoles = tenantUserRoleRepository.findByTenantId(tenantId);
+            
+            for (TenantUserRole tenantRole : allTenantRoles) {
+                // Skip if this is the admin role itself
+                if (tenantRole.getUserId().equals(adminUserId)) {
+                    continue;
+                }
+                
+                // Deactivate user in User table
+                User user = userRepository.findById(tenantRole.getUserId())
+                        .orElse(null);
+                if (user != null) {
+                    user.setActive(false);
+                    userRepository.save(user);
+                }
+                
+                // Deactivate tenant user role
+                tenantRole.setIsActive(false);
+                tenantUserRoleRepository.save(tenantRole);
+            }
+        }
+    }
 }

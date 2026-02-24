@@ -45,6 +45,7 @@ public class AuthService {
     private final PasswordEncoder encoder;
     private final JwtUtil jwt;
     private final EmailOtpService emailOtpService;
+    private final TenantService tenantService;
 
     // ========================== LOGIN ==========================
     @Transactional
@@ -60,7 +61,7 @@ public class AuthService {
         }
 
         if (!encoder.matches(req.password, user.getPasswordHash())) {
-            throw new BadCredentialsException("Invalid email or password");
+            throw new BadCredentialsException("Invalid credentials.");
         }
 
         // ================= DEVICE VERIFICATION =================
@@ -124,7 +125,7 @@ public class AuthService {
         }
 
         if (user.getEmailVerifiedAt() == null) {
-            throw new UserNotAllowedException("Go and verify your email");
+            throw new UserNotAllowedException("Email verification required. Please check your inbox and verify your email address.");
         }
         // for currently, we are allowing multiple sessions as we are moving towards
         // channel-based login
@@ -197,7 +198,7 @@ public class AuthService {
 
         Long roleId = Long.valueOf(roleEnum.getId());
 
-        // active / trial → normal login
+        // active / trial → allow login, but check license status for sync
         if (tenant.isActiveOrTrial()) {
 
             String token = jwt.generateAccessToken(user.getId(), tenantId, roleId);
@@ -207,17 +208,40 @@ public class AuthService {
                     ? "/tenant/admin/dashboard"
                     : "/tenant/user/dashboard";
 
+            // ---- LICENSE CHECK FOR SYNC RESTRICTION ----
+            // Check if the tenant has an active license or valid trial.
+            // If not, embed a SYNC_BLOCKED marker so the connector can detect it.
+            String loginMessage;
+            try {
+                java.util.Map<String, Object> licenseInfo = tenantService.getLicenseStatus(tenantId);
+                String licenseStatus = (String) licenseInfo.get("status");
+                boolean syncAllowed = "ACTIVE".equals(licenseStatus) || "trial".equals(licenseStatus);
+
+                if (syncAllowed) {
+                    loginMessage = "Login successful";
+                } else {
+                    // Attach human-readable block reason after '|SYNC_BLOCKED:'
+                    String reason = buildSyncBlockReason(licenseStatus, licenseInfo);
+                    loginMessage = "Login successful|SYNC_BLOCKED:" + reason;
+                }
+            } catch (Exception e) {
+                // If license check fails, allow login but log the error
+                System.err.println("[AUTH] License check failed for tenant " + tenantId + ": " + e.getMessage());
+                loginMessage = "Login successful";
+            }
+            // -------------------------------------------
+
             return LoginResponse.builder()
                     .accessToken(token)
                     .roleId(roleId)
                     .userId(user.getId()) // for frontend use
                     .tenantId(tenantId)
                     .redirectUrl(redirect)
-                    .message("Login successful")
+                    .message(loginMessage)
                     .build();
         }
 
-        // inactive → allow login but redirect to plan page
+        // inactive → allow login but redirect to plan page (sync is always blocked here)
         if (tenant.isInactive()) {
 
             String token = jwt.generateAccessToken(user.getId(), tenantId, roleId);
@@ -229,12 +253,22 @@ public class AuthService {
                     .userId(user.getId()) // for frontend use
                     .tenantId(tenantId)
                     .redirectUrl("/tenant/plan")
-                    .message("Tenant plan inactive")
+                    .message("Login successful|SYNC_BLOCKED:Your account is inactive. Please subscribe to a plan to enable syncing.")
                     .build();
         }
 
         throw new UserNotAllowedException(
                 "Tenant not eligible to login: " + tenant.getStatus());
+    }
+
+    // ================= SYNC BLOCK REASON HELPER =================
+    private String buildSyncBlockReason(String licenseStatus, java.util.Map<String, Object> licenseInfo) {
+        return switch (licenseStatus) {
+            case "trial" -> "Your free trial has expired. Please subscribe to a plan to continue syncing.";
+            case "EXPIRED" -> "Your license has expired. Please renew your subscription to continue syncing.";
+            case "NONE" -> "No active license found. Please contact your vendor or subscribe to a plan.";
+            default -> licenseInfo.getOrDefault("message", "Your license is not active. Please contact support.").toString();
+        };
     }
 
     // ================= PARTNER REDIRECT =================

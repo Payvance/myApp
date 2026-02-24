@@ -13,9 +13,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.payvance.erp_saas.core.entity.PlanLimitation;
 import com.payvance.erp_saas.core.entity.Tenant;
-import com.payvance.erp_saas.core.entity.TenantUsage;
 import com.payvance.erp_saas.core.repository.AddOnRepository;
 import com.payvance.erp_saas.core.repository.PlanLimitationRepository;
 import com.payvance.erp_saas.core.repository.SubscriptionRepository;
@@ -23,6 +21,7 @@ import com.payvance.erp_saas.core.repository.TenantRepository;
 import com.payvance.erp_saas.core.repository.TenantUsageRepository;
 import com.payvance.erp_saas.core.repository.TenantUserRoleRepository;
 import com.payvance.erp_saas.core.repository.UserRepository;
+import com.payvance.erp_saas.erp.repository.TallyCompanyRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -44,7 +43,7 @@ public class TenantDashboardService {
     private final SubscriptionRepository subscriptionRepository;
     private final PlanLimitationRepository planLimitationRepository;
     private final AddOnRepository addOnRepository;
-    
+    private final TallyCompanyRepository tallyCompanyRepository;
     /**
      * Get complete dashboard data for Tenant
      * TODO: Implement with actual repository methods
@@ -110,6 +109,10 @@ public class TenantDashboardService {
             planName = capitalize(tenantStatus);
         }
 
+     // ✅ Fetch company count directly from tally_companies table
+        long totalCompanies = tallyCompanyRepository.countByTenantId(tenantId);
+        String companyCount = String.valueOf(totalCompanies);
+
         // Get Plan ID only once
         Optional<Long> planIdOpt =
                 subscriptionRepository.findActivePlanIdByTenantId(tenantId);
@@ -118,21 +121,14 @@ public class TenantDashboardService {
 
             Long planId = planIdOpt.get();
 
-            // Get company limitation
-            Optional<PlanLimitation> limitationOpt =
-                    planLimitationRepository.findByPlanId(planId);
-
-            if (limitationOpt.isPresent()) {
-                allowedCompanyCount =
-                        String.valueOf(limitationOpt.get().getAllowedCompanyCount());
-            }
-
             // Get addon count
             Long addons =
                     addOnRepository.countActiveAddonsByPlanId(planId);
 
             addonsCount = addons != null ? addons.toString() : "0";
         }
+        
+        
         
         // Get 5 most recent users for tenant
         List<Map<String, Object>> recentUsers = tenantUserRoleRepository.findRecentUsersByTenantId(tenantId)
@@ -143,51 +139,112 @@ public class TenantDashboardService {
      // Get active plan details
         Optional<Map<String, Object>> planDetailsOpt = subscriptionRepository.findActivePlanDetailsByTenantId(tenantId);
 
-        // ================================
-        // FINAL 6 CARDS
-        // ================================
+     // ================================
+     // CALCULATIONS USING EXISTING DATA
+     // ================================
 
-        data.put("cards", Arrays.asList(
+     double activeUserPercent = totalUsers > 0
+             ? (activeUsers * 100.0 / totalUsers)
+             : 0;
 
-                Map.of("id", "total_users",
-                        "title", "Total Users",
-                        "value", totalUsers.toString(),
-                        "icon", "bi-people",
-                        "color", "primary"),
+     double inactiveUserPercent = totalUsers > 0
+             ? (inactiveUsers * 100.0 / totalUsers)
+             : 0;
 
-                Map.of("id", "active_users",
-                        "title", "Active Users",
-                        "value", activeUsers.toString(),
-                        "icon", "bi-person-check",
-                        "color", "success"),
+     // 🔹 Calculate this month's user creation from bar graph
+     List<Map<String, Object>> trendData =
+             getUserCreationTrendData(userId, startYear, endYear);
 
-                Map.of("id", "inactive_users",
-                        "title", "Inactive Users",
-                        "value", inactiveUsers.toString(),
-                        "icon", "bi-person-x",
-                        "color", "danger"),
+     long thisMonthUsers = 0;
+     String currentMonth = getMonthName(LocalDate.now().getMonthValue()) + " " + LocalDate.now().getYear();
 
-                Map.of("id", "plan",
-                        "title", "Plan",
-                        "value", planName,
-                        "icon", "bi-award",
-                        "color", "warning"),
-                
-                Map.of("id", "addons",
-                        "title", "Add-ons",
-                        "value", addonsCount,
-                        "icon", "bi-puzzle-fill",
-                        "color", "warning"),
-                
-                Map.of("id", "companies_allowed",
-                        "title", "Synced Companies",
-                        "value", allowedCompanyCount,
-                        "icon", "bi-buildings-fill",
-                        "color", "primary")
+     for (Map<String, Object> item : trendData) {
+         if (item.get("month").equals(currentMonth)) {
+             thisMonthUsers = (Long) item.get("users_created");
+             break;
+         }
+     }
 
-              
-        ));
+     // 🔹 Calculate today's active users from recentUsers
+     long activeToday = recentUsers.stream()
+             .filter(u -> Boolean.TRUE.equals(u.get("isActive")))
+             .filter(u -> u.get("createdAt") != null &&
+                     u.get("createdAt").toString().startsWith(LocalDate.now().toString()))
+             .count();
 
+     // 🔹 Calculate inactive users this week
+     LocalDate weekStart = LocalDate.now().minusDays(7);
+
+     long inactiveThisWeek = recentUsers.stream()
+             .filter(u -> !Boolean.TRUE.equals(u.get("isActive")))
+             .filter(u -> {
+                 if (u.get("createdAt") == null) return false;
+                 LocalDate created = LocalDate.parse(u.get("createdAt").toString().substring(0, 10));
+                 return !created.isBefore(weekStart);
+             })
+             .count();
+
+
+     // ================================
+     // FINAL CARDS
+     // ================================
+
+     data.put("cards", Arrays.asList(
+
+             Map.of(
+                     "id", "total_users",
+                     "title", "Total Users",
+                     "value", String.format("%,d", totalUsers),
+                     "trend", "+" + thisMonthUsers + " this month",
+                     "lastUpdated", "Updated today",
+                     "icon", "bi-people",
+                     "color", "primary"
+             ),
+
+             Map.of(
+                     "id", "active_users",
+                     "title", "Active Users",
+                     "value", String.format("%,d", activeUsers),
+                     "percentage", String.format("%.0f%% of Total Users", activeUserPercent),
+                     "trend", "+" + activeToday + " Today",
+                     "icon", "bi-person-check",
+                     "color", "success"
+             ),
+
+             Map.of(
+                     "id", "inactive_users",
+                     "title", "Inactive Users",
+                     "value", String.format("%,d", inactiveUsers),
+                     "percentage", String.format("%.0f%% of Total Users", inactiveUserPercent),
+                     "trend", "-" + inactiveThisWeek + " This Week",
+                     "icon", "bi-person-x",
+                     "color", "danger"
+             ),
+
+             Map.of(
+                     "id", "plan",
+                     "title", "Plan",
+                     "value", planName,
+                     "icon", "bi-award",
+                     "color", "warning"
+             ),
+
+             Map.of(
+                     "id", "addons",
+                     "title", "Add-ons",
+                     "value", addonsCount,
+                     "icon", "bi-puzzle-fill",
+                     "color", "warning"
+             ),
+
+             Map.of(
+                     "id", "companies_allowed",
+                     "title", "Synced Companies",
+                     "value", companyCount,
+                     "icon", "bi-buildings-fill",
+                     "color", "primary"
+             )
+     ));
      // Pie charts data
         data.put("pieCharts", Arrays.asList(
                 Map.of("id", "user_activity",
@@ -210,7 +267,7 @@ public class TenantDashboardService {
         data.put("dataViews", Arrays.asList(
         	    Map.of(
         	        "id", "recent_users",
-        	        "title", "Recent Users",
+        	        "title", "Recent Top 5 Users",
         	        "data", recentUsers.stream()
         	            .map(user -> Map.of(
         	                "id", user.get("userId"),

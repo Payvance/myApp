@@ -42,6 +42,16 @@ public interface TenantUserRoleRepository
     Optional<TenantUserRole> findByUserIdAndTenantId(Long userId, Long tenantId);
     
     /*
+     * Find all TenantUserRole entries by userId
+     */
+    List<TenantUserRole> findByUserId(Long userId);
+    
+    /*
+     * Find all TenantUserRole entries by tenantId
+     */
+    List<TenantUserRole> findByTenantId(Long tenantId);
+    
+    /*
      * Find all TenantUserRole entries by tenantId and roleId
      */
     List<TenantUserRole> findByTenantIdAndRoleId(

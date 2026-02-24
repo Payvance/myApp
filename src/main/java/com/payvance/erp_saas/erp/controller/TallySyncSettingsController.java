@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 public class TallySyncSettingsController {
 
 	private final TallySyncSettingsService service;
+	private final com.payvance.erp_saas.core.service.TenantService tenantService;
 
 	@PostMapping("/save")
 	public ResponseEntity<TallySyncSettings> save(@RequestBody TallySyncSettingsRequest request) {
@@ -27,7 +28,17 @@ public class TallySyncSettingsController {
 	@org.springframework.web.bind.annotation.GetMapping
 	public ResponseEntity<?> getSettings() {
 		try {
-			return ResponseEntity.ok(service.getSettings());
+			com.payvance.erp_saas.erp.entity.TallySyncSettings settings = service.getSettings();
+			Long tenantId = com.payvance.erp_saas.erp.security.TenantContext.getCurrentTenant();
+			java.util.Map<String, Object> licenseStatus = tenantService.getLicenseStatus(tenantId);
+
+			// Convert entity to Map to add licenseStatus field
+			com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+			mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
+			java.util.Map<String, Object> response = mapper.convertValue(settings, new com.fasterxml.jackson.core.type.TypeReference<java.util.Map<String, Object>>() {});
+			response.put("licenseStatus", licenseStatus);
+
+			return ResponseEntity.ok(response);
 		} catch (Exception e) {
 			return ResponseEntity.notFound().build();
 		}
