@@ -28,21 +28,12 @@ import com.payvance.erp_saas.core.config.TrialConfig;
 import com.payvance.erp_saas.core.dto.LicenseCheckDto;
 import com.payvance.erp_saas.core.dto.TrialPeriod;
 import com.payvance.erp_saas.core.dto.ValidationResponse;
-import com.payvance.erp_saas.core.entity.ReferralCode;
-import com.payvance.erp_saas.core.entity.Tenant;
-import com.payvance.erp_saas.core.entity.TenantSetting;
-import com.payvance.erp_saas.core.entity.TenantUsage;
-import com.payvance.erp_saas.core.entity.User;
-import com.payvance.erp_saas.core.entity.Vendor;
-import com.payvance.erp_saas.core.repository.ReferralCodeRepository;
-import com.payvance.erp_saas.core.repository.TenantRepository;
-import com.payvance.erp_saas.core.repository.TenantSettingsRepository;
-import com.payvance.erp_saas.core.repository.TenantUsageRepository;
-import com.payvance.erp_saas.core.repository.TenantUserRoleRepository;
-import com.payvance.erp_saas.core.repository.UserRepository;
-import com.payvance.erp_saas.core.repository.VendorRepository;
+import com.payvance.erp_saas.core.entity.*;
+import com.payvance.erp_saas.core.repository.*;
 import com.payvance.erp_saas.exceptions.UserNotAllowedException;
 import com.payvance.erp_saas.exceptions.UserNotFoundException;
+
+import lombok.RequiredArgsConstructor;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -61,6 +52,8 @@ public class TenantService {
     private final EventService eventService;
     private final TrialConfig trialConfig;
     private final ReferralCodeRepository referralCodeRepository;
+    private final TenantActivationRepository tenantActivationRepository;
+    private final ActivationKeyRepository activationKeyRepository;
 
     @Transactional
     public TrialPeriod startTrial(Long tenantId, Long actorUserId) {
@@ -292,5 +285,88 @@ public class TenantService {
                 "VALID",
                 "Tenant and referral code are valid"
         );
+    }
+    
+    /*
+     * Get consolidated license status for a tenant
+     */
+    public Map<String, Object> getLicenseStatus(Long tenantId) {
+        Tenant tenant = getTenantById(tenantId);
+        LocalDateTime now = LocalDateTime.now();
+
+        // 1. Check TenantActivation table
+        Optional<TenantActivation> activation = tenantActivationRepository.findFirstByTenantIdOrderByCreatedAtDesc(tenantId);
+        if (activation.isPresent() && "active".equalsIgnoreCase(activation.get().getStatus())) {
+            if (activation.get().getExpiresAt() != null && activation.get().getExpiresAt().isAfter(now)) {
+                return Map.of(
+                    "status", "ACTIVE",
+                    "expiry", activation.get().getExpiresAt().toString(),
+                    "message", "License is active (SaaS)"
+                );
+            }
+        }
+
+        // 2. Check ActivationKey table (Vendor Licenses)
+        List<ActivationKey> activeKeys = activationKeyRepository.findActiveBlockingKeys(tenantId, now);
+        if (!activeKeys.isEmpty()) {
+            // Take the one with the latest expiry
+            ActivationKey latestKey = activeKeys.stream()
+                .filter(k -> k.getExpiresAt() != null)
+                .max(java.util.Comparator.comparing(ActivationKey::getExpiresAt))
+                .orElse(activeKeys.get(0));
+
+            return Map.of(
+                "status", "ACTIVE",
+                "expiry", latestKey.getExpiresAt() != null ? latestKey.getExpiresAt().toString() : "N/A",
+                "message", "License is active (Key)"
+            );
+        }
+
+        // 3. Check if EXPIRED (SaaS)
+        if (activation.isPresent() && activation.get().getExpiresAt() != null) {
+            return Map.of(
+                "status", "EXPIRED",
+                "expiry", activation.get().getExpiresAt().toString(),
+                "message", "License has expired"
+            );
+        }
+
+        // 2. Check Trial
+        if (tenant.getTrialStartAt() != null && tenant.getTrialEndAt() != null) {
+            if (tenant.getTrialEndAt().isAfter(now)) {
+                return Map.of(
+                    "status", "trial",
+                    "expiry", tenant.getTrialEndAt().toString(),
+                    "message", "Trial version is active"
+                );
+            } else {
+                return Map.of(
+                    "status", "payment_pending",
+                    "expiry", tenant.getTrialEndAt().toString(),
+                    "message", "Trial version has expired"
+                );
+            }
+        }
+
+        // 3. No License
+        return Map.of(
+            "status", "NONE",
+            "message", "No active license or trial found"
+        );
+    }
+
+    /**
+     * Get consolidated license status for a user (by their tenant)
+     */
+    public Map<String, Object> getLicenseStatusByUserId(Long userId) {
+        List<Long> tenantIds = tenantUserRoleRepository.findTenantIdsByUserId(userId);
+        if (tenantIds.isEmpty()) {
+            return Map.of(
+                "status", "NONE",
+                "message", "No tenant associated with user"
+            );
+        }
+        // Assuming the first tenant for license check
+        return getLicenseStatus(tenantIds.get(0));
     }
 }

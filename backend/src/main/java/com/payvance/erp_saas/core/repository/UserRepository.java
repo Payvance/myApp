@@ -201,6 +201,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
             WHEN tur.roleId = 2 THEN 'TENANT_ADMIN'
             WHEN tur.roleId = 3 THEN 'TENANT_USER'
         END,
+    		   COALESCE(r.id, NULL), 
 
     		    c.id, c.caRegNo, c.enrollmentYear, c.icaiMemberStatus,
     		    c.practiceType, c.firmName, c.icaiMemberNo, c.status, c.caType,
@@ -221,8 +222,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
     		LEFT JOIN Ca c ON c.userId = u.id
     		LEFT JOIN Vendor v ON v.userId = u.id
     		LEFT JOIN TenantUserRole tur 
-           ON tur.userId = u.id 
-          AND tur.isActive = true
+           ON tur.userId = u.id
+    		LEFT JOIN Role r ON (
+    		    (u.isSuperadmin = true AND r.code = 'SUPERADMIN') OR
+    		    (c.userId IS NOT NULL AND r.code = 'CA') OR
+    		    (v.userId IS NOT NULL AND r.code = 'VENDOR') OR
+    		    (tur.roleId IS NOT NULL AND r.id = tur.roleId)
+    		)
     		LEFT JOIN UserAddress ua ON ua.userId = u.id
     		LEFT JOIN BankDetails bd ON bd.userId = u.id
     		WHERE u.id = :userId

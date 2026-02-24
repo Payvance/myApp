@@ -11,9 +11,11 @@ import java.util.List;
 public class TallySyncController {
 
     private final TallySyncService syncService;
+    private final com.payvance.erp_saas.core.service.TenantService tenantService;
 
-    public TallySyncController(TallySyncService syncService) {
+    public TallySyncController(TallySyncService syncService, com.payvance.erp_saas.core.service.TenantService tenantService) {
         this.syncService = syncService;
+        this.tenantService = tenantService;
     }
 
     @GetMapping("/tally/config")
@@ -23,7 +25,18 @@ public class TallySyncController {
             if (config == null) {
                 return ResponseEntity.notFound().build();
             }
-            return ResponseEntity.ok(config);
+
+            // --- Consolidated License Check ---
+            Long tenantId = com.payvance.erp_saas.erp.security.TenantContext.getCurrentTenant();
+            java.util.Map<String, Object> licenseStatus = tenantService.getLicenseStatus(tenantId);
+
+            // Convert entity to Map to add licenseStatus field and keep it flat
+            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+            mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
+            java.util.Map<String, Object> response = mapper.convertValue(config, new com.fasterxml.jackson.core.type.TypeReference<java.util.Map<String, Object>>() {});
+            response.put("licenseStatus", licenseStatus);
+
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Error: " + e.getMessage());
         }

@@ -13,7 +13,7 @@ public class UserFullDetailsDto {
 	private String userPhone;
 	private Boolean isActive;
 	private String role;
-
+	private Long roleId;
 	// CA
 	private Long caId;
 	private String caRegNo;
@@ -67,7 +67,7 @@ public class UserFullDetailsDto {
 		// TODO Auto-generated constructor stub
 	}
 	public UserFullDetailsDto(Long userId, String userName, String userEmail, String userPhone, Boolean isActive,
-			String role, Long caId, String caRegNo, Integer enrollmentYear, String icaiMemberStatus,
+			String role, Long roleId, Long caId, String caRegNo, Integer enrollmentYear, String icaiMemberStatus,
 			String practiceType, String firmName, String icaiMemberNo, String caStatus, String caType, String caGstNo,
 			String caCinNo, String caPanNo, String caTanNo, Long vendorId, String vendorName, String vendorType,
 			Long vendorDiscountId, Integer experienceYears, String gstNo, String cinNo, String panNo, String tanNo,
@@ -82,6 +82,7 @@ public class UserFullDetailsDto {
 		this.userPhone = userPhone;
 		this.isActive = isActive;
 		this.role = role;
+		this.roleId = roleId;
 		this.caId = caId;
 		this.caRegNo = caRegNo;
 		this.enrollmentYear = enrollmentYear;
