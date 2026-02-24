@@ -18,6 +18,7 @@ import {
 import './CommonDashboard.css';
 import { applyHighchartsTheme } from '../../theme/highchartsTheme';
 import RecentUsersTable from './hooks/RecentUsersTable';
+import DashboardModal from './hooks/DashboardModal';
 
 
 const CommonDashboard = () => {
@@ -35,6 +36,14 @@ const CommonDashboard = () => {
     startYear: new Date().getFullYear() - 1, // Default: 2025
     endYear: new Date().getFullYear() // Default: 2026
   });
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedCard, setSelectedCard] = useState(null);
+
+  const handleCardClick = (card) => {
+    setSelectedCard(card);
+    setModalOpen(true);
+  };
 
   // Hooks now use getRoleId() internally, no need to pass roleId
   const { cards, loading: cardsLoading, error: cardsError } = useDashboardCards(yearRange);
@@ -74,7 +83,11 @@ const CommonDashboard = () => {
       <div className="dashboard-section">
         <div className="dashboard-cards-grid">
           {cards.map((card) => (
-            <DashboardCard key={card.id} {...card} />
+            <DashboardCard
+              key={card.id}
+              {...card}
+              onCardClick={handleCardClick}
+            />
           ))}
         </div>
       </div>
@@ -138,6 +151,13 @@ const CommonDashboard = () => {
           </div>
         )}
       </div>
+      {modalOpen && selectedCard && (
+        <DashboardModal
+          show={modalOpen}
+          data={selectedCard}
+          onClose={() => setModalOpen(false)}
+        />
+      )}
     </DashboardLayout>
   );
 };

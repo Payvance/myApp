@@ -10,6 +10,7 @@ import OptionInputBox from '../../../components/common/optioninputbox/OptionInpu
 // import Checkbox from '../../../components/common/checkbox/Checkbox';
 import Checkbox from '../../../components/common/checkbox/Checkbox';
 import Toggle from '../../../components/common/togglebutton/Toggle';
+import StateToggle from '../../../components/common/togglebutton2/StateToggle';
 import SubscriptionCard from '../../../components/common/subscriptioncard/SubscriptionCard';
 import PageHeader from '../../../components/common/pageheader/PageHeader';
 
@@ -439,31 +440,16 @@ const isFormValid = () => {
               required
               classN="large"
             />
-            {/* database shared or  not */}
-            <div className="database-checkboxes">
-              <Checkbox
-                label="Separate Database"
-                checked={!formData.databaseShared}
-                onChange={(e) => {
-                  if (e.target.checked) {
-                    setFormData(prev => ({ ...prev, databaseShared: false }));
-                  }
-                }}
+            {/* database shared or not */}
+
+              <StateToggle
+                isOn={formData.databaseShared}
+                onToggle={(newValue) => setFormData(prev => ({ ...prev, databaseShared: newValue }))}
+                labelOn="Shared Database"
+                labelOff="Separate Database"
                 size="medium"
-                 disabled={isEditMode? true : false}
+                disabled={isEditMode ? true : false}
               />
-              <Checkbox
-                label="Shared Database"
-                checked={formData.databaseShared}
-                onChange={(e) => {
-                  if (e.target.checked) {
-                    setFormData(prev => ({ ...prev, databaseShared: true }));
-                  }
-                }}
-                size="medium"
-                 disabled={isEditMode? true : false}
-              />
-            </div>
           </div>
 
           <div className="form-actions">

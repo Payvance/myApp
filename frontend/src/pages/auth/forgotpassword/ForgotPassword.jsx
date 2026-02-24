@@ -6,6 +6,7 @@ import Button from "../../../components/common/button/Button";
 import { useNavigate } from "react-router-dom";
 import { authServices } from "../../../services/apiService";
 import { toast } from "react-toastify";
+import OtpModal from "../../../components/common/otpModal/OtpModal";
 
 /**
  *
@@ -27,6 +28,7 @@ const ForgotPassword = () => {
         canResend,
         sendOtp,
         verifyOtp,
+        verifyError,
         resendOtp,
         cancelOtp,
         handleOtpChange,
@@ -100,50 +102,21 @@ const ForgotPassword = () => {
 
                 {/* OTP MODAL */}
                 {showOtpModal && (
-                    <div className="otp-modal-overlay">
-                        <div className="otp-modal">
-                            <h3>Verify OTP</h3>
-                            <p>Enter the 6-digit OTP sent to</p>
-                            <strong>{email}</strong>
-
-                            <div className="otp-box-wrapper">
-                                {otp.map((digit, index) => (
-                                    <input
-                                        key={index}
-                                        id={`otp-${index}`}
-                                        type="text"
-                                        maxLength="1"
-                                        value={digit}
-                                        onChange={(e) => handleOtpChange(e.target.value, index)}
-                                        onKeyDown={(e) => handleOtpKeyDown(e, index)}
-                                        className="otp-box"
-                                    />
-                                ))}
-                            </div>
-
-                            <div className="otp-actions">
-                                <Button
-                                    text="Verify OTP"
-                                    onClick={() => verifyOtp(email, "email")}
-                                    disabled={otpLoading}
-                                />
-
-                                <button
-                                    className={`forgot ${!canResend ? "disabled-link" : ""}`}
-                                    disabled={!canResend || otpLoading}
-                                    onClick={() => resendOtp(email, "email")}
-                                >
-                                    {canResend
-                                        ? "Resend OTP"
-                                        : `Resend OTP in ${resendTimer}s`}
-                                </button>
-
-                                <button className="forgot" onClick={cancelOtp}>
-                                    Cancel
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                  <OtpModal
+                    heading="Please verify yourself"
+                    description="Enter the 6-digit OTP sent to"
+                    target={email}
+                    otp={otp}
+                    otpLoading={otpLoading}
+                    resendTimer={resendTimer}
+                    canResend={canResend}
+                    onOtpChange={handleOtpChange}
+                    onOtpKeyDown={handleOtpKeyDown}
+                    onVerify={() => verifyOtp(email, "email")}
+                    onResend={() => resendOtp(email, "email")}
+                    onCancel={cancelOtp}
+                                        verifyError={verifyError}
+                  />
                 )}
 
             </div>

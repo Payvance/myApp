@@ -1,85 +1,65 @@
 // src/components/common/subscriptioncard/SubscriptionCard.jsx
 import React from 'react';
 import './SubscriptionCard.css';
-// imported the css file for the subscription card
 
-// created a subscription card component
-const SubscriptionCard = ({
-  plan,
-  onEdit,
-  onBuy,     
-  buttonDisabled
-}) => {
-  // Contains all subscription-related data
-  const {
-    id,
-    name,
-    subtitle,
-    status,
-    price,
-    period,
-    stats,
-    features
-  } = plan;
+const SubscriptionCard = ({ plan, onEdit, onBuy, buttonDisabled }) => {
+  const { id, name, subtitle, status, price, period, stats, features } = plan;
+  const isActive = status.toLowerCase() === 'active';
 
   return (
     <div className="subscription-card">
-      {/* ---------- Header Section ---------- */}
-      {/* Displays plan name, subtitle, and status badge */}
-      <div className="subscription-card-header">
-        <div>
-          <h3 className="subscription-card-name">{name}</h3>
-          <p className="subscription-card-desc">{subtitle}</p>
-        </div>
-        {/* Status badge (e.g., Active / Inactive) */}
-        <span className={`subscription-status-badge ${status.toLowerCase() === 'active' ? 'status-active' : 'status-inactive'}`}>
-          {status}
-        </span>
-      </div>
 
-      {/* ---------- Pricing Section ---------- */}
-      {/* Displays price and billing period */}
-      <div className="subscription-card-pricing">
-        <div className="subscription-pricing-info">
-          <h2 className="subscription-card-price">₹{price}</h2>
-          <p className="subscription-card-period">{period}</p>
+      {/* Gradient top band */}
+      <div className="sc-band" />
+
+      <div className="sc-body">
+
+        {/* ── Header ── */}
+        <div className="sc-header">
+          <div>
+            <h3 className="sc-name">{name}</h3>
+            <p className="sc-sub">{subtitle}</p>
+          </div>
+          <span className={`sc-badge ${isActive ? 'sc-badge--active' : 'sc-badge--inactive'}`}>
+            {status}
+          </span>
         </div>
 
-        {/* ---------- Stats Section ---------- */}
-        {/* Displays key metrics like code */}
-        <div className="subscription-card-stats">
-          <div className="subscription-stat-item">
-            <span className="subscription-stat-label">CODE</span>
-            <span className="subscription-stat-value">{stats.code}</span>
+        {/* ── Pricing ── */}
+        <div className="sc-pricing">
+          <div className="sc-price-wrap">
+            <span className="sc-price">₹{price}</span>
+            <span className="sc-period">{period}</span>
           </div>
         </div>
+
+        <div className="sc-divider" />
+
+        {/* ── Features ── */}
+        <div className="sc-features">
+          <span className="sc-features-label">Features</span>
+          <ul className="sc-features-list">
+            {features.map((feature, idx) => (
+              <li key={idx} className="sc-feature">
+                <i className="bi bi-check2" /> {feature}
+              </li>
+            ))}
+          </ul>
+        </div>
+
       </div>
 
-      {/* ---------- Features Section ---------- */}
-      {/* Displays list of features */}
-      <div className="subscription-card-features">
-        <span className="subscription-features-label">FEATURES</span>
-        <ul className="subscription-features-list">
-          {features.map((feature, idx) => (
-            <li key={idx} className="subscription-feature-item">
-              <i className="bi bi-check2"></i> {feature}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* ---------- Edit Button ---------- */}
-      {/* Allows editing of the plan */}
+      {/* ── Button ── */}
       <button
-        className="subscription-edit-btn"
+        className={`sc-btn ${onBuy ? 'sc-btn--buy' : 'sc-btn--edit'}`}
         disabled={buttonDisabled}
-        onClick={() => {if (onBuy) onBuy(plan);
-          else if (onEdit) onEdit(plan);}}
+        onClick={() => { if (onBuy) onBuy(plan); else if (onEdit) onEdit(plan); }}
       >
-       {onBuy ? "Buy Now" : "Edit Plan"}
+        <i className={`bi ${onBuy ? 'bi-bag-check' : 'bi-pencil'}`} />
+        {onBuy ? 'Buy Now' : 'Edit Plan'}
       </button>
+
     </div>
-    // End of SubscriptionCard
   );
 };
 

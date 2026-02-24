@@ -30,6 +30,7 @@ import "./SignIn.css";
 import { login } from "../../../../redux/slices/authSlice";
 import { Link } from "react-router-dom";
 import useOtp from "../../../../hooks/useOtp.js";
+import OtpModal from "../../../../components/common/otpModal/OtpModal";
 import PaswordInputBox from "../../../../components/common/inputfield/PaswordInputBox.jsx"
 import PopUp from "../../../../components/common/popups/PopUp.jsx";
 import { COMPANY_INFO } from "../../../../config/Config.js";
@@ -44,6 +45,7 @@ const SignIn = () => {
   canResend,
   sendOtp,
   verifyOtp,
+  verifyError,
   resendOtp,
   cancelOtp,
   handleOtpChange,
@@ -155,6 +157,9 @@ const handleLogin = async () => {
       localStorage.setItem("user_id", result.userId);
       navigate("/dashboard");
       localStorage.setItem("user_id", result.userId);
+    }
+    else if (roleId === 3) {
+      toast.error("You are only elligible to login from mobile app");
     }
     else if (roleId === 2) {
       // ✅ STORE TENANT ID FOR TENANT ADMIN
@@ -353,7 +358,7 @@ const handleSignup = async () => {
             <div className="welcome-header">
               <h2>{formConfig.signup.get.label}</h2>
               <div className="gradient-line"></div>
-              <p>{formConfig.signup.signup.label}</p>
+              <p>Create Account and Start Your Journey</p>
             </div>
             {/* welcome header div end */}
             {/* reuable input field component */}
@@ -433,12 +438,7 @@ const handleSignup = async () => {
             <i className={`bi ${showConfirmPassword ? "bi-eye" : "bi-eye-slash"} eye-icon-confirm`}
             onClick={() => setShowConfirmPassword(!showConfirmPassword)}></i>
             </div>
-           <div className="signin-divider">
-            <span className="line"></span>
-            <span className="or-text">Create Account and Start Your Journey</span>
-            <span className="line"></span>
-          </div>
-           
+        
             <div className="signin-submit">
               <Button text="Create Account" onClick={handleSignup} disabled={!otpVerified} />
  
@@ -456,48 +456,21 @@ const handleSignup = async () => {
         </div>
         {/* signup panel end */}
         {showOtpModal && (
-       <div className="otp-modal-overlay">
-      <div className="otp-modal">
-      <h3>Verify OTP</h3>
-      <p>Enter the 6-digit OTP sent to</p>
-      <strong>+91 {mobileNumber}</strong>
- 
-     <div className="otp-box-wrapper">
-      {otp.map((digit, index) => (
-        <input
-          key={index}
-          id={`otp-${index}`}
-          type="text"
-          maxLength="1"
-          value={digit}
-          onChange={(e) => handleOtpChange(e.target.value, index)}
-          onKeyDown={(e) => handleOtpKeyDown(e, index)}
-          className="otp-box"
-        />
-      ))}
-    </div>
- 
-    <div className="otp-actions">
-      <Button
-        text="Verify OTP"
-      onClick={() => verifyOtp(mobileNumber)}
-        disabled={otpLoading}
-      />
-      <button
-        className={`forgot ${!canResend ? "disabled-link" : ""}`}
-        disabled={!canResend || otpLoading}
-        onClick={() => resendOtp(mobileNumber)}
-      >
-        {canResend
-          ? "Resend OTP"
-          : `Resend OTP in ${resendTimer}s`}
-      </button>
-          <button className="forgot" onClick={cancelOtp}>
-          Cancel
-        </button>
-        </div>
-            </div>
-          </div>
+          <OtpModal
+            heading="Verify OTP"
+            description="Enter the 6-digit OTP sent to"
+            target={`+91 ${mobileNumber}`}
+            otp={otp}
+            otpLoading={otpLoading}
+            canResend={canResend}
+            onOtpChange={handleOtpChange}
+            onOtpKeyDown={handleOtpKeyDown}
+            onVerify={() => verifyOtp(mobileNumber)}
+            onResend={() => resendOtp(mobileNumber)}
+            onCancel={cancelOtp}
+            verifyError={verifyError}
+            totalSeconds={60}
+          />
         )}
  
       </div> {/* signin card end */}

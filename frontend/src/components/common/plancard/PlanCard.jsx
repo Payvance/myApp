@@ -7,51 +7,58 @@ const PlanCard = ({ plan, onBuy, buttonText = "Try Now", buttonDisabled = false 
 
   return (
     <div className="subscription-card">
-      {/* ---------- Header ---------- */}
-      <div className="subscription-card-header">
-        <div>
-          <h3 className="subscription-card-name">{name}</h3>
-          <p className="subscription-card-desc">{subtitle}</p>
-        </div>
-        {/* ❌ Status removed */}
-      </div>
 
-      {/* ---------- Pricing ---------- */}
-      <div className="subscription-card-pricing">
-        <div className="subscription-pricing-info">
-          <h2 className="subscription-card-price">₹{price}</h2>
-          <p className="subscription-card-period">{period}</p>
-        </div>
+      {/* Gradient top band */}
+      <div className="sc-band" />
 
-        {/* ---------- Stats ---------- */}
-        <div className="subscription-card-stats">
-          <div className="subscription-stat-item">
-            <span className="subscription-stat-label">CODE</span>
-            <span className="subscription-stat-value">{stats?.code}</span>
+      <div className="sc-body">
+
+        {/* ── Header ── */}
+        <div className="sc-header">
+          <div>
+            <h3 className="sc-name">{name}</h3>
+            <p className="sc-sub">{subtitle}</p>
           </div>
         </div>
+
+        {/* ── Pricing ── */}
+        <div className="sc-pricing">
+          <div className="sc-price-wrap">
+            <span className="sc-price">₹{price}</span>
+            <span className="sc-period">{period}</span>
+          </div>
+          <div className="sc-code">
+            <span className="sc-code__label">Code</span>
+            <span className="sc-code__value">{stats?.code}</span>
+          </div>
+        </div>
+
+        <div className="sc-divider" />
+
+        {/* ── Features ── */}
+        <div className="sc-features">
+          <span className="sc-features-label">Features</span>
+          <ul className="sc-features-list">
+            {features.map((feature, idx) => (
+              <li key={idx} className="sc-feature">
+                <i className="bi bi-check2" /> {feature}
+              </li>
+            ))}
+          </ul>
+        </div>
+
       </div>
 
-      {/* ---------- Features ---------- */}
-      <div className="subscription-card-features">
-        <span className="subscription-features-label">FEATURES</span>
-        <ul className="subscription-features-list">
-          {features.map((feature, idx) => (
-            <li key={idx} className="subscription-feature-item">
-              <i className="bi bi-check2"></i> {feature}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* ---------- Buy Button ---------- */}
+      {/* ── Button ── */}
       <button
-        className="subscription-edit-btn"
+        className="sc-btn sc-btn--buy"
         onClick={() => onBuy && onBuy(plan)}
         disabled={buttonDisabled}
       >
+        <i className="bi bi-bag-check" />
         {buttonText}
       </button>
+
     </div>
   );
 };

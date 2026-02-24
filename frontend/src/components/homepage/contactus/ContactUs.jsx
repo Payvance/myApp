@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './ContactUs.css';
 import { companyConfigServices } from '../../../services/apiService';
+import { validateField } from '../../../config/validateField';
 
 const ContactUs = () => {
     const [form, setForm] = useState({
@@ -11,12 +12,57 @@ const ContactUs = () => {
         message: ''
     });
 
+    const [errors, setErrors] = useState({});
     const [sent, setSent] = useState(false);
     const [companyData, setCompanyData] = useState({});
 
 
-    const handleChange = (e) =>
-        setForm({ ...form, [e.target.name]: e.target.value });
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        const validationType = e.target.getAttribute('validationType');
+        let finalValue = value;
+
+        // Alphabet-only filtering for Name field
+        if (validationType === 'TEXT_ONLY') {
+            finalValue = value.replace(/[^A-Za-z\s]/g, "");
+        }
+
+        // 10-digit limit for Phone field
+        if (validationType === 'NUMBER_ONLY') {
+            finalValue = value.replace(/[^0-9]/g, "").slice(0, 10);
+        }
+
+        setForm({ ...form, [name]: finalValue });
+
+        // Clear error when user starts typing again
+        if (errors[name]) {
+            setErrors(prev => {
+                const newErrors = { ...prev };
+                delete newErrors[name];
+                return newErrors;
+            });
+        }
+    };
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            const { name, value } = e.target;
+            const validationType = e.target.getAttribute('validationType');
+
+            // Only show error if input is NOT empty
+            if (value.trim() !== "" && validationType) {
+                const error = validateField(validationType, value, e.target.required);
+                setErrors(prev => ({ ...prev, [name]: error }));
+            } else if (value.trim() === "") {
+                // Clear error if empty (requirement: don't show error when empty)
+                setErrors(prev => {
+                    const newErrors = { ...prev };
+                    delete newErrors[name];
+                    return newErrors;
+                });
+            }
+        }
+    };
 
     // 🔹 Fetch Company Details on Load
     useEffect(() => {
@@ -44,6 +90,25 @@ const ContactUs = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        // Final check before submission
+        const newErrors = {};
+        const fieldsToValidate = [
+            { name: 'name', type: 'TEXT_ONLY', required: true },
+            { name: 'email', type: 'EMAIL', required: true },
+            { name: 'phone', type: 'NUMBER_ONLY', required: false },
+        ];
+
+        fieldsToValidate.forEach(field => {
+            const error = validateField(field.type, form[field.name], field.required);
+            if (error) newErrors[field.name] = error;
+        });
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            return;
+        }
+
         setSent(true);
         setForm({
             name: '',
@@ -52,6 +117,7 @@ const ContactUs = () => {
             subject: '',
             message: ''
         });
+        setErrors({});
         setTimeout(() => setSent(false), 4000);
     };
 
@@ -75,7 +141,7 @@ const ContactUs = () => {
                             <i className="bi bi-geo-alt-fill"></i>
                         </div>
                         <div>
-                            <h4>Office Address</h4>
+                            <h4>Registered Office Address</h4>
                             <p>
                                 {companyData.companyName}<br />
                                 {companyData.address}
@@ -124,12 +190,15 @@ const ContactUs = () => {
                                         id="cu-name"
                                         name="name"
                                         type="text"
+                                        className={errors.name ? 'cu-input-error' : ''}
                                         placeholder="Enter your full name"
                                         value={form.name}
                                         validationType="TEXT_ONLY"
                                         onChange={handleChange}
+                                        onKeyDown={handleKeyDown}
                                         required
                                     />
+                                    {errors.name && <span className="cu-error-msg">{errors.name}</span>}
                                 </div>
                                 <div className="cu-field">
                                     <label htmlFor="cu-email">Email *</label>
@@ -137,12 +206,15 @@ const ContactUs = () => {
                                         id="cu-email"
                                         name="email"
                                         type="email"
+                                        className={errors.email ? 'cu-input-error' : ''}
                                         placeholder="you@company.com"
                                         value={form.email}
                                         onChange={handleChange}
+                                        onKeyDown={handleKeyDown}
                                         validationType="EMAIL"
                                         required
                                     />
+                                    {errors.email && <span className="cu-error-msg">{errors.email}</span>}
                                 </div>
                             </div>
 
@@ -153,11 +225,14 @@ const ContactUs = () => {
                                         id="cu-phone"
                                         name="phone"
                                         type="tel"
+                                        className={errors.phone ? 'cu-input-error' : ''}
                                         placeholder="Enter your phone number"
                                         value={form.phone}
                                         validationType="NUMBER_ONLY"
                                         onChange={handleChange}
+                                        onKeyDown={handleKeyDown}
                                     />
+                                    {errors.phone && <span className="cu-error-msg">{errors.phone}</span>}
                                 </div>
                                 <div className="cu-field">
                                     <label htmlFor="cu-subject">Subject</label>
@@ -177,7 +252,7 @@ const ContactUs = () => {
                                 <textarea
                                     id="cu-message"
                                     name="message"
-                                    rows={5}
+                                    rows={3}
                                     placeholder="Describe your query in detail..."
                                     value={form.message}
                                     onChange={handleChange}

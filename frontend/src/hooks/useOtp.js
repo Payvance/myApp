@@ -30,6 +30,7 @@ const useOtp = () => {
   const [otpVerified, setOtpVerified] = useState(false);
   const [otpLoading, setOtpLoading] = useState(false);
   const [showOtpModal, setShowOtpModal] = useState(false);
+  const [verifyError, setVerifyError] = useState(null);
 
   const [resendTimer, setResendTimer] = useState(0);
   const [canResend, setCanResend] = useState(false);
@@ -97,6 +98,7 @@ const useOtp = () => {
         await authServices.otpsend(identifier);
       }
       toast.success("OTP sent successfully");
+      setVerifyError(null);
       setShowOtpModal(true);
       setOtp(Array(6).fill(""));
       const duration = getResendTime(type);
@@ -119,6 +121,7 @@ const useOtp = () => {
       } else {
         toast.error("Something went wrong. Please try again.");
       }
+      setVerifyError(null);
     } finally {
       setOtpLoading(false);
     }
@@ -139,6 +142,7 @@ const useOtp = () => {
     }
     try {
       setOtpLoading(true);
+      setVerifyError(null);
       if (type === "email") {
         await authServices.emailOtpVerify(identifier, otpValue);
       } else {
@@ -156,9 +160,12 @@ const useOtp = () => {
       }
       setOtpVerified(true);
       setShowOtpModal(false);
+      setVerifyError(null);
       return true;
     } catch (error) {
-      toast.error("Invalid OTP");
+      const errorMsg = error?.response?.data?.message || "Invalid OTP";
+      toast.error(errorMsg);
+      setVerifyError(errorMsg);
       setOtp(Array(6).fill(""));
       setTimeout(() => {
         document.getElementById("otp-0")?.focus();
@@ -180,6 +187,7 @@ const useOtp = () => {
       }
       toast.success("OTP resent successfully");
       setOtp(Array(6).fill(""));
+      setVerifyError(null);
       const duration = getResendTime(type);
       setResendTimer(duration);
       setCanResend(false);
@@ -202,6 +210,7 @@ const useOtp = () => {
     const updatedOtp = [...otp];
     updatedOtp[index] = value;
     setOtp(updatedOtp);
+    setVerifyError(null);
     if (value && index < 5) {
       document.getElementById(`otp-${index + 1}`)?.focus();
     }
@@ -217,6 +226,7 @@ const useOtp = () => {
   const cancelOtp = () => {
     setShowOtpModal(false);
     setOtp(Array(6).fill(""));
+    setVerifyError(null);
   };
 
   return {
@@ -232,6 +242,7 @@ const useOtp = () => {
     cancelOtp,
     handleOtpChange,
     handleOtpKeyDown,
+    verifyError,
   };
 };
 

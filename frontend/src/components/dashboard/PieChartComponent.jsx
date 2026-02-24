@@ -9,7 +9,7 @@ const PieChartComponent = ({ title, data, loading }) => {
     chart: {
       type: "pie",
       backgroundColor: "transparent",
-      height: 260   // 🔥 smaller
+      height: 240  
     },
     title: {
       text: title,
@@ -17,7 +17,7 @@ const PieChartComponent = ({ title, data, loading }) => {
       verticalAlign: "top",
       x: 0,
       y: 10,
-      style: { fontSize: "14px", fontWeight: 600 }
+      style: { fontSize: "14px", fontWeight: 550 }
     },
     plotOptions: {
       pie: {
