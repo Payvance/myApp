@@ -7,7 +7,7 @@ import { APP_NAME } from '../../../../config/Config';
 /* ───────────── Static Data ───────────── */
 
 const userSubItems = [
-  { path: '/users', icon: 'bi bi-person-lines-fill', label: 'All Partners' },
+  { path: '/partners', icon: 'bi bi-person-lines-fill', label: 'All Partners' },
   { path: '/users/pending', icon: 'bi bi-hourglass-split', label: 'Pending Approval' },
   { path: '/users/reject', icon: 'bi bi-person-x-fill', label: 'Rejected Partners' },
   { path: '/vendordiscount', icon: 'bi bi-percent', label: 'Discount' },

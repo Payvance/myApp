@@ -8,15 +8,20 @@ const DashboardCard = ({
   icon,
   color = 'primary',
   size = 'medium',
-  width = 'auto'
+  width = 'auto',
+  onCardClick,
+  ...rest
 }) => {
   const navigate = useNavigate();
 
   const handleCardClick = (e) => {
-    // Prevent event bubbling
     e.preventDefault();
     e.stopPropagation();
-    
+    if (onCardClick) {
+      onCardClick({ title, value, icon, color, ...rest });
+      return;
+    }
+
     // Navigate based on card title - using actual routes from App.jsx
     if (title) {
       const titleLower = title.toLowerCase();

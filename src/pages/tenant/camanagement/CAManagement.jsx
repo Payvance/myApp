@@ -144,9 +144,9 @@ const CAManagement = () => {
           isOpen={isCreatePopupOpen}
           onClose={handleCloseCreatePopup}
           title="Create New CA"
-          size="medium"
+          size="small"
         >
-          <div className="signup-panel">
+          <div className="signup-panel pop-pannel">
             <div className="signup-inner">
               {/* CA No. */}
               <InputField

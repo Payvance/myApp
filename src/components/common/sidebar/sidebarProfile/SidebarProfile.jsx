@@ -396,11 +396,23 @@ const UserProfileMenu = ({
         isOpen={showLogoutPopup}
         onClose={() => setShowLogoutPopup(false)}
         title="Log Out"
+        subtitle="Are you sure you want to end your session?"
+        icon="bi-box-arrow-right"
         size="small"
       >
-        <div className="popup-buttons" style={{ marginTop: "10px" }}>
-          <Button text="Cancel" variant="green-line" onClick={() => setShowLogoutPopup(false)} />
-          <Button text="Logout" variant="red-line" onClick={handleLogout} />
+        <div className="lo-body">
+          <div className="lo-note">
+            <i className="bi bi-exclamation-triangle-fill" />
+            <p>You will be redirected to the sign-in page and will need to log in again to continue.</p>
+          </div>
+          <div className="lo-actions">
+            <button className="lo-cancel-btn" onClick={() => setShowLogoutPopup(false)}>
+              <i className="bi bi-x" /> cancle
+            </button>
+            <button className="lo-logout-btn" onClick={handleLogout}>
+              <i className="bi bi-box-arrow-right" /> Log Out
+            </button>
+          </div>
         </div>
       </PopUp>
     </>

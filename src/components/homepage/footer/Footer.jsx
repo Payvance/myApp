@@ -13,8 +13,8 @@ const quickLinks = [
 ];
 
 const supportLinks = [
-    { label: 'Terms & Conditions' },
-    { label: 'Privacy Policy' },
+    { label: 'Terms & Conditions', path: '/src/assets/termcondition/TermCondition.pdf' },
+    { label: 'Privacy Policy', path: '/src/assets/privacypolicy/Privacy Policy.pdf' },
 ];
 
 const socialLinks = [
@@ -59,6 +59,10 @@ const Footer = () => {
         fetchCompanyDetails();
     }, []);
 
+    const openPDF = (path) => {
+        window.open(path, '_blank', 'noopener,noreferrer');
+    };
+
     const scrollTo = (href) => {
         if (href.startsWith('#')) {
             const el = document.querySelector(href);
@@ -78,12 +82,6 @@ const Footer = () => {
                         {companyDetails.companyName}
                     </div>
 
-                    <p className="ft-tagline">
-                        Designed for smarter financial management.
-                        Streamlined invoicing and tax compliance.
-                        Actionable analytics at your fingertips.
-                    </p>
-
                     <div className="ft-brand-details">
                         <div className="ft-address">
                             <i className="bi bi-geo-alt-fill"></i>
@@ -91,18 +89,25 @@ const Footer = () => {
                                 {companyDetails.address}
                             </span>
                         </div>
-                        <div className="ft-map-square">
-                            <iframe
-                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3767.8967406240217!2d72.95159107598!3d19.20015568703491!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7b913619a970d%3A0x3565e06495db1670!2sCentrum%20Business%20Square!5e0!3m2!1sen!2sin!4v1740304033306!5m2!1sen!2sin"
-                                width="100%"
-                                height="100%"
-                                style={{ border: 0 }}
-                                allowFullScreen=""
-                                loading="lazy"
-                                referrerPolicy="no-referrer-when-downgrade"
-                                title="Office Location"
-                            ></iframe>
-                        </div>
+                        <a
+                            href="https://maps.app.goo.gl/xFdqEhBRZg1TqqeW6"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="ft-map-link"
+                        >
+                            <div className="ft-map-square">
+                                <iframe
+                                    src="https://maps.google.com/maps?q=19.1956,72.9535&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                                    width="100%"
+                                    height="100%"
+                                    style={{ border: 0, pointerEvents: 'none' }}
+                                    allowFullScreen=""
+                                    loading="lazy"
+                                    referrerPolicy="no-referrer-when-downgrade"
+                                    title="Office Location"
+                                ></iframe>
+                            </div>
+                        </a>
                     </div>
                 </div>
 
@@ -143,7 +148,13 @@ const Footer = () => {
                     <ul className="ft-link-list">
                         {supportLinks.map((l, i) => (
                             <li key={i}>
-                                <a href="#">
+                                <a
+                                    href={l.path}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        openPDF(l.path);
+                                    }}
+                                >
                                     <i className="bi bi-file-earmark-text"></i> {l.label}
                                 </a>
                             </li>
@@ -165,12 +176,6 @@ const Footer = () => {
                             <i className="bi bi-envelope-fill"></i>
                             <div>
                                 <span>{companyDetails.email}</span>
-                            </div>
-                        </li>
-                        <li>
-                            <i className="bi bi-clock-fill"></i>
-                            <div>
-                                <span>24/7 Available</span>
                             </div>
                         </li>
                     </ul>
@@ -200,7 +205,14 @@ const Footer = () => {
             <div className="ft-divider"></div>
 
             {/* Copyright */}
-            <CommonFooter />
+            <CommonFooter>
+                <span
+                    onClick={() => openPDF('/src/assets/privacypolicy/Privacy Policy.pdf')}
+                    style={{ cursor: 'pointer' }}
+                >
+                    © Copyrights 2026. {companyDetails.companyName}. All rights reserved.
+                </span>
+            </CommonFooter>
 
         </footer>
     );

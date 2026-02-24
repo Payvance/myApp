@@ -104,20 +104,7 @@ const BarChartComponent = ({
       <div className="bar-chart__header">
         <h3 className="bar-chart__title">{title}</h3>
 
-        <div className="bar-chart__year-selector">
-          <label>Year Range:</label>
-          <select
-            value={selectedPair}
-            onChange={handleYearChange}
-            className="bar-chart__year-select"
-          >
-            {yearPairs.map(pair => (
-              <option key={pair} value={pair}>
-                {pair}
-              </option>
-            ))}
-          </select>
-        </div>
+        
       </div>
 
       <div className="bar-chart__container">

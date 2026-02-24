@@ -11,10 +11,10 @@
     box-sizing: border-box;
     overflow-x: hidden;
 }
-.database-checkboxes {
+.database-toggle-container {
     display: flex;
-    gap: 16px;
-    margin-right: 5rem;
+    align-items: center;
+    justify-content: flex-start;
     margin-left: 6px;
 }
 /* subscription header */
@@ -88,6 +88,7 @@
     min-width: 0 !important;
     margin: 0 !important;
     flex-shrink: 0;
+    height: 265px;
 }
 
 /* Responsive grid layout */

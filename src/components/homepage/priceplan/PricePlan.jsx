@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { planServices } from '../../../services/apiService';
 import './PricePlan.css';
 
@@ -6,6 +7,7 @@ const PricePlan = () => {
     const [plans, setPlans] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchPlans = async () => {
@@ -36,7 +38,7 @@ const PricePlan = () => {
                             'Secure Data Backup'
                         ],
                         cta: amount ? 'Start Free Trial' : 'Contact Sales',
-                        ctaLink: amount ? '#pricing' : '#contact',
+                        ctaLink: amount ? '/signin' : '#contact',
                         highlighted: index === 1, // Highlight the second plan by default
                     };
                 });
@@ -53,6 +55,16 @@ const PricePlan = () => {
 
         fetchPlans();
     }, []);
+
+    const handleCTAClick = (e, link) => {
+        if (link.startsWith('/')) {
+            e.preventDefault();
+            navigate(link);
+        } else if (link.startsWith('#')) {
+            // Standard anchor behavior for hash links
+            return;
+        }
+    };
 
     if (loading) {
         return (
@@ -129,7 +141,11 @@ const PricePlan = () => {
                                 </li>
                             ))}
                         </ul>
-                        <a href={plan.ctaLink} className={`pricing-cta ${plan.highlighted ? 'primary' : 'outline'}`}>
+                        <a
+                            href={plan.ctaLink}
+                            className={`pricing-cta ${plan.highlighted ? 'primary' : 'outline'}`}
+                            onClick={(e) => handleCTAClick(e, plan.ctaLink)}
+                        >
                             {plan.cta}
                         </a>
                     </div>

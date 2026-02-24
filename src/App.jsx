@@ -176,7 +176,7 @@ function App() {
         } />
 
         {/* User Management routes */}
-        <Route path="/users" element={
+        <Route path="/partners" element={
           <ProtectedRoute>
             <UserManagement />
           </ProtectedRoute>

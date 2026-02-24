@@ -8,11 +8,6 @@ const features = [
         desc: 'Generate professional invoices in seconds. Customise templates, add discounts, and send to clients with one click.',
     },
     {
-        icon: 'bi-percent',
-        title: 'GST-Ready',
-        desc: 'Fully compliant GST invoicing with CGST, SGST, IGST breakdowns. File returns without switching tools.',
-    },
-    {
         icon: 'bi-graph-up-arrow',
         title: 'Profit / Loss Reports',
         desc: 'Real-time P&L dashboards with drill-down by category, date range, and product. Know exactly where you stand.',

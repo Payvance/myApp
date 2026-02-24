@@ -1,0 +1,207 @@
+/* src/components/common/otpmodal/OtpModal.css */
+/* ============================================================
+   OtpModal — om-* scoped, LightTheme.css variables
+   position: fixed  → standalone / full-screen
+   position: absolute → inside popup-content { position:relative }
+   ============================================================ */
+
+.om-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.527);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 50; padding: 24px;
+  animation: omFadeIn 0.2s ease;
+}
+@keyframes omFadeIn { from{opacity:0} to{opacity:1} }
+
+/* ── Card ── */
+.om-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-primary);
+  border-radius: 20px;
+  box-shadow: 0 8px 40px rgba(126,86,228,.14);
+  width: 100%; max-width: 360px;
+  overflow: hidden;
+  animation: omIn 0.28s cubic-bezier(0.16,1,0.3,1);
+}
+@keyframes omIn {
+  from { transform: translateY(16px) scale(0.97); opacity: 0; }
+  to   { transform: translateY(0)    scale(1);    opacity: 1; }
+}
+
+/* ── Gradient header ── */
+.om-header {
+  background: var(--gradient-primary);
+  padding: 14px 20px 12px;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  position: relative;
+}
+
+.om-icon-ring {
+  width: 40px; height: 40px;
+  background: rgba(255,255,255,0.18);
+  border: 1.5px solid rgba(255,255,255,0.28);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; color: #fff; margin-bottom: 5px;
+}
+
+.om-heading {
+  font-size: 15px; font-weight: 800; color: #fff;
+  letter-spacing: -0.01em; text-align: center; margin: 0;
+}
+.om-subheading {
+  font-size: 10.5px; color: rgba(255,255,255,0.72); text-align: center;
+}
+
+/* Timer bar at bottom edge of header */
+.om-timer-bar-wrap {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 3px; background: rgba(255, 255, 255, 0.18);
+}
+.om-timer-bar {
+  height: 100%; background: #fbbf24;
+  transition: width 1s linear; border-radius: 0 2px 2px 0;
+}
+.om-timer-bar.warning { background: #fbbf24; }
+.om-timer-bar.expired { background: #f87171; width: 0% !important; }
+
+/* ── Body ── */
+.om-body {
+  padding: 14px 18px 16px;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+}
+
+/* Timer pill */
+.om-timer-pill {
+  display: flex; align-items: center; gap: 5px;
+  background: var(--bg-secondary); border: 1px solid var(--border-primary);
+  border-radius: 100px; padding: 3px 11px;
+  font-size: 11.5px; font-weight: 600; color: var(--text-secondary);
+  transition: color 0.3s, background 0.3s, border-color 0.3s;
+}
+.om-timer-pill i { font-size: 11px; color: var(--text-tertiary); }
+.om-timer-pill.warning { border-color: #fde68a; background: #fffbeb; color: #d97706; }
+.om-timer-pill.warning i { color: #d97706; }
+.om-timer-pill.expired  { border-color: #fecaca; background: #fff5f5;  color: var(--error); }
+.om-timer-pill.expired i { color: var(--error); }
+
+/* Target */
+.om-target-row { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.om-desc { font-size: 11.5px; color: var(--text-secondary); }
+.om-target {
+  font-size: 12px; font-weight: 700; color: var(--text-primary);
+  background: var(--bg-secondary); border: 1px solid var(--border-primary);
+  border-radius: 6px; padding: 2px 10px; letter-spacing: 0.02em;
+}
+
+/* ── OTP boxes ── */
+.om-boxes { display: flex; gap: 7px; }
+.om-boxes.shake { animation: shake 0.35s ease; }
+@keyframes shake {
+  0%,100%{transform:translateX(0)} 20%{transform:translateX(-5px)}
+  40%{transform:translateX(5px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)}
+}
+
+.om-box {
+  width: 40px; height: 46px;
+  text-align: center; font-size: 19px; font-weight: 700;
+  color: var(--text-primary);
+  background: var(--bg-secondary); border: 2px solid var(--border-secondary);
+  border-radius: 10px; outline: none;
+  caret-color: var(--purple-500); font-family: inherit;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s, transform 0.1s;
+}
+.om-box:focus {
+  border-color: var(--purple-500); background: var(--purple-50, #faf8ff);
+  box-shadow: 0 0 0 3px rgba(126,86,228,.12); transform: scale(1.06);
+}
+.om-box--filled { border-color: var(--purple-500); background: var(--purple-100, #f0eefb); }
+.om-box:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* Attempt dots */
+.om-attempts {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 10.5px; color: var(--text-tertiary);
+}
+.om-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--border-secondary); transition: background 0.2s;
+}
+.om-dot--used { background: var(--error); }
+
+/* Status */
+.om-status {
+  font-size: 11.5px; font-weight: 600; text-align: center;
+  padding: 5px 12px; border-radius: 8px; width: 100%;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  animation: fadeUp 0.2s ease;
+}
+@keyframes fadeUp { from{opacity:0;transform:translateY(-3px)} to{opacity:1;transform:translateY(0)} }
+.om-status--error   { background: #fff5f5; color: var(--error);   border: 1px solid #fecaca; }
+.om-status--success { background: #f0fdf4; color: var(--success); border: 1px solid #bbf7d0; }
+
+/* Resend */
+.om-resend-row {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 11.5px; color: var(--text-tertiary);
+}
+.om-resend-btn {
+  background: none; border: none; font-size: 11.5px; font-weight: 700;
+  color: var(--purple-500); cursor: pointer; padding: 0; font-family: inherit;
+  display: inline-flex; align-items: center; gap: 4px; transition: color 0.15s;
+}
+.om-resend-btn:hover:not(:disabled) { color: var(--purple-600); text-decoration: underline; }
+.om-resend-btn:disabled { color: var(--text-tertiary); cursor: not-allowed; }
+
+/* ── Actions ── */
+.om-actions { display: flex; gap: 8px; width: 100%; margin-top: 2px; }
+
+.om-cancel-btn {
+  height: 36px; padding: 0 15px;
+  background: transparent; border: 1.5px solid var(--border-secondary);
+  border-radius: 9px; font-size: 12.5px; font-weight: 700;
+  color: var(--text-secondary); cursor: pointer; font-family: inherit;
+  display: inline-flex; align-items: center; gap: 5px;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  white-space: nowrap;
+}
+.om-cancel-btn:hover { border-color: var(--border-secondary); color: var(--text-primary); background: var(--bg-secondary); }
+
+.om-submit-btn {
+  flex: 1; height: 36px;
+  background: var(--gradient-primary); color: #fff; border: none;
+  border-radius: 9px; font-size: 12.5px; font-weight: 700;
+  font-family: inherit; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  box-shadow: 0 2px 10px rgba(126,86,228,.28);
+  transition: opacity 0.18s, transform 0.12s, box-shadow 0.18s;
+  position: relative; overflow: hidden; letter-spacing: 0.01em;
+}
+.om-submit-btn::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg,transparent,rgba(255,255,255,.13),transparent);
+  transform: translateX(-100%); transition: transform 0.45s ease;
+}
+.om-submit-btn:hover:not(:disabled) { opacity:.88; transform:translateY(-1px); box-shadow:0 5px 16px rgba(126,86,228,.40); }
+.om-submit-btn:hover::after { transform:translateX(100%); }
+.om-submit-btn:active:not(:disabled) { transform:translateY(0); }
+.om-submit-btn:disabled { opacity:.38; cursor:not-allowed; box-shadow:none; transform:none; }
+.om-submit-btn--success { background: linear-gradient(135deg,#16a34a,#22c55e); box-shadow: 0 2px 10px rgba(22,163,74,.28); }
+
+/* Spinner */
+.om-spinner {
+  width: 12px; height: 12px;
+  border: 2px solid rgba(255,255,255,0.28); border-top-color: #fff;
+  border-radius: 50%; animation: omSpin 0.65s linear infinite;
+}
+@keyframes omSpin { to{transform:rotate(360deg)} }
+
+/* Responsive */
+@media (max-width: 480px) {
+  .om-body { padding: 12px 14px 14px; }
+  .om-box  { width: 36px; height: 42px; font-size: 17px; }
+}

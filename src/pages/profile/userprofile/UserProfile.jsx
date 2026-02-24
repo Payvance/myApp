@@ -49,6 +49,7 @@ const UserProfile = () => {
 
   // Role of the user 
   const [role, setRole] = useState("");
+  const [roleId, setRoleId] = useState(""); // Add roleId state
 
   // Active/Inactive status of the user
   const [isActive, setIsActive] = useState(true);
@@ -127,6 +128,7 @@ const UserProfile = () => {
 
         // Set Common Data
         setRole(data.role);
+        setRoleId(data.roleId); // Extract roleId from response
         setIsActive(data.isActive ?? true);
         mapAddressAndBank(data);
         // Map Personal Data
@@ -297,9 +299,17 @@ const UserProfile = () => {
       //  Success Handling (Exactly like handleSignup)
       toast.success("User profile updated successfully!");
 
-      //  Redirection after success
+      //  Role-based Redirection after success
       setTimeout(() => {
-        navigate("/users");
+        // Check by role ID: 4&5 -> users, 2&3 -> tenantmanagement
+        if (roleId === 4 || roleId === 5) {
+          navigate("/partners");
+        } else if (roleId === 2 || roleId === 3) {
+          navigate("/tenantmanagement");
+        } else {
+          // Default fallback to users page
+          navigate("/users");
+        }
       }, 2000);
 
     } catch (error) {

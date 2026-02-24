@@ -26,25 +26,25 @@ const differentiators = [
 
 const storyMilestones = [
     {
-        year: '2021',
+        year: '2014',
         icon: 'bi-rocket-takeoff',
         title: 'Founded',
-        desc: 'PayVance Innovation Pvt. Ltd. was founded with a mission to democratise financial technology for businesses of all sizes.',
-    },
-    {
-        year: '2022',
-        icon: 'bi-code-slash',
-        title: 'First Product',
-        desc: 'Launched our first API-driven payment platform, serving early adopters across retail and e-commerce sectors.',
-    },
-    {
-        year: '2023',
-        icon: 'bi-globe2',
-        title: 'Scaling Up',
-        desc: 'Expanded operations to 50+ countries and crossed 1 million transactions processed on our embedded finance infrastructure.',
+        desc: 'Sil Technology Private Limited was founded with a mission to democratise financial technology for businesses of all sizes.',
     },
     {
         year: '2024',
+        icon: 'bi-code-slash',
+        title: 'Acquisition',
+        desc: 'Acquired PayVance Innovation Private Limited to expand our product offerings and market reach.',
+    },
+    {
+        year: '2025',
+        icon: 'bi-globe2',
+        title: 'Scaling Up',
+        desc: ' Sil Technology to PayVance Innovation Private Limited',
+    },
+    {
+        year: '2026',
         icon: 'bi-stars',
         title: 'FinlyticZ Born',
         desc: 'FinlyticZ launched as our flagship SaaS product — bringing real-time analytics, smart alerts, and AI automation to every business.',
@@ -144,9 +144,6 @@ const AboutUs = () => {
                     <h3>Empowering digital finance through innovation & agility</h3>
                     <ul className="mv-list">
                         <li>Empowering digital finance through innovation, agility and secure cloud-native solutions with zero compromise on security.</li>
-                        <li>To deliver future-ready financial ecosystems that plug in, not slow down — ensuring agility, security and zero compromise on compliance.</li>
-                        <li>To build really bold, safe and secure FinTech solutions that help banks and businesses launch faster, grow smarter, and lead confidently.</li>
-                        <li>To empower financial institutions and fin-techs with agile, API driven platforms that fuel innovation, boost efficiency and drive real impact.</li>
                     </ul>
                 </div>
                 <div className="about-mv-card vision">
@@ -154,10 +151,7 @@ const AboutUs = () => {
                     <span className="about-eyebrow">OUR VISION</span>
                     <h3>Redefining global banking through India's FinTech brilliance</h3>
                     <ul className="mv-list">
-                        <li>To redefine global banking by showcasing India's FinTech brilliance — modular, seamless, and future-ready.</li>
                         <li>To unlock financial potential through next-gen software built in trust, tech and transformation.</li>
-                        <li>Where innovation meets resilience — delivering banking infrastructure that thrives on change, driven by AI, automation and continuous intelligence.</li>
-                        <li>To be the engine behind tomorrow's FinTech — secure, scalable and built for speed.</li>
                     </ul>
                 </div>
             </div>

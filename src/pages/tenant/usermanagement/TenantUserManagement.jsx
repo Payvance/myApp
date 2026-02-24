@@ -10,6 +10,7 @@ import Footer from "../../../components/common/footer/Footer";
 import { toast } from "react-toastify";
 import formConfig from "../../../config/formConfig";
 import useOtp from "../../../hooks/useOtp";
+import OtpModal from "../../../components/common/otpModal/OtpModal";
 import { authServices, tenantServices, userServices } from "../../../services/apiService";
 import { useNavigate } from "react-router-dom";
 import { COMPANY_INFO } from "../../../config/Config";
@@ -54,6 +55,7 @@ const TenantUserManagement = () => {
     handleOtpKeyDown,
     resetOtp, // for resetting OTP state
     resetOtpVerification,
+    verifyError,
   } = useOtp();
 
   // ---------------- Reset Form ----------------
@@ -314,46 +316,22 @@ const fetchData = useCallback(async (params = {}) => {
  
           {/* OTP Modal */}
           {showOtpModal && (
-            <div className="otp-modal-overlay">
-              <div className="otp-modal">
-                <h3>Verify OTP</h3>
-                <p>Enter the 6-digit OTP sent to</p>
-                <strong>+91 {mobileNumber}</strong>
- 
-                <div className="otp-box-wrapper">
-                  {otp.map((digit, index) => (
-                    <input
-                      key={index}
-                      id={`otp-${index}`}
-                      type="text"
-                      maxLength="1"
-                      value={digit}
-                      onChange={(e) => handleOtpChange(e.target.value, index)}
-                      onKeyDown={(e) => handleOtpKeyDown(e, index)}
-                      className="otp-box"
-                    />
-                  ))}
-                </div>
- 
-                <div className="otp-actions">
-                  <Button
-                    text="Verify OTP"
-                    onClick={() => verifyOtp(mobileNumber)}
-                    disabled={otpLoading}
-                  />
-                  <button
-                    className={`forgot ${!canResend ? "disabled-link" : ""}`}
-                    disabled={!canResend || otpLoading}
-                    onClick={() => resendOtp(mobileNumber)}
-                  >
-                    {canResend ? "Resend OTP" : `Resend OTP in ${resendTimer}s`}
-                  </button>
-                  <button className="forgot" onClick={cancelOtp}>
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            </div>
+            <OtpModal
+              heading="Verify OTP"
+              description="Enter the 6-digit OTP sent to"
+              target={`+91 ${mobileNumber}`}
+              otp={otp}
+              otpLoading={otpLoading}
+              resendTimer={resendTimer}
+              canResend={canResend}
+              onOtpChange={handleOtpChange}
+              onOtpKeyDown={handleOtpKeyDown}
+              onVerify={() => verifyOtp(mobileNumber)}
+              onResend={() => resendOtp(mobileNumber)}
+              onCancel={cancelOtp}
+              verifyError={verifyError}
+              totalSeconds={60}
+            />
           )}
         </PopUp>
  

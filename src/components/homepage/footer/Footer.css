@@ -41,10 +41,10 @@
 /* ── Brand details (Address + Map) ── */
 .ft-brand-details {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: flex-start;
-    gap: 1.5rem;
-    margin-top: 0.5rem;
+    gap: 1.25rem;
+    margin-top: 1rem;
 }
 
 .ft-address {
@@ -63,12 +63,26 @@
     flex-shrink: 0;
 }
 
+.ft-map-link {
+    text-decoration: none;
+    display: block;
+    width: 100%;
+    max-width: 350px;
+}
+
 .ft-map-square {
-    width: 90px;
-    height: 90px;
-    border-radius: 10px;
+    width: 100%;
+    height: 180px;
+    border-radius: 12px;
     overflow: hidden;
-    border: 1px solid rgba(168, 85, 247, 0.3);
+    border: 1px solid rgba(168, 85, 247, 0.25);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.ft-map-link:hover .ft-map-square {
+    transform: scale(1.02);
+    box-shadow: 0 12px 32px rgba(168, 85, 247, 0.25);
 }
 
 .ft-map-square iframe {
