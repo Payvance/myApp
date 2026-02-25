@@ -60,7 +60,6 @@ import CaRedamptionaApprovals from './pages/superadmin/approvals/CaRedamptionaAp
 import TenantUserManagement from './pages/tenant/usermanagement/TenantUserManagement.jsx';
 import CAManagement from './pages/tenant/camanagement/CAManagement.jsx';
 import TenantRequests from './pages/ca/tenantrequests/TenantRequests.jsx';
-import TanentPlansManagement from './pages/tenant/plansmanagement/TanentPlansManagement.jsx';
 import ForgotPassword from './pages/auth/forgotpassword/ForgotPassword.jsx';
 import ResetPassword from './pages/auth/forgotpassword/resetpassword/ResetPassword.jsx';
 import BuyPlan from './pages/tenant/tenantplans/BuyPlan.jsx';
@@ -329,11 +328,6 @@ function App() {
         <Route path="/tenantrequests" element={
           <ProtectedRoute>
             <TenantRequests />
-          </ProtectedRoute>
-        } />
-        <Route path="/plansmanagement" element={
-          <ProtectedRoute>
-            <TanentPlansManagement />
           </ProtectedRoute>
         } />
         <Route path="/tenantplanss" element={

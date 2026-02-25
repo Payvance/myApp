@@ -73,8 +73,8 @@ const PartnerWithUs = () => {
       return;
     }
     if (!isPasswordValid) {
-    toast.error("Password does not meet the criteria");
-    return;
+      toast.error("Password does not meet the criteria");
+      return;
     }
     if (password !== confirmPassword) {
       toast.error("Confirm Password does not match Password");
@@ -91,8 +91,8 @@ const PartnerWithUs = () => {
 
     try {
       const response = await authServices.signup(payload);
-      toast.success(response?.data || "Partner registered successfully");
       navigate("/signin");
+      toast.success(response?.data || "Partner registered successfully");
     } catch (error) {
       toast.error(error?.response?.data || "Signup failed");
     }
@@ -103,7 +103,7 @@ const PartnerWithUs = () => {
       {/* SINGLE COLUMN CARD */}
       <div className="signin-card" style={{ width: "420px", gridTemplateColumns: "1fr", }}>
         <div className="signup-panel" style={{ position: "static", width: "100%" }}>
-          <div className="signup-inner" style={{ marginLeft: "-20%"}}>
+          <div className="signup-inner" style={{ marginLeft: "-20%" }}>
 
             {/* HEADER */}
             <div className="welcome-header" >
@@ -160,31 +160,31 @@ const PartnerWithUs = () => {
 
             {/* PASSWORD */}
             <div className="position-relative signup-pass-container">
-            <PaswordInputBox
-              label={formConfig.signin.password.label}
-              type={showPassword ? "text" : "password"}
-              value={password}
-              onChange={setPassword}
-              onValidationChange={setIsPasswordValid}
-            />
-            <i
-              className={`bi ${showPassword ? "bi-eye" : "bi-eye-slash"} eye-icon-signup`}
-              onClick={() => setShowPassword(!showPassword)}
-            > </i>
+              <PaswordInputBox
+                label={formConfig.signin.password.label}
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={setPassword}
+                onValidationChange={setIsPasswordValid}
+              />
+              <i
+                className={`bi ${showPassword ? "bi-eye" : "bi-eye-slash"} eye-icon-signup`}
+                onClick={() => setShowPassword(!showPassword)}
+              > </i>
             </div>
             {/* CONFIRM PASSWORD */}
             <div className="position-relative signup-pass-container">
-            <InputField
-              label={formConfig.signin.confirmPassword.label}
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              type={showConfirmPassword ? "text" : "password"}
-              onPaste={(e) => e.preventDefault()}
-            />
-            <i
-              className={`bi ${showConfirmPassword ? "bi-eye" : "bi-eye-slash"} eye-icon-signup`}
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            > </i>
+              <InputField
+                label={formConfig.signin.confirmPassword.label}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                type={showConfirmPassword ? "text" : "password"}
+                onPaste={(e) => e.preventDefault()}
+              />
+              <i
+                className={`bi ${showConfirmPassword ? "bi-eye" : "bi-eye-slash"} eye-icon-signup`}
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              > </i>
             </div>
             {/* SUBMIT */}
             <div className="signin-submit">
@@ -196,63 +196,67 @@ const PartnerWithUs = () => {
             </div>
 
             {/* BACK TO LOGIN */}
-            <button className="forgot" onClick={() => navigate("/signin")} style={{ marginLeft: "30%"}}>
+            <button className="forgot" onClick={() => navigate("/signin")} style={{ marginLeft: "35%" }}>
               Back to Sign In
             </button>
 
-            <Footer>{COMPANY_INFO.name} © 2025</Footer>
+            <button className="forgot" onClick={() => navigate("/")} style={{ marginLeft: "30%" }}>
+              Back to Homepage
+            </button>
           </div>
+
         </div>
 
         {/* OTP MODAL */}
-       {showOtpModal && (
-  <div className="otp-modal-overlay">
-    <div className="otp-modal">
-      <h3>Verify OTP</h3>
-      <p>Enter the 6-digit OTP sent to</p>
-      <strong>+91 {mobileNumber}</strong>
+        {showOtpModal && (
+          <div className="otp-modal-overlay">
+            <div className="otp-modal">
+              <h3>Verify OTP</h3>
+              <p>Enter the 6-digit OTP sent to</p>
+              <strong>+91 {mobileNumber}</strong>
 
-      <div className="otp-box-wrapper">
-        {otp.map((digit, index) => (
-          <input
-            key={index}
-            id={`otp-${index}`}
-            type="text"
-            maxLength="1"
-            value={digit}
-            onChange={(e) => handleOtpChange(e.target.value, index)}
-            onKeyDown={(e) => handleOtpKeyDown(e, index)}
-            className="otp-box"
-          />
-        ))}
+              <div className="otp-box-wrapper">
+                {otp.map((digit, index) => (
+                  <input
+                    key={index}
+                    id={`otp-${index}`}
+                    type="text"
+                    maxLength="1"
+                    value={digit}
+                    onChange={(e) => handleOtpChange(e.target.value, index)}
+                    onKeyDown={(e) => handleOtpKeyDown(e, index)}
+                    className="otp-box"
+                  />
+                ))}
+              </div>
+
+              <div className="otp-actions">
+                <Button
+                  text="Verify OTP"
+                  onClick={() => verifyOtp(mobileNumber)}
+                  disabled={otpLoading}
+                />
+
+                <button
+                  className={`forgot ${!canResend ? "disabled-link" : ""}`}
+                  disabled={!canResend || otpLoading}
+                  onClick={() => resendOtp(mobileNumber)}
+                >
+                  {canResend
+                    ? "Resend OTP"
+                    : `Resend OTP in ${resendTimer}s`}
+                </button>
+
+                <button className="forgot" onClick={cancelOtp}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
       </div>
-
-      <div className="otp-actions">
-        <Button
-          text="Verify OTP"
-          onClick={() => verifyOtp(mobileNumber)}
-          disabled={otpLoading}
-        />
-
-        <button
-          className={`forgot ${!canResend ? "disabled-link" : ""}`}
-          disabled={!canResend || otpLoading}
-          onClick={() => resendOtp(mobileNumber)}
-        >
-          {canResend
-            ? "Resend OTP"
-            : `Resend OTP in ${resendTimer}s`}
-        </button>
-
-        <button className="forgot" onClick={cancelOtp}>
-          Cancel
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
-      </div>
+      <Footer>{COMPANY_INFO.name} . All rights reserved</Footer>
     </div>
   );
 };

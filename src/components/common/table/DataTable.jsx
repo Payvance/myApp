@@ -107,7 +107,7 @@ const DataTable = ({
             onClick={() => handleRowExpand(row.id)}
             aria-label="Expand row"
           >
-            <i 
+            <i
               className={`bi ${internalExpandedRows.includes(row.id) ? 'bi-chevron-up' : 'bi-chevron-down'}`}
             />
           </button>
@@ -139,7 +139,7 @@ const DataTable = ({
           // Handle generic status field
           const statusValue = String(value).toLowerCase();
           let statusConfig = { text: value, class: 'status-badge' };
-          
+
           if (statusValue === 'approved' || statusValue === 'approve') {
             statusConfig = { text: 'Approved', class: 'status-badge status-badge--approve' };
           } else if (statusValue === 'rejected' || statusValue === 'reject') {
@@ -147,7 +147,13 @@ const DataTable = ({
           } else if (statusValue === 'pending') {
             statusConfig = { text: 'Pending', class: 'status-badge status-badge--pending' };
           }
-          
+          else if (statusValue === 'active') {
+            statusConfig = { text: 'Active', class: 'status-badge status-badge--active' };
+          }
+          else if (statusValue === 'inactive') {
+            statusConfig = { text: 'Inactive', class: 'status-badge status-badge--inactive' };
+          }
+
           return <span className={statusConfig.class}>{statusConfig.text}</span>;
         } else if (['date', 'datetime'].includes(col.type)) {
           return <DateTimeFormatter value={value} showTime={col.type === 'datetime'} />;
@@ -385,7 +391,7 @@ const DataTable = ({
                           try {
                             // Handle both string and array nestedData
                             let nestedData = row.original.nestedData || '[]';
-                            
+
                             // If nestedData is already an array, use it directly
                             if (Array.isArray(nestedData)) {
                               // Already parsed array
@@ -396,7 +402,7 @@ const DataTable = ({
                               // Invalid format, set to empty array
                               nestedData = [];
                             }
-                            
+
                             if (!nestedData || nestedData.length === 0) {
                               return (
                                 <div className="expanded-content-default">
@@ -410,7 +416,7 @@ const DataTable = ({
                                 <div className="nested-table-header">
                                   <span className="nested-count">{nestedData.length} records</span>
                                 </div>
-                                
+
                                 <table className="data-table">
                                   <tbody>
                                     {nestedData.map((item, rowIndex) => (
@@ -420,7 +426,7 @@ const DataTable = ({
                                             {(() => {
                                               const value = item[column.accessorKey];
                                               const col = column;
-                                              
+
                                               // Use the exact same cell rendering logic as main table
                                               if (col.accessorKey === 'isView') {
                                                 // Handle isView status: 0 = Pending, 1 = Approved, 2 = Rejected
@@ -435,7 +441,7 @@ const DataTable = ({
                                                 // Handle generic status field
                                                 const statusValue = String(value).toLowerCase();
                                                 let statusConfig = { text: value, class: 'status-badge' };
-                                                
+
                                                 if (statusValue === 'approved' || statusValue === 'approve') {
                                                   statusConfig = { text: 'Approved', class: 'status-badge status-badge--approve' };
                                                 } else if (statusValue === 'rejected' || statusValue === 'reject') {
@@ -443,7 +449,12 @@ const DataTable = ({
                                                 } else if (statusValue === 'pending') {
                                                   statusConfig = { text: 'Pending', class: 'status-badge status-badge--pending' };
                                                 }
-                                                
+                                                else if (statusValue === 'active') {
+                                                  statusConfig = { text: 'Active', class: 'status-badge status-badge--active' };
+                                                }
+                                                else if (statusValue === 'inactive') {
+                                                  statusConfig = { text: 'Inactive', class: 'status-badge status-badge--inactive' };
+                                                }
                                                 return <span className={statusConfig.class}>{statusConfig.text}</span>;
                                               } else if (['date', 'datetime'].includes(col.type)) {
                                                 return <DateTimeFormatter value={value} showTime={col.type === 'datetime'} />;
@@ -465,7 +476,7 @@ const DataTable = ({
                                             })()}
                                           </td>
                                         ))}
-                                        
+
                                         {/* Add Actions column for nested table */}
                                         {showActions && (
                                           <td key="actions" className="actions-cell">
