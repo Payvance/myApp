@@ -162,10 +162,61 @@ public class Voucher {
     @Column(name = "transport_distance")
     private Integer transportDistance;
 
-    @Column(name = "eway_bill_no", length = 15)
+    @Column(name = "eway_bill_no", length = 50)
     private String ewayBillNo;
 
-    @Column(name = "eway_bill_valid_upto", length = 50)
+    @Column(name = "shipped_by", length = 50)
+    private String shippedBy;
+
+    @Column(name = "destination_country", length = 100)
+    private String destinationCountry;
+
+    @Column(name = "place_of_receipt", length = 100)
+    private String placeOfReceipt;
+
+    @Column(name = "ship_document_no", length = 100)
+    private String shipDocumentNo;
+
+    @Column(name = "port_of_loading", length = 100)
+    private String portOfLoading;
+
+    @Column(name = "port_of_discharge", length = 100)
+    private String portOfDischarge;
+
+    @Column(name = "final_destination", length = 100)
+    private String finalDestination;
+
+    @Column(name = "order_ref", length = 100)
+    private String orderRef;
+
+    @Column(name = "ship_vessel_no", length = 100)
+    private String shipVesselNo;
+
+    @Column(name = "buyers_sales_tax_no", length = 100)
+    private String buyersSalesTaxNo;
+
+    @Column(name = "due_date_of_payment", length = 50)
+    private String dueDateOfPayment;
+
+    @Column(name = "serial_num_in_pla", length = 100)
+    private String serialNumInPla;
+
+    @Column(name = "date_time_of_invoice", length = 100)
+    private String dateTimeOfInvoice;
+
+    @Column(name = "date_time_of_removal", length = 100)
+    private String dateTimeOfRemoval;
+
+    @Column(name = "mfgr_address_type", length = 100)
+    private String mfgrAddressType;
+
+    @Column(name = "bill_of_lading_no", length = 100)
+    private String billOfLadingNo;
+
+    @Column(name = "bill_of_lading_date", length = 50)
+    private String billOfLadingDate;
+
+    @Column(name = "eway_bill_valid_upto", length = 200)
     private String ewayBillValidUpto;
 
     // --- Financial Totals ---
@@ -193,6 +244,12 @@ public class Voucher {
 
     @OneToMany(mappedBy = "voucher", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LedgerEntry> ledgerEntries;
+
+    @OneToMany(mappedBy = "voucher", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<VoucherOrder> orders;
+
+    @OneToMany(mappedBy = "voucher", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EwayBillDetails> ewayBillDetails;
 
     @OneToMany(mappedBy = "voucher", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<InventoryEntry> inventoryEntries;
