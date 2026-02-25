@@ -16,11 +16,19 @@ public class VoucherInventoryDetailDTO {
     private String billedQty;
     private BigDecimal rate;
     private BigDecimal amount;
+    private BigDecimal discount;
 
     // GST & UOM
     private String hsnCode;
     private BigDecimal gstRate;
+    private BigDecimal igstRate;
+    private BigDecimal cgstRate;
+    private BigDecimal sgstRate;
+    private BigDecimal cessRate;
     private String uom;
+    private String hsnName;
+    private String typeOfSupply;
+    private BigDecimal gstAssblValue;
     private BigDecimal cgstAmount;
     private BigDecimal sgstAmount;
     private BigDecimal igstAmount;

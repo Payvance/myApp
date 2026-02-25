@@ -11,9 +11,17 @@ public class VoucherInventoryDTO {
     private String billedQty;
     private java.math.BigDecimal rate;
     private java.math.BigDecimal amount;
+    private java.math.BigDecimal discount;
     private String hsnCode;
     private String gstTaxability;
     private java.math.BigDecimal gstRate;
+    private java.math.BigDecimal igstRate;
+    private java.math.BigDecimal cgstRate;
+    private java.math.BigDecimal sgstRate;
+    private java.math.BigDecimal cessRate;
+    private String hsnName;
+    private String typeOfSupply;
+    private java.math.BigDecimal gstAssblValue;
 
     // Classification & Tax Amounts
     private String uom;

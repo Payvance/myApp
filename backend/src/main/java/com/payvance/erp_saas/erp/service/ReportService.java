@@ -144,6 +144,24 @@ public class ReportService {
         dto.setCmpState(voucher.getCmpState());
         dto.setCmpRegType(voucher.getCmpRegType());
 
+        dto.setShippedBy(voucher.getShippedBy());
+        dto.setDestinationCountry(voucher.getDestinationCountry());
+        dto.setPlaceOfReceipt(voucher.getPlaceOfReceipt());
+        dto.setShipDocumentNo(voucher.getShipDocumentNo());
+        dto.setPortOfLoading(voucher.getPortOfLoading());
+        dto.setPortOfDischarge(voucher.getPortOfDischarge());
+        dto.setFinalDestination(voucher.getFinalDestination());
+        dto.setOrderRef(voucher.getOrderRef());
+        dto.setShipVesselNo(voucher.getShipVesselNo());
+        dto.setBuyersSalesTaxNo(voucher.getBuyersSalesTaxNo());
+        dto.setDueDateOfPayment(voucher.getDueDateOfPayment());
+        dto.setSerialNumInPla(voucher.getSerialNumInPla());
+        dto.setDateTimeOfInvoice(voucher.getDateTimeOfInvoice());
+        dto.setDateTimeOfRemoval(voucher.getDateTimeOfRemoval());
+        dto.setMfgrAddressType(voucher.getMfgrAddressType());
+        dto.setBillOfLadingNo(voucher.getBillOfLadingNo());
+        dto.setBillOfLadingDate(voucher.getBillOfLadingDate());
+
         // Additional Addresses
         dto.setBillPlace(voucher.getBillPlace());
 
@@ -153,6 +171,12 @@ public class ReportService {
         dto.setSgstAmount(voucher.getSgstAmount());
         dto.setIgstAmount(voucher.getIgstAmount());
         dto.setRoundOffAmount(voucher.getRoundOffAmount());
+
+        // Business Flags
+        dto.setIsCancelled(voucher.getIsCancelled());
+        dto.setIsOptional(voucher.getIsOptional());
+        dto.setIsDeletedRetained(voucher.getIsDeletedRetained());
+        dto.setPersistedView(voucher.getPersistedView());
 
         // Map inventory entries
         if (voucher.getInventoryEntries() != null) {
@@ -170,6 +194,20 @@ public class ReportService {
             dto.setLedgerEntries(ledgerDtos);
         }
 
+        if (voucher.getOrders() != null) {
+            List<VoucherOrderDetailDTO> orderDtos = voucher.getOrders().stream()
+                    .map(this::mapOrderEntry)
+                    .collect(Collectors.toList());
+            dto.setOrders(orderDtos);
+        }
+
+        // Map E-way Bill details
+        if (voucher.getEwayBillDetails() != null) {
+            List<VoucherEwayBillDTO> ewayDtos = voucher.getEwayBillDetails().stream()
+                    .map(this::mapEwayBillEntry)
+                    .collect(Collectors.toList());
+            dto.setEwayBillDetails(ewayDtos);
+        }
         return dto;
     }
 
@@ -180,6 +218,14 @@ public class ReportService {
         dto.setBilledQty(entry.getBilledQty());
         dto.setRate(entry.getRate());
         dto.setAmount(entry.getAmount());
+        dto.setDiscount(entry.getDiscount());
+        dto.setIgstRate(entry.getIgstRate());
+        dto.setCgstRate(entry.getCgstRate());
+        dto.setSgstRate(entry.getSgstRate());
+        dto.setCessRate(entry.getCessRate());
+        dto.setHsnName(entry.getHsnName());
+        dto.setTypeOfSupply(entry.getTypeOfSupply());
+        dto.setGstAssblValue(entry.getGstAssblValue());
 
         // GST & UOM
         dto.setHsnCode(entry.getHsnCode());
@@ -223,6 +269,39 @@ public class ReportService {
         dto.setGstClass(entry.getGstNature()); // Mapping gstNature to gstClass in DTO or use specialized field
         dto.setCostCenterName(entry.getCostCenterName());
 
+        return dto;
+    }
+
+    private VoucherOrderDetailDTO mapOrderEntry(com.payvance.erp_saas.erp.entity.VoucherOrder order) {
+        VoucherOrderDetailDTO dto = new VoucherOrderDetailDTO();
+        dto.setBasicPurchaseOrderNo(order.getBasicPurchaseOrderNo());
+        dto.setBasicOrderDate(order.getBasicOrderDate());
+        return dto;
+    }
+
+    private VoucherEwayBillDTO mapEwayBillEntry(com.payvance.erp_saas.erp.entity.EwayBillDetails eway) {
+        VoucherEwayBillDTO dto = new VoucherEwayBillDTO();
+        dto.setBillNumber(eway.getBillNumber());
+        dto.setBillDate(eway.getBillDate());
+        dto.setDocumentType(eway.getDocumentType());
+        dto.setSubType(eway.getSubType());
+        dto.setConsignorName(eway.getConsignorName());
+        dto.setConsignorPlace(eway.getConsignorPlace());
+        dto.setConsignorPincode(eway.getConsignorPincode());
+        dto.setConsignorAddress(eway.getConsignorAddress());
+        dto.setConsigneeName(eway.getConsigneeName());
+        dto.setConsigneePlace(eway.getConsigneePlace());
+        dto.setConsigneePincode(eway.getConsigneePincode());
+        dto.setConsigneeAddress(eway.getConsigneeAddress());
+        dto.setShippedFromState(eway.getShippedFromState());
+        dto.setShippedToState(eway.getShippedToState());
+        dto.setIrpSource(eway.getIrpSource());
+        dto.setVehicleNumber(eway.getVehicleNumber());
+        dto.setTransportMode(eway.getTransportMode());
+        dto.setDistance(eway.getDistance());
+        dto.setValidUpto(eway.getValidUpto());
+        dto.setCancelDate(eway.getCancelDate());
+        dto.setCancelReason(eway.getCancelReason());
         return dto;
     }
 }

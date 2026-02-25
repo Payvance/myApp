@@ -788,7 +788,7 @@ public class TallySyncService {
         v.setBasicBuyerName(d.getBasicBuyerName());
 
         // Business Flags
-        v.setIsCancelled(d.getIsCancelled());
+        v.setIsCancelled(d.getIsCancelled() != null ? d.getIsCancelled() : d.getIsCancelled());
         v.setIsOptional(d.getIsOptional());
         v.setIsDeletedRetained(d.getIsDeletedRetained());
         v.setPersistedView(d.getPersistedView());
@@ -799,6 +799,90 @@ public class TallySyncService {
         v.setTransportDistance(d.getTransportDistance());
         v.setEwayBillNo(d.getEwayBillNo());
         v.setEwayBillValidUpto(d.getEwayBillValidUpto());
+
+        v.setShippedBy(d.getShippedBy());
+        v.setDestinationCountry(d.getDestinationCountry());
+        v.setPlaceOfReceipt(d.getPlaceOfReceipt());
+        v.setShipDocumentNo(d.getShipDocumentNo());
+        v.setPortOfLoading(d.getPortOfLoading());
+        v.setPortOfDischarge(d.getPortOfDischarge());
+        v.setFinalDestination(d.getFinalDestination());
+        v.setOrderRef(d.getOrderRef());
+        v.setShipVesselNo(d.getShipVesselNo());
+        v.setBuyersSalesTaxNo(d.getBuyersSalesTaxNo());
+        v.setDueDateOfPayment(d.getDueDateOfPayment());
+        v.setSerialNumInPla(d.getSerialNumInPla());
+        v.setDateTimeOfInvoice(d.getDateTimeOfInvoice());
+        v.setDateTimeOfRemoval(d.getDateTimeOfRemoval());
+        v.setMfgrAddressType(d.getMfgrAddressType());
+        v.setBillOfLadingNo(d.getBillOfLadingNo());
+        v.setBillOfLadingDate(d.getBillOfLadingDate());
+
+        // Map Orders
+        if (v.getOrders() != null) {
+            v.getOrders().clear();
+        } else {
+            v.setOrders(new java.util.ArrayList<>());
+        }
+
+        if (d.getOrders() != null) {
+            for (VoucherOrderDTO oDto : d.getOrders()) {
+                VoucherOrder order = new VoucherOrder();
+                order.setVoucher(v);
+                order.setBasicPurchaseOrderNo(oDto.getBasicPurchaseOrderNo());
+                if (oDto.getBasicOrderDate() != null && !oDto.getBasicOrderDate().trim().isEmpty()) {
+                    try {
+                        order.setBasicOrderDate(
+                                com.payvance.erp_saas.erp.util.TallyXmlParser.parseDate(oDto.getBasicOrderDate()));
+                    } catch (Exception e) {
+                        System.err.println("[WARN] Failed to parse basicOrderDate: " + oDto.getBasicOrderDate());
+                    }
+                }
+                v.getOrders().add(order);
+            }
+        }
+
+        // Map E-way Bills
+        if (v.getEwayBillDetails() != null) {
+            v.getEwayBillDetails().clear();
+        } else {
+            v.setEwayBillDetails(new java.util.ArrayList<>());
+        }
+
+        if (d.getEwayBillDetails() != null) {
+            for (EwayBillDTO eDto : d.getEwayBillDetails()) {
+                EwayBillDetails eway = new EwayBillDetails();
+                eway.setVoucher(v);
+                eway.setBillNumber(eDto.getBillNumber());
+                if (eDto.getBillDate() != null && !eDto.getBillDate().trim().isEmpty()) {
+                    eway.setBillDate(com.payvance.erp_saas.erp.util.TallyXmlParser.parseDate(eDto.getBillDate()));
+                }
+                eway.setDocumentType(eDto.getDocumentType());
+                eway.setSubType(eDto.getSubType());
+                eway.setConsignorName(eDto.getConsignorName());
+                eway.setConsignorPlace(eDto.getConsignorPlace());
+                eway.setConsignorPincode(eDto.getConsignorPincode());
+                eway.setConsignorAddress(eDto.getConsignorAddress());
+                eway.setConsigneeName(eDto.getConsigneeName());
+                eway.setConsigneePlace(eDto.getConsigneePlace());
+                eway.setConsigneePincode(eDto.getConsigneePincode());
+                eway.setConsigneeAddress(eDto.getConsigneeAddress());
+                eway.setShippedFromState(eDto.getShippedFromState());
+                eway.setShippedToState(eDto.getShippedToState());
+                eway.setIrpSource(eDto.getIrpSource());
+                eway.setVehicleNumber(eDto.getVehicleNumber());
+                eway.setTransportMode(eDto.getTransportMode());
+                eway.setDistance(eDto.getDistance());
+                if (eDto.getValidUpto() != null && !eDto.getValidUpto().trim().isEmpty()) {
+                    eway.setValidUpto(com.payvance.erp_saas.erp.util.TallyXmlParser.parseDate(eDto.getValidUpto()));
+                }
+                if (eDto.getCancelDate() != null && !eDto.getCancelDate().trim().isEmpty()) {
+                    eway.setCancelDate(com.payvance.erp_saas.erp.util.TallyXmlParser.parseDate(eDto.getCancelDate()));
+                }
+                eway.setCancelReason(eDto.getCancelReason());
+                v.getEwayBillDetails().add(eway);
+            }
+        }
 
         // Financial Totals
         v.setTaxableAmount(d.getTaxableAmount());
@@ -849,7 +933,15 @@ public class TallySyncService {
                 entity.setActualQty(ie.getActualQty());
                 entity.setRate(ie.getRate()); // Now BigDecimal
                 entity.setAmount(ie.getAmount());
-                entity.setGstRate(ie.getGstRate()); // Now BigDecimal
+                entity.setDiscount(ie.getDiscount());
+                entity.setGstRate(ie.getGstRate());
+                entity.setIgstRate(ie.getIgstRate());
+                entity.setCgstRate(ie.getCgstRate());
+                entity.setSgstRate(ie.getSgstRate());
+                entity.setCessRate(ie.getCessRate());
+                entity.setHsnName(ie.getHsnName());
+                entity.setTypeOfSupply(ie.getTypeOfSupply());
+                entity.setGstAssblValue(ie.getGstAssblValue());
 
                 // Item Classification & Tax
                 entity.setHsnCode(ie.getHsnCode());

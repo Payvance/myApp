@@ -33,8 +33,32 @@ public class InventoryEntry {
     @Column(name = "amount", precision = 19, scale = 4)
     private java.math.BigDecimal amount;
 
+    @Column(name = "discount", precision = 19, scale = 4)
+    private java.math.BigDecimal discount;
+
     @Column(name = "gst_rate", precision = 9, scale = 4)
     private java.math.BigDecimal gstRate;
+
+    @Column(name = "igst_rate", precision = 9, scale = 4)
+    private java.math.BigDecimal igstRate;
+
+    @Column(name = "cgst_rate", precision = 9, scale = 4)
+    private java.math.BigDecimal cgstRate;
+
+    @Column(name = "sgst_rate", precision = 9, scale = 4)
+    private java.math.BigDecimal sgstRate;
+
+    @Column(name = "cess_rate", precision = 9, scale = 4)
+    private java.math.BigDecimal cessRate;
+
+    @Column(name = "hsn_name", length = 100)
+    private String hsnName;
+
+    @Column(name = "type_of_supply", length = 50)
+    private String typeOfSupply;
+
+    @Column(name = "gst_assbl_value", precision = 19, scale = 4)
+    private java.math.BigDecimal gstAssblValue;
 
     // --- Item Classification ---
 

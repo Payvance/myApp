@@ -75,4 +75,24 @@ public class VoucherDTO {
     private java.math.BigDecimal igstAmount;
     private java.math.BigDecimal roundOffAmount;
     private java.math.BigDecimal invoiceTotal;
+    private java.util.List<VoucherOrderDTO> orders;
+    private java.util.List<EwayBillDTO> ewayBillDetails;
+
+    private String shippedBy;
+    private String destinationCountry;
+    private String placeOfReceipt;
+    private String shipDocumentNo;
+    private String portOfLoading;
+    private String portOfDischarge;
+    private String finalDestination;
+    private String orderRef;
+    private String shipVesselNo;
+    private String buyersSalesTaxNo;
+    private String dueDateOfPayment;
+    private String serialNumInPla;
+    private String dateTimeOfInvoice;
+    private String dateTimeOfRemoval;
+    private String mfgrAddressType;
+    private String billOfLadingNo;
+    private String billOfLadingDate;
 }

@@ -42,6 +42,24 @@ public class VoucherDetailDTO {
     private String cmpState;
     private String cmpRegType;
 
+    private String shippedBy;
+    private String destinationCountry;
+    private String placeOfReceipt;
+    private String shipDocumentNo;
+    private String portOfLoading;
+    private String portOfDischarge;
+    private String finalDestination;
+    private String orderRef;
+    private String shipVesselNo;
+    private String buyersSalesTaxNo;
+    private String dueDateOfPayment;
+    private String serialNumInPla;
+    private String dateTimeOfInvoice;
+    private String dateTimeOfRemoval;
+    private String mfgrAddressType;
+    private String billOfLadingNo;
+    private String billOfLadingDate;
+
     // Additional Addresses
     private String billPlace;
 
@@ -74,4 +92,18 @@ public class VoucherDetailDTO {
 
     private List<VoucherInventoryDetailDTO> inventoryEntries;
     private List<VoucherLedgerDetailDTO> ledgerEntries;
+    private List<VoucherOrderDetailDTO> orders;
+    private List<VoucherEwayBillDTO> ewayBillDetails;
+
+    private String voucherCategory;
+    private String natureOfVoucher;
+    private String irpSource;
+    private Boolean isEwayApplicable;
+
+    // Business Flags
+    private Boolean isCancelled;
+    private Boolean isOptional;
+    private Boolean isDeletedRetained;
+    private String persistedView;
+
 }
