@@ -17,8 +17,7 @@ const TenantRequests = () => {
     size: 10,
   });
   const [loading, setLoading] = useState(false);
-  const [approvePopup, setApprovePopup] = useState(false);
-  const [rejectPopup, setRejectPopup] = useState(false);
+  const [actionPopup, setActionPopup] = useState(false);
   const [selectedTenant, setSelectedTenant] = useState(null);
 
   const fetchData = async ({ page, size, sortField, sortOrder, filters }) => {
@@ -41,7 +40,7 @@ const TenantRequests = () => {
       }
 
       const response = await caTenantServices.getTenantsForCa(params);
-      
+
       if (response.data && response.data.content) {
         setData({
           content: response.data.content,
@@ -74,14 +73,9 @@ const TenantRequests = () => {
     }
   };
 
-  const handleApprove = (tenantData) => {
+  const handleOpenActionPopup = (tenantData) => {
     setSelectedTenant(tenantData);
-    setApprovePopup(true);
-  };
-
-  const handleReject = (tenantData) => {
-    setSelectedTenant(tenantData);
-    setRejectPopup(true);
+    setActionPopup(true);
   };
 
   const handleConfirmApprove = async () => {
@@ -92,10 +86,10 @@ const TenantRequests = () => {
         tenantId: selectedTenant.id,
         isView: 1
       };
-      
+
       await caTenantServices.updateTenantStatus(payload);
       toast.success("Tenant approved successfully");
-      setApprovePopup(false);
+      setActionPopup(false);
       setSelectedTenant(null);
       fetchData({ page: 0, size: 10 });
     } catch (error) {
@@ -112,10 +106,10 @@ const TenantRequests = () => {
         tenantId: selectedTenant.id,
         isView: 2
       };
-      
+
       await caTenantServices.updateTenantStatus(payload);
       toast.success("Tenant rejected successfully");
-      setRejectPopup(false);
+      setActionPopup(false);
       setSelectedTenant(null);
       fetchData({ page: 0, size: 10 });
     } catch (error) {
@@ -124,13 +118,8 @@ const TenantRequests = () => {
     }
   };
 
-  const handleCloseApprovePopup = () => {
-    setApprovePopup(false);
-    setSelectedTenant(null);
-  };
-
-  const handleCloseRejectPopup = () => {
-    setRejectPopup(false);
+  const handleCloseActionPopup = () => {
+    setActionPopup(false);
     setSelectedTenant(null);
   };
 
@@ -144,7 +133,7 @@ const TenantRequests = () => {
         <PageHeader
           title="Tenant Requests"
         />
-        
+
         <DataTable
           data={data}
           columns={CA_TENANT_REQUESTS_COLUMNS}
@@ -152,41 +141,34 @@ const TenantRequests = () => {
           loading={loading}
           showActions={true}
           showApproveButton={true}
-          showRejectButton={true}
-          onApprove={handleApprove}
-          onReject={handleReject}
+          showRejectButton={false}
+          onApprove={handleOpenActionPopup}
+          approveButtonDisabled={(row) => row.isView !== 0}
         />
 
-        {/* Approve Confirmation Popup */}
         <PopUp
-          isOpen={approvePopup}
-          onClose={handleCloseApprovePopup}
-          title="Confirm Approval"
+          isOpen={actionPopup}
+          onClose={handleCloseActionPopup}
+          title="Tenant Request Action"
           size="small"
         >
-          <div className="approve-popup-content">
-            <div className="popup-actions">
-              <Button 
+          <div className="action-popup-content">
+            {selectedTenant && (
+              <div className="tenant-details" style={{ marginBottom: '20px', padding: '10px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px' }}>
+                <p style={{ margin: '5px 0', fontSize: '14px' }}><strong>Name:</strong> {selectedTenant.name}</p>
+                <p style={{ margin: '5px 0', fontSize: '14px' }}><strong>Email:</strong> {selectedTenant.email}</p>
+                <p style={{ margin: '5px 0', fontSize: '14px' }}><strong>Phone:</strong> {selectedTenant.phone}</p>
+              </div>
+            )}
+            <div className="popup-actions" style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+              <Button
                 text="Approve"
                 variant="primary"
                 onClick={handleConfirmApprove}
               />
-            </div>
-          </div>
-        </PopUp>
-
-        {/* Reject Confirmation Popup */}
-        <PopUp
-          isOpen={rejectPopup}
-          onClose={handleCloseRejectPopup}
-          title="Confirm Rejection"
-          size="small"
-        >
-          <div className="reject-popup-content">
-            <div className="popup-actions">
-              <Button 
+              <Button
                 text="Reject"
-                variant="primary"
+                variant="red"
                 onClick={handleConfirmReject}
               />
             </div>

@@ -25,7 +25,7 @@ const TenantSidebar = ({ isCollapsed, setIsCollapsed }) => {
     const menuItems = [
         { path: '/tenantdashboard', icon: <i className="bi bi-house"></i>, label: 'Dashboard' },
         { path: '/usermanagement', icon: <i className="bi bi-person"></i>, label: 'User Management' },
-        { path: '/plansmanagement', icon: <i className="bi-card-checklist"></i>, label: 'Plans Management' },
+        { path: '/tenantplanss', icon: <i className="bi-card-checklist"></i>, label: 'Plans Management' },
         { path: '/camanagement', icon: <i className="bi-card-checklist"></i>, label: 'CA Management' },
     ];
 
