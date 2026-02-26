@@ -395,7 +395,7 @@ const UserProfileMenu = ({
       <PopUp
         isOpen={showLogoutPopup}
         onClose={() => setShowLogoutPopup(false)}
-        title="Log Out"
+        title= {formConfig.Logout.logout.label}
         subtitle="Are you sure you want to end your session?"
         icon="bi-box-arrow-right"
         size="small"
@@ -407,10 +407,10 @@ const UserProfileMenu = ({
           </div>
           <div className="lo-actions">
             <button className="lo-cancel-btn" onClick={() => setShowLogoutPopup(false)}>
-              <i className="bi bi-x" /> cancle
+              <i className="bi bi-x" /> {formConfig.Logout.cancel.label}
             </button>
             <button className="lo-logout-btn" onClick={handleLogout}>
-              <i className="bi bi-box-arrow-right" /> Log Out
+              <i className="bi bi-box-arrow-right" /> {formConfig.Logout.logout.label}
             </button>
           </div>
         </div>

@@ -25,6 +25,7 @@ import { useTheme } from "../../../context/ThemeContext.jsx";
 import { authServices } from "../../../services/apiService";
 import { formConfig } from "../../../config/formConfig.js";
 import useOtp from "../../../hooks/useOtp";
+import OtpModal from "../../../components/common/otpModal/OtpModal.jsx";
 import "../login/signin/SignIn.css";
 import { COMPANY_INFO } from "../../../config/Config.js";
 
@@ -45,6 +46,7 @@ const PartnerWithUs = () => {
     cancelOtp,
     handleOtpChange,
     handleOtpKeyDown,
+    verifyError,
   } = useOtp();
 
   useEffect(() => {
@@ -209,50 +211,21 @@ const PartnerWithUs = () => {
 
         {/* OTP MODAL */}
         {showOtpModal && (
-          <div className="otp-modal-overlay">
-            <div className="otp-modal">
-              <h3>Verify OTP</h3>
-              <p>Enter the 6-digit OTP sent to</p>
-              <strong>+91 {mobileNumber}</strong>
-
-              <div className="otp-box-wrapper">
-                {otp.map((digit, index) => (
-                  <input
-                    key={index}
-                    id={`otp-${index}`}
-                    type="text"
-                    maxLength="1"
-                    value={digit}
-                    onChange={(e) => handleOtpChange(e.target.value, index)}
-                    onKeyDown={(e) => handleOtpKeyDown(e, index)}
-                    className="otp-box"
-                  />
-                ))}
-              </div>
-
-              <div className="otp-actions">
-                <Button
-                  text="Verify OTP"
-                  onClick={() => verifyOtp(mobileNumber)}
-                  disabled={otpLoading}
-                />
-
-                <button
-                  className={`forgot ${!canResend ? "disabled-link" : ""}`}
-                  disabled={!canResend || otpLoading}
-                  onClick={() => resendOtp(mobileNumber)}
-                >
-                  {canResend
-                    ? "Resend OTP"
-                    : `Resend OTP in ${resendTimer}s`}
-                </button>
-
-                <button className="forgot" onClick={cancelOtp}>
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
+          <OtpModal
+            heading={formConfig.Logout.verifyItp.label}
+            description="Enter the 6-digit OTP sent to"
+            target={`+91 ${mobileNumber}`}
+            otp={otp}
+            otpLoading={otpLoading}
+            canResend={canResend}
+            onOtpChange={handleOtpChange}
+            onOtpKeyDown={handleOtpKeyDown}
+            onVerify={() => verifyOtp(mobileNumber)}
+            onResend={() => resendOtp(mobileNumber)}
+            onCancel={cancelOtp}
+            verifyError={verifyError}
+            totalSeconds={60}
+          />
         )}
 
       </div>

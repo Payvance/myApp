@@ -67,13 +67,35 @@ export function normalizeDate(input) {
 
 
 /**
- * Formats a given date input into a short, human-friendly format (e.g., "05 Jan 2025").
- * - Returns "Invalid Date" for empty, null, or unparseable values.
- * - Uses the local timezone for day and year.
- * - Month is displayed as a short English name (Jan, Feb, Mar, etc.).
- * - Specially Designed to be used for the calender section
+ * Format: "dd-Mon-yyyy" (e.g., "05-Jan-2025")
+ * Standard date format used throughout the application
+ * - Returns "Invalid Date" for empty, null, or unparseable values
+ * - Uses local timezone for day and year
+ * - Month is displayed as a short English name (Jan, Feb, Mar, etc.)
+ * - This is the standard format to be used everywhere dates are displayed
  */
-export function formatDateShort(input) {
+export function formatDateStandard(input) {
+  if (!input) return "Invalid Date";
+
+  const date = new Date(input);
+  if (isNaN(date.getTime())) return "Invalid Date";
+
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = date.toLocaleString("en-US", { month: "short" });
+  const year = date.getFullYear();
+
+  return `${day}-${month}-${year}`;
+}
+
+/**
+ * Format: "dd Mon yyyy" (e.g., "05 Jan 2025")
+ * Alternative standard date format with spaces
+ * - Returns "Invalid Date" for empty, null, or unparseable values
+ * - Uses local timezone for day and year
+ * - Month is displayed as a short English name (Jan, Feb, Mar, etc.)
+ * - This is the standard format to be used everywhere dates are displayed
+ */
+export function formatDateStandardSpace(input) {
   if (!input) return "Invalid Date";
 
   const date = new Date(input);
@@ -84,6 +106,18 @@ export function formatDateShort(input) {
   const year = date.getFullYear();
 
   return `${day} ${month} ${year}`;
+}
+
+/**
+ * Formats a given date input into a short, human-friendly format (e.g., "05 Jan 2025").
+ * - Returns "Invalid Date" for empty, null, or unparseable values.
+ * - Uses local timezone for day and year.
+ * - Month is displayed as a short English name (Jan, Feb, Mar, etc.).
+ * - Specially Designed to be used for calender section
+ * @deprecated Use formatDateStandardSpace instead
+ */
+export function formatDateShort(input) {
+  return formatDateStandardSpace(input);
 }
 
 /**

@@ -1,4 +1,5 @@
 import React from 'react';
+import { formatDateStandardSpace } from '../../../utils/dateUtils';
 import './DashboardModal.css';
 
 const DashboardModal = ({ show, onClose, data }) => {
@@ -6,9 +7,8 @@ const DashboardModal = ({ show, onClose, data }) => {
   if (!show || !data) return null;
 
   return (
-    <div className="dashboard-modal-overlay">
-      <div className="dashboard-modal">
-        
+    <div className="dashboard-modal-overlay" onClick={onClose}>
+      <div className="dashboard-modal" onClick={e => e.stopPropagation()}>
         <div className="dashboard-modal-header">
           <h3>{data.title} Details</h3>
           <button className="close-btn" onClick={onClose}>×</button>
@@ -38,12 +38,11 @@ const DashboardModal = ({ show, onClose, data }) => {
           {data.lastUpdated && (
             <div className="modal-row">
               <span className="modal-key">Last Updated</span>
-              <span className="modal-value">{data.lastUpdated}</span>
+              <span className="modal-value">{formatDateStandardSpace(data.lastUpdated)}</span>
             </div>
           )}
           {/* Show other details if needed */}
         </div>
-
       </div>
     </div>
   );

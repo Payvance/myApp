@@ -1,4 +1,5 @@
 import React from 'react';
+import { formatDateStandardSpace } from '../../utils/dateUtils';
 import './DataViewComponent.css';
 
 const DataViewComponent = ({ title, data, loading }) => {
@@ -18,16 +19,39 @@ const DataViewComponent = ({ title, data, loading }) => {
     );
   }
 
+  // Conditional rendering for Top 5 Tenants by Revenue (vendor dashboard)
+  const isTopTenants = title === "Top 5 Tenants by Revenue" && Array.isArray(data) && data.length > 0 && data[0].tenantName && data[0].revenue;
+
+  // Check if this is plan details section
+  const isPlanDetails = title === "Plan Details";
+
+  // Format date values for plan details
+  const formatValue = (name, value) => {
+    if (isPlanDetails && (name === "Start Date" || name === "End Date")) {
+      return value && value !== "--" ? formatDateStandardSpace(value) : value;
+    }
+    return value;
+  };
+
   return (
     <div className="data-view-card">
       <h3 className="data-view__title">{title}</h3>
       <div className="data-view__content">
-        {data.map((item, index) => (
-          <div key={index} className="data-view__row">
-            <span className="data-view__name">{item.name}</span>
-            <span className="data-view__value">{item.value}</span>
-          </div>
-        ))}
+        {isTopTenants ? (
+          data.map((item, index) => (
+            <div key={index} className="data-view__row">
+              <span className="data-view__name">{item.tenantName}</span>
+              <span className="data-view__value">₹{item.revenue.toLocaleString()}</span>
+            </div>
+          ))
+        ) : (
+          data.map((item, index) => (
+            <div key={index} className="data-view__row">
+              <span className="data-view__name">{item.name}</span>
+              <span className="data-view__value">{formatValue(item.name, item.value)}</span>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

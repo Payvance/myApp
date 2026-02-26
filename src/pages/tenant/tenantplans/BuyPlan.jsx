@@ -251,9 +251,12 @@ const BuyPlan = () => {
 
           {/* ── Left: Add-on cards ─────────────────────────── */}
           <div className="addons-section">
+            <div style={{display: "flex", gap: "5px", alignItems: "center"}}>
+            <Button isBack variant="back" text="" />
             <PageHeader
               title="Available Add-ons"
             />
+            </div>
             <div className="plans-grid">
               {loadingAddons ? (
                 <p>Loading add-ons...</p>

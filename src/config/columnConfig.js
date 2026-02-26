@@ -236,6 +236,5 @@ export const TANENT_COLUMNS = [
         .replace(/\b\w/g, (l) => l.toUpperCase());
     }
   },
-  { accessorKey: 'tenantStatus', header: 'Tenant Status', type: 'text', sortable: false, filterable: true, width: 140 },
   { accessorKey: 'isActive', header: 'Active', type: 'boolean', sortable: true, accessorFn: (row) => row.tenantUserActive, width: 100 },
 ];

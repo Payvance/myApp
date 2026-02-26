@@ -34,7 +34,7 @@ const VendorLayout = ({ children }) => {
       className="layout-grid"
       style={{
         '--sidebar-width': isSidebarCollapsed ? '3.75rem' : '13rem',
-        '--navbar-height': '56px'
+        '--navbar-height': '0px'
       }}
     >
       {/* VendorSidebar - occupies the sidebar area */}
@@ -42,12 +42,10 @@ const VendorLayout = ({ children }) => {
         isCollapsed={isSidebarCollapsed}
         setIsCollapsed={setIsSidebarCollapsed}
       />
-      {/* Navbar - occupies the navbar area */}
-      <Navbar isSidebarCollapsed={isSidebarCollapsed} />
 
       {/* Main content area */}
       {/* Using the MainScreenContainer component */}
-      <MainScreenContainer className={`with-navbar with-sidebar ${isSidebarCollapsed ? 'collapsed' : ''}`}>
+      <MainScreenContainer className={`with-sidebar ${isSidebarCollapsed ? 'collapsed' : ''}`}>
         <div className="main-content">
           {children}
         </div>

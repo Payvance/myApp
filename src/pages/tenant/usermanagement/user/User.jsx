@@ -81,9 +81,13 @@ const User = () => {
     const tenant_id = localStorage.getItem("tenant_id");
    
     const response = await tenantServices.updateTenantUserStatus(payload, tenant_id);
-    setShowSuccessPopup(true);
-    // optional: success toast
+
     toast.success("User updated successfully");
+
+    // Navigate after 2 seconds
+    setTimeout(() => {
+      navigate("/usermanagement");
+    }, 2000);
   } catch (error) {
         toast.error("Failed to update user");
   } finally {
@@ -181,29 +185,7 @@ const User = () => {
         </div>
         {/* profile-sections-container div end */}
 
-        {/* Success PopUp start */}
-        <PopUp
-            isOpen={showSuccessPopup}
-            onClose={() => setShowSuccessPopup(false)}
-            title="Success"
-            subtitle="User Updated Successfully"
-            size="small"
-    >
-            {/* popup content div start */}
-            <div style={{ textAlign: "center" }}>
-                <p>The user details have been updated successfully.</p>
-                 {/* OK button start */}
-                <Button
-                 text="OK"
-                 onClick={() => {
-                    setShowSuccessPopup(false);
-                    navigate("/usermanagement");
-                }}
-                />
-                {/* OK button end */}
-            </div>
-            {/* popup content div end */}
-        </PopUp>
+      
         {/* Success PopUp end */}
       </div>
       {/* user-profile-page div end */}

@@ -13,21 +13,32 @@ const BarChartComponent = ({
   onYearChange
 }) => {
 
-  const currentYear = new Date().getFullYear();
-  let firstYear = currentYear;
-  if (data && data.length > 0 && data[0][xAxis]) {
-    const firstLabel = data[0][xAxis];
-    const match = firstLabel.match(/(\d{4})/);
-    if (match) firstYear = parseInt(match[1]);
+  // Base year (start of financial tracking)
+  const baseYear = 2025;
+
+  // Look for the currently viewed year in the Title string (e.g. "FY 2025-26")
+  let currentStartYear = baseYear;
+  if (title) {
+    const match = title.match(/(\d{4})/);
+    if (match) currentStartYear = parseInt(match[1]);
   }
 
-  const defaultPair = `${firstYear}-${firstYear + 1}`;
-  const [selectedPair, setSelectedPair] = useState(defaultPair);
+  const [selectedPair, setSelectedPair] = useState(`${currentStartYear}-${currentStartYear + 1}`);
 
-  // Generate year pairs
+  // Sync state if title explicitly changes from outside loading
+  React.useEffect(() => {
+    if (title) {
+      const match = title.match(/(\d{4})/);
+      if (match) {
+        setSelectedPair(`${parseInt(match[1])}-${parseInt(match[1]) + 1}`);
+      }
+    }
+  }, [title]);
+
+  // Generate FIXED year pairs so they don't disappear on change
   const yearPairs = [];
   for (let i = 0; i <= 10; i++) {
-    const startYear = firstYear + i;
+    const startYear = baseYear + i;
     const endYear = startYear + 1;
     yearPairs.push(`${startYear}-${endYear}`);
   }
@@ -104,7 +115,19 @@ const BarChartComponent = ({
       <div className="bar-chart__header">
         <h3 className="bar-chart__title">{title}</h3>
 
-        
+        {onYearChange && (
+          <select
+            className="bar-chart__year-select"
+            value={selectedPair}
+            onChange={handleYearChange}
+          >
+            {yearPairs.map(pair => (
+              <option key={pair} value={pair}>
+                FY {pair}
+              </option>
+            ))}
+          </select>
+        )}
       </div>
 
       <div className="bar-chart__container">

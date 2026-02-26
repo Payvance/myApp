@@ -94,9 +94,9 @@ export const authServices = {
 
 export const profileServices = {
   createOrUpdateProfile: (data, roleId) =>
-    publicApi.post(API_ENDPOINTS.PROFILE.CREATE, data, {
+    api.post(API_ENDPOINTS.PROFILE.CREATE, data, {
       headers: {
-        ROLE_ID: roleId, // ✅ REQUIRED BY BACKEND
+        ROLE_ID: roleId, 
       },
     }),
 };

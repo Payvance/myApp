@@ -14,8 +14,9 @@
   display: flex;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  background: #f5f5f5;
+  box-shadow: var(--shadow-sm);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
 }
 
 /* Toggle Side Buttons */
@@ -35,43 +36,44 @@
 }
 
 .state-toggle-side:hover:not(.state-toggle-disabled):not(.state-toggle-active) {
-  background: rgba(0, 0, 0, 0.05);
+  background: var(--bg-tertiary);
 }
 
 .state-toggle-side:active:not(.state-toggle-disabled) {
   transform: scale(0.98);
 }
 
-/* Active State (Blue) */
+/* Active State */
 .state-toggle-active {
-  background: #ffffff;
-  color: #3b82f6;
+  background: var(--bg-primary);
+  color: var(--purple-500);
+  border: 1px solid var(--purple-500);
 }
 
 .state-toggle-active .state-toggle-label {
-  color: #3b82f6;
+  color: var(--purple-500);
   font-weight: 600;
 }
 
 .state-toggle-active .state-toggle-icon {
-  background: #3b82f6;
+  background: var(--purple-500);
   color: white;
 }
 
-/* Inactive State (Gray) */
+/* Inactive State */
 .state-toggle-inactive {
-  background: #e5e7eb;
-  color: #6b7280;
+  background: transparent;
+  color: var(--text-secondary);
 }
 
 .state-toggle-inactive .state-toggle-label {
-  color: #6b7280;
+  color: var(--text-secondary);
   font-weight: 500;
 }
 
 .state-toggle-inactive .state-toggle-icon {
-  background: #9ca3af;
-  color: white;
+  background: var(--border-primary);
+  color: var(--text-tertiary);
 }
 
 /* Content Layout */
@@ -115,21 +117,21 @@
 /* Left side specific */
 .state-toggle-left {
   border-radius: 12px 0 0 12px;
-  border-right: 1px solid #d1d5db;
+  border-right: 1px solid var(--border-primary);
 }
 
 .state-toggle-left.state-toggle-active {
-  border-right: 1px solid #3b82f6;
+  border-right: 1px solid var(--purple-500);
 }
 
 /* Right side specific */
 .state-toggle-right {
   border-radius: 0 12px 12px 0;
-  border-left: 1px solid #d1d5db;
+  border-left: 1px solid var(--border-primary);
 }
 
 .state-toggle-right.state-toggle-active {
-  border-left: 1px solid #3b82f6;
+  border-left: 1px solid var(--purple-500);
 }
 
 /* Disabled State */
@@ -140,12 +142,12 @@
 }
 
 .state-toggle-disabled .state-toggle-label {
-  color: #9ca3af !important;
+  color: var(--text-quaternary) !important;
 }
 
 .state-toggle-disabled .state-toggle-icon {
-  background: #d1d5db !important;
-  color: #9ca3af !important;
+  background: var(--border-secondary) !important;
+  color: var(--text-quaternary) !important;
 }
 
 /* Size Variants */
@@ -196,7 +198,7 @@
 
 /* Focus state */
 .state-toggle-side:focus-visible {
-  outline: 2px solid #3b82f6;
+  outline: 2px solid var(--purple-500);
   outline-offset: 2px;
 }
 
@@ -221,33 +223,33 @@
 /* High contrast mode support */
 @media (prefers-contrast: high) {
   .state-toggle-active {
-    background: #000;
-    color: #fff;
-    border: 2px solid #fff;
+    background: var(--text-primary);
+    color: var(--bg-primary);
+    border: 2px solid var(--text-primary);
   }
   
   .state-toggle-active .state-toggle-label {
-    color: #fff;
+    color: var(--bg-primary);
   }
   
   .state-toggle-active .state-toggle-icon {
-    background: #fff;
-    color: #000;
+    background: var(--bg-primary);
+    color: var(--text-primary);
   }
   
   .state-toggle-inactive {
-    background: #fff;
-    color: #000;
-    border: 2px solid #000;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    border: 2px solid var(--text-primary);
   }
   
   .state-toggle-inactive .state-toggle-label {
-    color: #000;
+    color: var(--text-primary);
   }
   
   .state-toggle-inactive .state-toggle-icon {
-    background: #000;
-    color: #fff;
+    background: var(--text-primary);
+    color: var(--bg-primary);
   }
 }
 

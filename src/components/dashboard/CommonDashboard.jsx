@@ -132,22 +132,36 @@ const CommonDashboard = () => {
           </div>
         ) : (
           <div className="dashboard-ca-section">
-            {dataViews.map((view) => (
-              view.id === "recent_users" ? (
-                <RecentUsersTable
-                  key={view.id}
-                  title={view.title}
-                  data={view.data}
-                  loading={dataLoading}
-                />
-              ) : (
-                <DataViewComponent
-                  key={view.id}
-                  {...view}
-                  loading={dataLoading}
-                />
-              )
-            ))}
+            {dataViews.map((view) => {
+              if (view.id === "recent_users") {
+                return (
+                  <RecentUsersTable
+                    key={view.id}
+                    title={view.title}
+                    data={view.data}
+                    loading={dataLoading}
+                  />
+                );
+              } else if (view.id === "recent_batches") {
+                return (
+                  <RecentUsersTable
+                    key={view.id}
+                    title={view.title}
+                    data={view.data}
+                    type="batches"
+                    loading={dataLoading}
+                  />
+                );
+              } else {
+                return (
+                  <DataViewComponent
+                    key={view.id}
+                    {...view}
+                    loading={dataLoading}
+                  />
+                );
+              }
+            })}
           </div>
         )}
       </div>
