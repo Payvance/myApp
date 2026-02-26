@@ -62,4 +62,27 @@ public interface ActivationKeyRepository
             @Param("tenantId") Long tenantId,
             @Param("now") LocalDateTime now
     );
+    
+    @Query("""
+        SELECT 
+            CASE 
+                WHEN EXISTS (
+                    SELECT 1
+                    FROM ActivationKey ak2
+                    WHERE ak2.redeemedTenantId = ak.redeemedTenantId
+                      AND ak2.vendorBatchId IN (
+                          SELECT vab2.id FROM VendorActivationBatch vab2 WHERE vab2.vendorId = :vendorId
+                      )
+                      AND ak2.createdAt < ak.createdAt
+                )
+                THEN 'RENEWAL'
+                ELSE 'NEW_SALE'
+            END
+        FROM ActivationKey ak
+        WHERE ak.redeemedTenantId IS NOT NULL 
+          AND ak.vendorBatchId IN (
+              SELECT vab.id FROM VendorActivationBatch vab WHERE vab.vendorId = :vendorId
+          )
+    """)
+    List<String> getSalesTypesByVendorId(@Param("vendorId") Long vendorId);
 }

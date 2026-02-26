@@ -6,12 +6,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.payvance.erp_saas.core.dto.CaRequest;
+import com.payvance.erp_saas.core.dto.LoginResponse;
 import com.payvance.erp_saas.core.dto.ProfileResponse;
 import com.payvance.erp_saas.core.entity.BankDetails;
 import com.payvance.erp_saas.core.entity.Ca;
+import com.payvance.erp_saas.core.entity.PersonalAccessToken;
+import com.payvance.erp_saas.core.entity.Role;
 import com.payvance.erp_saas.core.entity.UserAddress;
+import com.payvance.erp_saas.core.enums.RoleEnum;
 import com.payvance.erp_saas.core.repository.CaRepository;
+import com.payvance.erp_saas.core.repository.PersonalAccessTokenRepository;
+import com.payvance.erp_saas.core.repository.RoleRepository;
 import com.payvance.erp_saas.core.repository.UserRepository;
+import com.payvance.erp_saas.security.util.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
 // Service for managing CA profiles including upserting profile, address, and bank details
@@ -24,9 +31,11 @@ public class CaProfileService {
     private final BankService bankService;
     private final EmailService emailService;
     private final UserRepository userRepository;
-    
+    private final JwtUtil jwt;                       
+    private final PersonalAccessTokenRepository patRepo; 
+    private final RoleRepository roleRepository;
     @Transactional
-    public ProfileResponse upsertCaProfile(CaRequest request) {
+    public LoginResponse upsertCaProfile(CaRequest request, String token) {
 
         Long userId = request.getUserId();
 
@@ -125,17 +134,35 @@ public class CaProfileService {
         ca.setBankDetailsId(savedBank.getId());
 
         ca = caRepository.save(ca);
+        String tokenId = jwt.getTokenId(token);
+        patRepo.deleteByTokenId(tokenId);
+
+        // ===== GENERATE NEW CA TOKEN =====
+        Role role = roleRepository.findById(5L)
+                .orElseThrow(() -> new RuntimeException("CA role not found"));
+
+        Long roleId = role.getId();
+
+        String newToken = jwt.generateAccessToken(userId, null, roleId);
+        // Save new PAT
+        patRepo.save(PersonalAccessToken.builder()
+                .tokenId(jwt.getTokenId(newToken))
+                .userId(userId)
+                .tenantId(null)
+                .tokenableId(userId)
+                .tokenableType(role.getCode())
+                .name("ACCESS_TOKEN")
+                .expiresAt(jwt.getExpiration(newToken))
+                .build());
         
         if (registeredEmail != null && !registeredEmail.isBlank()) {
             emailService.sendProfileSubmittedEmail(userId);
         }
 
-        return ProfileResponse.builder()
-                .id(ca.getId())
-                .name(ca.getName())
-                .email(ca.getEmail())
-                .phone(ca.getPhone())
-                .status(ca.getStatus())
+        return LoginResponse.builder()
+                .accessToken(newToken)
+                .roleId(roleId)
+                .userId(userId)
                 .build();
     }
 }

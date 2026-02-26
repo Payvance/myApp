@@ -1,14 +1,19 @@
 package com.payvance.erp_saas.core.service;
 
-import com.payvance.erp_saas.core.repository.VendorActivationBatchRepository;
-import com.payvance.erp_saas.core.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import org.springframework.stereotype.Service;
+
+import com.payvance.erp_saas.core.repository.ActivationKeyRepository;
+import com.payvance.erp_saas.core.repository.TenantActivationRepository;
+import com.payvance.erp_saas.core.repository.UserRepository;
+import com.payvance.erp_saas.core.repository.VendorActivationBatchRepository;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * Service for Vendor Dashboard Data
@@ -23,12 +28,14 @@ public class VendorDashboardService {
     
     private final VendorActivationBatchRepository vendorActivationBatchRepository;
     private final UserRepository userRepository;
+    private final ActivationKeyRepository activationKeyRepository;
+    private final TenantActivationRepository tenantActivationRepository;
     
     /**
      * Get complete dashboard data for Vendor
      * TODO: Implement with actual repository methods
      */
-    public Map<String, Object> getDashboardData(Long userId) {
+    public Map<String, Object> getDashboardData(Long userId, Integer startYear, Integer endYear) {
         Map<String, Object> data = new HashMap<>();
         
         // Get activation data once to avoid multiple repository calls
@@ -58,65 +65,85 @@ public class VendorDashboardService {
             Map.of("id", "total_profit", "title", "Estimated Profit", "value", totalRevenue != null ? totalRevenue.toString() : "0", "icon", "bi-currency-rupee", "color", "success")
         ));
         
+        // Renewal vs New Sales Data
+        java.util.List<String> salesTypes = activationKeyRepository.getSalesTypesByVendorId(userId);
+        long renewalCount = salesTypes.stream().filter("RENEWAL"::equals).count();
+        long newSaleCount = salesTypes.stream().filter("NEW_SALE"::equals).count();
+        
+        List<Map<String, Object>> highestSellingPlans = vendorActivationBatchRepository.findHighestSellingPlansByVendorId(userId);
+        
         // Pie charts data
         data.put("pieCharts", Arrays.asList(
             Map.of("id", "renewal_vs_newsales", "title", "Renewal vs New Sales",
                 "data", Arrays.asList(
-                    Map.of("name", "Renewal", "value", 40),
-                    Map.of("name", "New Sales", "value", 35)
+                    Map.of("name", "Renewal", "value", renewalCount),
+                    Map.of("name", "New Sales", "value", newSaleCount)
                 )
             ),
             Map.of("id", "highest_selling_plans", "title", "Highest Selling Plans",
-                "data", Arrays.asList(
-                    Map.of("name", "Basic", "value", 40),
-                    Map.of("name", "Premium", "value", 35),
-                    Map.of("name", "Enterprise", "value", 25)
-                )
+                "data", highestSellingPlans
             )
         ));
         
+        // --- Monthly Revenue (Keys Used) logic for Financial Year (e.g., 2025-26) ---
+        int fyStartYear = (startYear != null) ? startYear : 2025; 
+        int fyEndYear = (endYear != null) ? endYear : fyStartYear + 1;
+        
+        java.time.LocalDateTime startDate = java.time.LocalDateTime.of(fyStartYear, 4, 1, 0, 0); // April 1st of startYear
+        java.time.LocalDateTime endDate = java.time.LocalDateTime.of(fyEndYear, 4, 1, 0, 0); // April 1st of endYear (exclusive)
+        
+        List<Map<String, Object>> monthlyData = vendorActivationBatchRepository.findMonthlyKeysUsedByVendorId(userId, startDate, endDate);
+        
+        // Map database results (Month number -> Count)
+        Map<Integer, Long> monthlyCounts = new HashMap<>();
+        for (Map<String, Object> record : monthlyData) {
+            Number monthObj = (Number) record.get("month");
+            Number countObj = (Number) record.get("count");
+            if (monthObj != null && countObj != null) {
+                monthlyCounts.put(monthObj.intValue(), countObj.longValue());
+            }
+        }
+        
+        // Financial Year months sequence: April to March
+        String[] fyMonths = {"Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar"};
+        int[] fyMonthNumbers = {4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3};
+        
+        List<Map<String, Object>> barChartDataList = new java.util.ArrayList<>();
+        for (int i = 0; i < fyMonths.length; i++) {
+        	long revenueCount = monthlyCounts.getOrDefault(fyMonthNumbers[i], 0L);
+        	barChartDataList.add(Map.of("month", fyMonths[i], "revenue", revenueCount));
+        }
+
         // Bar charts data
         data.put("barCharts", Arrays.asList(
-            Map.of("id", "monthly_revenue", "title", "Monthly Revenue", "xAxis", "month", "yAxis", "revenue",
-                "data", Arrays.asList(
-                    Map.of("month", "Apr", "revenue", 10000),
-                    Map.of("month", "May", "revenue", 12000),
-                    Map.of("month", "Jun", "revenue", 14000),
-                    Map.of("month", "Jul", "revenue", 16000),
-                    Map.of("month", "Aug", "revenue", 18000),
-                    Map.of("month", "Sep", "revenue", 20000),
-                    Map.of("month", "Oct", "revenue", 19000),
-                    Map.of("month", "Nov", "revenue", 21000),
-                    Map.of("month", "Dec", "revenue", 23000),
-                    Map.of("month", "Jan", "revenue", 22000),
-                    Map.of("month", "Feb", "revenue", 24000),
-                    Map.of("month", "Mar", "revenue", 26000)
-                )
+            Map.of("id", "monthly_revenue", "title", "Keys Used per Month (FY " + fyStartYear + "-" + (fyStartYear + 1)%100 + ")", "xAxis", "month", "yAxis", "revenue",
+                "data", barChartDataList
             )
         ));
         
         // Data views
         data.put("dataViews", Arrays.asList(
-            Map.of("id", "recent_batches", "title", "Recent Batches",
+            Map.of("id", "recent_batches", "title", "Recent Top 5 Batches",
                 "data", vendorActivationBatchRepository.findRecentBatchesByVendorId(userId)
                     .stream()
                     .limit(5)
-                    .map(batch -> Map.of(
-                        "name", batch.get("planName") != null ? batch.get("planName") : "Unknown Plan",
-                        "value", batch.get("totalActivations") != null && batch.get("status") != null 
-                            ? batch.get("totalActivations") + " / " + batch.get("status") 
-                            : "0 / Unknown"
-                    ))
                     .toList()
             ),
-            Map.of("id", "top_tenants", "title", "Top Tenants",
-                "data", Arrays.asList(
-                    Map.of("name", "Tenant 1", "revenue", "25%"),
-                    Map.of("name", "Tenant 2", "revenue", "20%"),
-                    Map.of("name", "Tenant 3", "revenue", "15%"),
-                    Map.of("name", "Tenant 4", "revenue", "10%"),
-                    Map.of("name", "Tenant 5", "revenue", "5%")
-                )
+            Map.of("id", "top_tenants", "title", "Top 5 Tenants by Revenue",
+                "data", tenantActivationRepository.findTopTenantsByVendorId(userId)
+                    .stream()
+                    .limit(5)
+                    .map(row -> {
+                        Number revenueNum = (Number) row.get("revenue");
+                        Number activationsNum = (Number) row.get("activations");
+                        return Map.of(
+                            "tenantName",   row.get("tenantName")  != null ? row.get("tenantName")  : "Unknown",
+                            "tenantEmail",  row.get("tenantEmail") != null ? row.get("tenantEmail") : "",
+                            "revenue",      revenueNum    != null ? revenueNum.doubleValue()    : 0.0,
+                            "activations",  activationsNum != null ? activationsNum.longValue() : 0L
+                        );
+                    })
+                    .toList()
             )
         ));
         

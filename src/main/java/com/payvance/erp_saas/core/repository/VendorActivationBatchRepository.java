@@ -91,13 +91,49 @@ public interface VendorActivationBatchRepository
             p.name as planName,
             v.totalActivations as totalActivations,
             v.status as status,
-            v.createdAt as createdAt
+            v.issuedAt as issuedAt
         )
         FROM VendorActivationBatch v
         JOIN v.plan p
         WHERE v.vendorId = :vendorId
-        ORDER BY v.createdAt DESC
+        ORDER BY v.issuedAt DESC
         """)
     List<Map<String, Object>> findRecentBatchesByVendorId(@Param("vendorId") Long vendorId);
     
+    /*
+     * Find highest selling plans by vendor ID
+     */
+    @Query("""
+        SELECT new map(
+            p.name as name,
+            SUM(v.usedActivations) as value
+        )
+        FROM VendorActivationBatch v
+        JOIN v.plan p
+        WHERE v.vendorId = :vendorId
+        GROUP BY p.name
+        ORDER BY SUM(v.usedActivations) DESC
+        """)
+    List<Map<String, Object>> findHighestSellingPlansByVendorId(@Param("vendorId") Long vendorId);
+    
+    /*
+     * Find monthly keys used counts by vendor ID for a specific financial year
+     */
+    @Query("""
+        SELECT new map(
+            MONTH(v.createdAt) as month,
+            CAST(SUM(v.usedActivations) as long) as count
+        )
+        FROM VendorActivationBatch v
+        WHERE v.vendorId = :vendorId
+          AND v.createdAt >= :startDate
+          AND v.createdAt < :endDate
+        GROUP BY MONTH(v.createdAt)
+        """)
+    List<Map<String, Object>> findMonthlyKeysUsedByVendorId(
+            @Param("vendorId") Long vendorId,
+            @Param("startDate") java.time.LocalDateTime startDate,
+            @Param("endDate") java.time.LocalDateTime endDate
+    );
+
 }

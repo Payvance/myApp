@@ -31,7 +31,7 @@ public class AddOn {
     @Column(name = "currency", length = 10, nullable = false)
     private String currency = "INR";
 
-    @Column(name = "unit", length = 30, nullable = false)
+    @Column(name = "unit", length = 30, nullable = true)
     private String unit = "unit";
 
     @Column(name = "unit_price", nullable = false, precision = 12, scale = 2)

@@ -22,7 +22,8 @@ public enum RoleEnum {
     TENANT_ADMIN(2),
     TENANT_USER(3),
     VENDOR(4),
-    CA(5);
+    CA(5),
+	GUEST(6);
 
     private final int id;
 
