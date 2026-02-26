@@ -1,5 +1,6 @@
 package com.payvance.erp_saas.core.controller;
 
+import com.payvance.erp_saas.core.dto.LoginResponse;
 import com.payvance.erp_saas.core.dto.ProfileRequest;
 import com.payvance.erp_saas.core.dto.ProfileResponse;
 import com.payvance.erp_saas.core.service.ProfileFacadeService;
@@ -22,15 +23,23 @@ public class ProfileController {
      * @return ProfileResponse
      */
     @PostMapping("/upsert")
-    public ResponseEntity<ProfileResponse> upsertProfile(
-            @RequestBody ProfileRequest request) {
+    public ResponseEntity<LoginResponse> upsertProfile(
+            @RequestBody ProfileRequest request,
+            @RequestHeader("Authorization") String authHeader) {
 
         Integer roleId = request.getRoleId();
         if (roleId == null) {
             return ResponseEntity.badRequest().build();
         }
 
-        ProfileResponse response = profileFacadeService.upsertProfile(roleId, request);
+        // Extract JWT from 
+        String token = authHeader.startsWith("Bearer ")
+                ? authHeader.substring(7)
+                : authHeader;
+
+        LoginResponse response =
+                profileFacadeService.upsertProfile(roleId, request, token);
+
         return ResponseEntity.ok(response);
     }
 

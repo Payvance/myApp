@@ -279,32 +279,72 @@ public class TenantDashboardService {
         	            ))
         	            .toList()
             ),
-            Map.of("id", "plan_details", "title", "Plan Details",
-                "data", "trial".equalsIgnoreCase(tenantStatus) ? 
-                    Arrays.asList(
-                        Map.of("name", "Plan Name", "value", "Trial"),
-                        Map.of("name", "Plan Price", "value", "₹0"),
-                        Map.of("name", "Start Date", "value", tenantOpt.map(Tenant::getTrialStartAt).map(date -> date.toLocalDate().toString()).orElse("--")),
-                        Map.of("name", "End Date", "value", tenantOpt.map(Tenant::getTrialEndAt).map(date -> date.toLocalDate().toString()).orElse("--")),
-                        Map.of("name", "Days Left", "value", calculateTrialDaysLeft(tenantOpt))
-                    ) : 
-                    planDetailsOpt.map(planDetails -> Arrays.asList(
-                        Map.of("name", "Plan Name", "value", planDetails.get("planName") != null ? planDetails.get("planName") : "No Plan"),
-                        Map.of("name", "Plan Price", "value", planDetails.get("planPrice") != null ? "₹" + planDetails.get("planPrice") : "₹0"),
-                        Map.of("name", "Status", "value", planDetails.get("status") != null ? planDetails.get("status") : "--"),
-                        Map.of("name", "Start Date", "value", planDetails.get("startAt") != null ? planDetails.get("startAt").toString().split("T")[0] : "--"),
-                        Map.of("name", "End Date", "value", planDetails.get("currentPeriodEnd") != null ? planDetails.get("currentPeriodEnd").toString().split("T")[0] : "--")
-                    )).orElse(Collections.emptyList())
-            )
+        	    Map.of("id", "plan_details", "title", "Plan Details",
+        	    	    "data", "trial".equalsIgnoreCase(tenantStatus) ? 
+        	    	        Arrays.asList(
+        	    	            Map.of("name", "Plan Name", "value", "Trial"),
+        	    	            Map.of("name", "Plan Price", "value", "₹0"),
+        	    	            Map.of("name", "Start Date", "value",
+        	    	                tenantOpt.map(Tenant::getTrialStartAt)
+        	    	                        .map(date -> date.toLocalDate().toString())
+        	    	                        .orElse("--")),
+        	    	            Map.of("name", "End Date", "value",
+        	    	                tenantOpt.map(Tenant::getTrialEndAt)
+        	    	                        .map(date -> date.toLocalDate().toString())
+        	    	                        .orElse("--")),
+        	    	            Map.of("name", "Days Left", "value",
+        	    	                calculateTrialDaysLeft(tenantOpt))
+        	    	        ) : 
+        	    	        planDetailsOpt.map(planDetails -> {
+        	    	            List<Map<String, Object>> details = new ArrayList<>();
+
+        	    	            details.add(Map.of("name", "Plan Name",
+        	    	                "value", planDetails.get("planName") != null
+        	    	                        ? planDetails.get("planName")
+        	    	                        : "No Plan"));
+
+        	    	            details.add(Map.of("name", "Plan Price",
+        	    	                "value", planDetails.get("planPrice") != null
+        	    	                        ? "₹" + planDetails.get("planPrice")
+        	    	                        : "₹0"));
+
+        	    	            details.add(Map.of("name", "Status",
+        	    	                "value", planDetails.get("status") != null
+        	    	                        ? capitalize(planDetails.get("status").toString())
+        	    	                        : "Inactive"));
+
+        	    	            details.add(Map.of("name", "Start Date",
+        	    	                "value", planDetails.get("startAt") != null
+        	    	                        ? planDetails.get("startAt").toString().split("T")[0]
+        	    	                        : "--"));
+
+        	    	            details.add(Map.of("name", "End Date",
+        	    	                "value", planDetails.get("currentPeriodEnd") != null
+        	    	                        ? planDetails.get("currentPeriodEnd").toString().split("T")[0]
+        	    	                        : "--"));
+
+        	    	            return details;
+
+        	    	        }).orElse(Arrays.asList(
+        	    	            Map.of("name", "Plan Name", "value", "No Active Plan"),
+        	    	            Map.of("name", "Plan Price", "value", "₹0"),
+        	    	            Map.of("name", "Status", "value", "Inactive"),
+        	    	            Map.of("name", "Start Date", "value", "--"),
+        	    	            Map.of("name", "End Date", "value", "--")
+        	    	        ))
+        	    	)
         ));
        
         return data;
     }
     
-    private String capitalize(String tenantStatus) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    private String capitalize(String value) {
+        if (value == null || value.isBlank()) {
+            return "Inactive";
+        }
+        return value.substring(0, 1).toUpperCase() +
+               value.substring(1).toLowerCase();
+    }
 
 	private String calculateTrialDaysLeft(Optional<Tenant> tenantOpt) {
         if (tenantOpt.isEmpty() || tenantOpt.get().getTrialEndAt() == null) {

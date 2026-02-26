@@ -177,14 +177,16 @@ public class AuthService {
             return partnerResult;
         }
 
-        // If user has no role mapping (signup without role), redirect frontend to
-        // profile/role selection page so they can complete signup. No access token
-        // is issued here; frontend should navigate to the provided URL and collect
-        // role/profile details before calling the upsert endpoints.
+        // Assign default role as GUEST for users
+        RoleEnum roleEnum = RoleEnum.GUEST;
+        Long roleId = Long.valueOf(roleEnum.getId());
+
+        String token = jwt.generateAccessToken(user.getId(), null, roleId);
+        savePAT(user.getId(), null, roleEnum, token);
         return LoginResponse.builder()
+        		.accessToken(token)
+        		.roleId(roleId)
                 .userId(user.getId())
-                .accessToken(null)
-                .roleId(null)
                 .redirectUrl("/profile-form")
                 .message("Complete your profile to continue")
                 .build();

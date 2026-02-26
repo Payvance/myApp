@@ -5,13 +5,20 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.payvance.erp_saas.core.dto.LoginResponse;
 import com.payvance.erp_saas.core.dto.ProfileResponse;
 import com.payvance.erp_saas.core.dto.VendorRequest;
 import com.payvance.erp_saas.core.entity.BankDetails;
+import com.payvance.erp_saas.core.entity.PersonalAccessToken;
+import com.payvance.erp_saas.core.entity.Role;
 import com.payvance.erp_saas.core.entity.UserAddress;
 import com.payvance.erp_saas.core.entity.Vendor;
+import com.payvance.erp_saas.core.enums.RoleEnum;
+import com.payvance.erp_saas.core.repository.PersonalAccessTokenRepository;
+import com.payvance.erp_saas.core.repository.RoleRepository;
 import com.payvance.erp_saas.core.repository.UserRepository;
 import com.payvance.erp_saas.core.repository.VendorRepository;
+import com.payvance.erp_saas.security.util.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
 // Service for managing vendor profiles including upserting profile, address, and bank details
@@ -24,9 +31,12 @@ public class VendorProfileService {
     private final BankService bankService;
     private final EmailService emailService;
     private final UserRepository userRepository;
+    private final JwtUtil jwt;                       
+    private final PersonalAccessTokenRepository patRepo; 
+    private final RoleRepository roleRepository;
 
     @Transactional
-    public ProfileResponse upsertVendorProfile(VendorRequest request) {
+    public LoginResponse upsertVendorProfile(VendorRequest request, String token) {
 
         Long userId = request.getUserId();
         String registeredEmail = userRepository.findById(userId)
@@ -118,16 +128,36 @@ public class VendorProfileService {
 
         vendor = vendorRepository.save(vendor);
         
+        String tokenId = jwt.getTokenId(token);
+        patRepo.deleteByTokenId(tokenId);
+
+        // ===== GENERATE NEW VENDOR TOKEN =====
+        Role role = roleRepository.findById(4L)
+                .orElseThrow(() -> new RuntimeException("VENDOR role not found"));
+
+        Long roleId = role.getId();
+
+        String newToken = jwt.generateAccessToken(userId, null, roleId);
+
+        // Save new PAT
+        patRepo.save(PersonalAccessToken.builder()
+                .tokenId(jwt.getTokenId(newToken))
+                .userId(userId)
+                .tenantId(null)
+                .tokenableId(userId)
+                .tokenableType(role.getCode())
+                .name("ACCESS_TOKEN")
+                .expiresAt(jwt.getExpiration(newToken))
+                .build());
+        
         if (registeredEmail != null && !registeredEmail.isBlank()) {
             emailService.sendProfileSubmittedEmail(userId);
         }
 
-        return ProfileResponse.builder()
-                .id(vendor.getId())
-                .name(vendor.getName())
-                .email(vendor.getEmail())
-                .phone(vendor.getPhone())
-                .status(vendor.getStatus())
+        return LoginResponse.builder()
+                .accessToken(newToken)
+                .roleId(roleId)
+                .userId(userId)
                 .build();
     }
 }

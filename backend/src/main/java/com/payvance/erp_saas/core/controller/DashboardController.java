@@ -47,7 +47,7 @@ public class DashboardController {
             case 1: // Superadmin
                 return superAdminDashboardService.getDashboardData();
             case 4: // Vendor
-                return vendorDashboardService.getDashboardData(userId);
+                return vendorDashboardService.getDashboardData(userId, startYear, endYear);
             case 2: // Tenant
                 return tenantDashboardService.getDashboardData(userId, startYear, endYear);
             case 5: // CA

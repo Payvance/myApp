@@ -20,16 +20,16 @@ public class ProfileFacadeService {
     /**
      * Upsert profile based on role
      */
-    public ProfileResponse upsertProfile(Integer roleId, ProfileRequest request) {
+    public LoginResponse upsertProfile(Integer roleId, ProfileRequest request, String token) {
         RoleEnum role = RoleEnum.fromId(roleId);
 
         switch (role) {
             case VENDOR:
                 VendorRequest vendorRequest = request.toVendorRequest();
-                return vendorProfileService.upsertVendorProfile(vendorRequest);
+                return vendorProfileService.upsertVendorProfile(vendorRequest, token);
             case CA:
                 CaRequest caRequest = request.toCaRequest();
-                return caProfileService.upsertCaProfile(caRequest);
+                return caProfileService.upsertCaProfile(caRequest, token);
             default:
                 throw new IllegalArgumentException("Unsupported role: " + role);
         }
