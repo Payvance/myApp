@@ -9,21 +9,16 @@ const PieChartComponent = ({ title, data, loading }) => {
     chart: {
       type: "pie",
       backgroundColor: "transparent",
-      height: 240  
+      height: 240
     },
     title: {
-      text: title,
-      align: "left",
-      verticalAlign: "top",
-      x: 0,
-      y: 10,
-      style: { fontSize: "14px", fontWeight: 550 }
+      text: title
     },
     plotOptions: {
       pie: {
         innerSize: "65%",
         size: "100%",   // 🔥 reduce pie size
-        showInLegend: true, 
+        showInLegend: true,
         borderWidth: 0,
         dataLabels: {
           enabled: true,
@@ -43,7 +38,7 @@ const PieChartComponent = ({ title, data, loading }) => {
     credits: { enabled: false },
     series: [
       {
-        name: "Users",
+        name: "Count",
         data: data?.map(item => ({
           name: item.name,
           y: Number(item.value || item.y)

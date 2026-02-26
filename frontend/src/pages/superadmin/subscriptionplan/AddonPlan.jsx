@@ -31,7 +31,6 @@ const AddonPlan = () => {
   plan_id: "",
   code: "",
   name: "",
-  unit: "",
   unit_price: "",
   currency: "INR",
   status: "active",
@@ -84,7 +83,6 @@ const handleEditAddon = async (addon) => {
       plan_id: data.plan_id,      // map plan_id to planId
       code: data.code || "",
       name: data.name || "",
-      unit: data.unit || "",
       unit_price: data.unit_price || "",
       currency: data.currency || "INR",
       status: data.status || "active",
@@ -118,15 +116,12 @@ const handleEditAddon = async (addon) => {
         subtitle: addon.code,
         status: addon.status?.toUpperCase(),
         price: addon.unit_price,
-        period: `per ${addon.unit}`,
         stats: {
           code: addon.code,
           subscribers: "-",
           revenue: "-",
         },
         features: [
-          // change name to period
-          `Period: ${addon.unit}`,
           `Currency: ${addon.currency}`,
         ],
       }));
@@ -151,7 +146,6 @@ const handleEditAddon = async (addon) => {
       code: formData.code,
       name: formData.name,
       currency: formData.currency,
-      unit: formData.unit,
       unit_price: Number(formData.unit_price),
       status: formData.status,
     };
@@ -178,7 +172,6 @@ const handleEditAddon = async (addon) => {
           plan_id: "",
           code: "",
           name: "",
-          unit: "",
           unit_price: "",
           currency: "INR",
           status: "active",
@@ -228,7 +221,6 @@ const handleEditAddon = async (addon) => {
       code: formData.code,
       name: formData.name,
       currency: formData.currency,
-      unit: formData.unit,
       unit_price: Number(formData.unit_price),
       status: formData.status,
     };
@@ -257,7 +249,6 @@ const handleEditAddon = async (addon) => {
     formData.plan_id !== "" &&
     formData.code.trim() !== "" &&
     formData.name.trim() !== "" &&
-    formData.unit !== "" &&
     Number(formData.unit_price) > 0 &&
     formData.status !== ""
   );
@@ -351,24 +342,6 @@ const handleEditAddon = async (addon) => {
               disabled={formData.id ? true : false}
               max={50}
             />
-            {/* add-on unit input field */}
-            <OptionInputBox
-              label={formConfig.addon.periodType.label}
-              name="unit"
-              value={formData.unit}
-              onChange={handleInputChange}
-              options={[
-                { code: 'yearly', value: 'Yearly' },
-                { code: 'monthly', value: 'Monthly' }
-              ]}
-              required
-              classN="large"
-              disabled={formData.id ? true : false}
-            />
-            
-          </div>
-
-          <div className="form-row">
             {/* add-on unit price input field */}
             <InputField
               label={formConfig.addon.UnitPrice.label}
@@ -381,6 +354,11 @@ const handleEditAddon = async (addon) => {
               placeholder="0.50"
               disabled={formData.id ? true : false}
             />
+            
+          </div>
+
+          <div className="form-row">
+            
             {/* add-on status input field */}
             <OptionInputBox
               label={formConfig.subscriptionPlan.status.label}

@@ -44,7 +44,7 @@
 }
 
 .users-table td {
- 
+
   border-top: 1px solid #f1f5f9;
   font-size: 14px;
 }
@@ -62,9 +62,9 @@
 }
 
 .avatar {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  border-radius: 25%;
   background: linear-gradient(135deg, #4F46E5, #8B5CF6);
   display: flex;
   align-items: center;
@@ -84,12 +84,14 @@
 
 /* Status Badge */
 .status-badge {
-  padding: 6px 14px;
+  padding: 4px 12px;
   border-radius: 20px;
   font-size: 12px;
   font-weight: 600;
+  display: inline-block;
 }
 
+/* Tenant statuses */
 .status-badge.active {
   background: #e6f9f0;
   color: #16a34a;
@@ -98,6 +100,27 @@
 .status-badge.inactive {
   background: #ffeaea;
   color: #dc2626;
+}
+
+/* Vendor batch statuses */
+.status-badge.approved {
+  background: #e6f9f0;
+  color: #16a34a;
+}
+
+.status-badge.rejected {
+  background: #ffeaea;
+  color: #dc2626;
+}
+
+.status-badge.pending {
+  background: #fff7e6;
+  color: #d97706;
+}
+
+.status-badge.cancelled {
+  background: #f1f5f9;
+  color: #64748b;
 }
 
 .joined-date {

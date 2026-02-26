@@ -1,4 +1,5 @@
 import React from 'react';
+import { formatDateStandardSpace } from '../../utils/dateUtils';
 import './TransactionHistory.css';
 
 const TransactionHistory = ({ data }) => {
@@ -10,14 +11,6 @@ const TransactionHistory = ({ data }) => {
       currency: 'INR',
       minimumFractionDigits: 0
     }).format(amount);
-  };
-
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-IN', {
-      day: '2-digit',
-      month: 'short'
-    });
   };
 
   return (
@@ -38,7 +31,7 @@ const TransactionHistory = ({ data }) => {
             {data.slice(0, 5).map((transaction, index) => (
               <tr key={index} className="transaction-history__row">
                 <td className="transaction-history__cell">
-                  {formatDate(transaction.date)}
+                  {formatDateStandardSpace(transaction.date)}
                 </td>
                 <td className="transaction-history__cell">
                   <span className={`transaction-history__type transaction-history__type--${transaction.type.toLowerCase()}`}>

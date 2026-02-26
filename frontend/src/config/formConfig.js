@@ -282,5 +282,17 @@ export const formConfig = {
       label : "Sign up to continue to your account"
     }
   },
+
+  Logout : {
+    cancel: {
+      label : "Cancel"
+    },
+    logout : {
+      label : "Log out"
+    },
+    verifyItp : {
+      label: "Verify OTP"
+    },
+  }
 };
 export default formConfig;
