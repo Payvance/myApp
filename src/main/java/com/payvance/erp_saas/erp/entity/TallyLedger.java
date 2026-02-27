@@ -151,4 +151,79 @@ public class TallyLedger {
 
     @Column(name = "is_cost_center")
     private Boolean isCostCenter;
+
+    @Column(name = "is_interest_on")
+    private Boolean isInterestOn;
+
+    @Column(name = "place_of_supply")
+    private String placeOfSupply;
+
+    @Column(name = "country_of_residence")
+    private String countryOfResidence;
+
+    @Column(name = "gst_applicable")
+    private String gstApplicable;
+
+    @Column(name = "tax_type")
+    private String taxType;
+
+    @Column(name = "currency_name")
+    private String currencyName;
+
+    @Column(name = "altered_on")
+    private String alteredOn;
+
+    @Column(name = "entered_by")
+    private String enteredBy;
+
+    @Column(name = "altered_by")
+    private String alteredBy;
+
+    @Column(name = "mailing_name")
+    private String mailingName;
+
+    @Column(name = "country_isd_code")
+    private String countryIsdCode;
+
+    @Column(name = "is_default_whatsapp_num")
+    private Boolean isDefaultWhatsappNum;
+
+    @Column(name = "bank_name")
+    private String bankName;
+
+    @Column(name = "credit_limit")
+    private BigDecimal creditLimit;
+
+    @Column(name = "gst_taxability")
+    private String gstTaxability;
+
+    @Column(name = "gst_calculation_type")
+    private String gstCalculationType;
+
+    @Column(name = "gst_source")
+    private String gstSource;
+
+    @Column(name = "hsn_source")
+    private String hsnSource;
+
+    @Column(name = "is_reverse_charge_applicable")
+    private Boolean isReverseChargeApplicable;
+
+    @Column(name = "cess_rate_per_unit")
+    private BigDecimal cessRatePerUnit;
+
+    @Column(name = "igst_rate_per_unit")
+    private BigDecimal igstRatePerUnit;
+
+    @Column(name = "cgst_rate_per_unit")
+    private BigDecimal cgstRatePerUnit;
+
+    @Column(name = "sgst_rate_per_unit")
+    private BigDecimal sgstRatePerUnit;
+
+    @Column(name = "is_gst_ineligible_itc")
+    private Boolean isGstIneligibleItc;
+
+    @Column(name = "alter_id")
+    private Long alterId;
 }

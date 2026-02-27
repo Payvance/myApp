@@ -24,6 +24,12 @@ public class SyncState {
     @Column(name = "last_alter_id")
     private Long lastAlterId;
 
+    @Column(name = "last_stock_item_alter_id")
+    private Long lastStockItemAlterId;
+
+    @Column(name = "last_ledger_alter_id")
+    private Long lastLedgerAlterId;
+
     @Column(name = "last_sync_time")
     private LocalDateTime lastSyncTime;
 }

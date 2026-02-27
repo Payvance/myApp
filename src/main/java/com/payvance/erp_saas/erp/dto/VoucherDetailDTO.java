@@ -27,6 +27,7 @@ public class VoucherDetailDTO {
     private String paymentTerms;
     private String consigneeName;
     private String consigneeAddress;
+    private String consigneeMailingName;
     private String buyerAddress;
 
     // Party Details
@@ -36,6 +37,13 @@ public class VoucherDetailDTO {
     private String gstRegistrationType;
     private String placeOfSupply;
     private String basicBuyerName;
+    private String buyerPanNumber;
+    private String partyStateName;
+    private String partyCountryName;
+    private String consigneePincode;
+    private String consigneeStateName;
+    private String consigneeCountryName;
+    private String consigneePanNumber;
 
     // Company Details
     private String cmpGst;

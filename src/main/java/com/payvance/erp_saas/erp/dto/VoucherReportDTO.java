@@ -11,4 +11,5 @@ public class VoucherReportDTO {
     private String name;
     private java.math.BigDecimal quantity;
     private java.math.BigDecimal amount;
+    private boolean isCancelled;
 }

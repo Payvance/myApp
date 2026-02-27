@@ -60,7 +60,8 @@ public class ReportService {
                     .findTopLedgersByRootGroup(tenantId, companyId, rootGroup,
                             org.springframework.data.domain.PageRequest.of(0, limit));
             return page.getContent().stream()
-                    .map(l -> new VoucherReportDTO(l.getName(), java.math.BigDecimal.ZERO, l.getClosingBalance()))
+                    .map(l -> new VoucherReportDTO(l.getName(), java.math.BigDecimal.ZERO, l.getClosingBalance(),
+                            false))
                     .collect(Collectors.toList());
         }
         return List.of();
@@ -107,6 +108,7 @@ public class ReportService {
         dto.setDeliveryNotes(voucher.getDeliveryNotes());
         dto.setPaymentTerms(voucher.getPaymentTerms());
         dto.setConsigneeName(voucher.getConsigneeName());
+        dto.setConsigneeMailingName(voucher.getConsigneeMailingName());
         dto.setConsigneeAddress(voucher.getConsigneeAddress());
         dto.setBuyerAddress(voucher.getBuyerAddress()); // New
         dto.setInvoiceTotal(voucher.getInvoiceTotal()); // Gross Total for display
@@ -138,7 +140,13 @@ public class ReportService {
         dto.setGstRegistrationType(voucher.getGstRegistrationType());
         dto.setPlaceOfSupply(voucher.getPlaceOfSupply());
         dto.setBasicBuyerName(voucher.getBasicBuyerName());
-
+        dto.setBuyerPanNumber(voucher.getBuyerPanNumber());
+        dto.setPartyStateName(voucher.getPartyStateName());
+        dto.setPartyCountryName(voucher.getPartyCountryName());
+        dto.setConsigneePincode(voucher.getConsigneePincode());
+        dto.setConsigneeStateName(voucher.getConsigneeStateName());
+        dto.setConsigneeCountryName(voucher.getConsigneeCountryName());
+        dto.setConsigneePanNumber(voucher.getConsigneePanNumber());
         // Company Details
         dto.setCmpGst(voucher.getCmpGst());
         dto.setCmpState(voucher.getCmpState());

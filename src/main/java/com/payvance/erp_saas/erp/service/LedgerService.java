@@ -79,8 +79,9 @@ public class LedgerService {
                 particulars = voucher.getVoucherType(); // Fallback
             }
 
+            Long vId = voucher.getId();
             dtos.add(LedgerStatementDTO.LedgerStatementEntryDTO.builder()
-                    .voucherId(voucher.getGuid())
+                    .voucherId(vId)
                     .voucherNumber(voucher.getVoucherNumber())
                     .voucherType(voucher.getVoucherType())
                     .date(voucher.getDate())

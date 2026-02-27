@@ -47,6 +47,7 @@ public class VoucherDTO {
     private String irn;
     private String irnAckDate;
     private String irnQrCode;
+    private String consigneeMailingName;
     private String buyerAddress;
     private String voucherCategory;
     private String natureOfVoucher;
@@ -54,6 +55,13 @@ public class VoucherDTO {
     private String irpSource;
     private Boolean isEwayApplicable;
     private String basicBuyerName;
+    private String buyerPanNumber;
+    private String partyStateName;
+    private String partyCountryName;
+    private String consigneePincode;
+    private String consigneeStateName;
+    private String consigneeCountryName;
+    private String consigneePanNumber;
 
     // Business Flags
     private Boolean isCancelled;

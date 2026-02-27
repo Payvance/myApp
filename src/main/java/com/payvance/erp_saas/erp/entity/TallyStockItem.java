@@ -27,6 +27,17 @@ public class TallyStockItem {
     @Column(name = "alias")
     private String alias;
 
+    @Column(name = "part_no", length = 100)
+    private String partNo;
+
+    @Lob
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
+
+    @Lob
+    @Column(name = "notes", columnDefinition = "TEXT")
+    private String notes;
+
     @Column(name = "stock_group_guid")
     private String stockGroupGuid;
 
@@ -57,8 +68,21 @@ public class TallyStockItem {
     @Column(name = "gst_hsn_code")
     private String gstHsnCode;
 
+    @Lob
+    @Column(name = "gst_hsn_description", columnDefinition = "TEXT")
+    private String gstHsnDescription;
+
     @Column(name = "gst_taxability")
     private String gstTaxability;
+
+    @Column(name = "gst_calculation_type")
+    private String gstCalculationType;
+
+    @Column(name = "gst_supply_type")
+    private String gstSupplyType;
+
+    @Column(name = "alter_id")
+    private Long alterId;
 
     @Column(name = "gst_rate")
     private Double gstRate;
@@ -74,6 +98,26 @@ public class TallyStockItem {
 
     @Column(name = "costing_method")
     private String costingMethod;
+
+    @Column(name = "default_disc_rate", length = 50)
+    private String defaultDiscountRate;
+
+    // --- Behaviour Fields ---
+
+    @Column(name = "ignore_physical_diff")
+    private Boolean ignorePhysicalDifference;
+
+    @Column(name = "ignore_negative_stock")
+    private Boolean ignoreNegativeStock;
+
+    @Column(name = "treat_sales_as_mfg")
+    private Boolean treatSalesAsManufactured;
+
+    @Column(name = "treat_purch_as_consumed")
+    private Boolean treatPurchasesAsConsumed;
+
+    @Column(name = "treat_rejects_as_scrap")
+    private Boolean treatRejectsAsScrap;
 
     @Column(name = "valuation_method")
     private String valuationMethod;
