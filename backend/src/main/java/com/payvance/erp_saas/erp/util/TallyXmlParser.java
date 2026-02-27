@@ -85,6 +85,14 @@ public class TallyXmlParser {
                         }
                     }
                     voucher.setNarration(getTagValue("NARRATION", el));
+                    voucher.setConsigneeMailingName(getTagValue("CONSIGNEEMAILINGNAME", el));
+                    voucher.setBuyerPanNumber(getTagValue("BUYERPINNUMBER", el));
+                    voucher.setPartyStateName(getTagValue("STATENAME", el));
+                    voucher.setPartyCountryName(getTagValue("COUNTRYOFRESIDENCE", el));
+                    voucher.setConsigneePincode(getTagValue("CONSIGNEEPINCODE", el));
+                    voucher.setConsigneeStateName(getTagValue("CONSIGNEESTATENAME", el));
+                    voucher.setConsigneeCountryName(getTagValue("CONSIGNEECOUNTRYNAME", el));
+                    voucher.setConsigneePanNumber(getTagValue("CONSIGNEEPINNUMBER", el));
                     voucher.setNatureOfVoucher(getTagValue("NATUREOFVOUCHER", el));
                     voucher.setTenantId(tenantId);
 

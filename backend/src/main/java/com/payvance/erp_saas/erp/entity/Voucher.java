@@ -57,8 +57,10 @@ public class Voucher {
     @Column(name = "consignee_name", length = 200)
     private String consigneeName;
 
-    @Lob
-    @Column(name = "consignee_address", columnDefinition = "TEXT")
+    @Column(name = "consignee_mailing_name", length = 200)
+    private String consigneeMailingName;
+
+    @Column(name = "consignee_address", length = 500)
     private String consigneeAddress;
 
     // --- New Fields ---
@@ -136,6 +138,27 @@ public class Voucher {
 
     @Column(name = "basic_buyer_name", length = 200)
     private String basicBuyerName;
+
+    @Column(name = "consignee_pincode", length = 20)
+    private String consigneePincode;
+
+    @Column(name = "consignee_state_name", length = 100)
+    private String consigneeStateName;
+
+    @Column(name = "consignee_country_name", length = 100)
+    private String consigneeCountryName;
+
+    @Column(name = "consignee_pan_number", length = 50)
+    private String consigneePanNumber;
+
+    @Column(name = "buyer_pan_number", length = 50)
+    private String buyerPanNumber;
+
+    @Column(name = "party_state_name", length = 100)
+    private String partyStateName;
+
+    @Column(name = "party_country_name", length = 100)
+    private String partyCountryName;
 
     // --- Business Flags ---
 

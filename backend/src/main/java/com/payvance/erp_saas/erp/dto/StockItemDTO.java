@@ -7,6 +7,9 @@ public class StockItemDTO {
     private String guid;
     private String name;
     private String alias;
+    private String partNo;
+    private String description;
+    private String notes;
     private String stockGroupGuid;
     private String stockGroupName;
     private String categoryName;
@@ -16,8 +19,12 @@ public class StockItemDTO {
     private Double openingQuantity;
     private Double openingRate;
     private java.math.BigDecimal openingValue;
+    private String defaultDiscountRate;
     private String gstHsnCode;
+    private String gstHsnDescription;
     private String gstTaxability;
+    private String gstCalculationType;
+    private String gstSupplyType;
     private Double gstRate;
     private Boolean isBatchwise;
     private Boolean isGodownTracking;
@@ -25,6 +32,13 @@ public class StockItemDTO {
 
     private String costingMethod;
     private String valuationMethod;
+
+    // Behaviour Fields
+    private Boolean ignorePhysicalDifference;
+    private Boolean ignoreNegativeStock;
+    private Boolean treatSalesAsManufactured;
+    private Boolean treatPurchasesAsConsumed;
+    private Boolean treatRejectsAsScrap;
 
     private Double inwardQuantity;
     private java.math.BigDecimal inwardValue;
@@ -53,4 +67,5 @@ public class StockItemDTO {
     // Company context
     private String companyGuid;
     private String companyName;
+    private Long alterId;
 }

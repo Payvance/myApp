@@ -4,7 +4,7 @@ import com.payvance.erp_saas.erp.dto.*;
 import com.payvance.erp_saas.erp.entity.*;
 import com.payvance.erp_saas.erp.repository.*;
 import com.payvance.erp_saas.erp.security.TenantContext;
-import java.util.ArrayList;
+
 import com.payvance.erp_saas.core.repository.TenantSettingsRepository;
 import com.payvance.erp_saas.core.repository.TenantRepository;
 import com.payvance.erp_saas.core.repository.SubscriptionRepository;
@@ -235,12 +235,60 @@ public class TallySyncService {
             l.setSwiftCode(d.getSwiftCode());
             l.setIsCostCenter(d.getIsCostCenter());
             l.setStateName(d.getStateName());
+            l.setAlterId(d.getAlterId());
+            l.setIsInterestOn(d.getIsInterestOn());
+            l.setPlaceOfSupply(d.getPlaceOfSupply());
+            l.setCountryOfResidence(d.getCountryOfResidence());
+            l.setGstApplicable(d.getGstApplicable());
+            l.setTaxType(d.getTaxType());
+            l.setCurrencyName(d.getCurrencyName());
+            l.setAlteredOn(d.getAlteredOn());
+            l.setEnteredBy(d.getEnteredBy());
+            l.setAlteredBy(d.getAlteredBy());
+            l.setMailingName(d.getMailingName());
+            l.setCountryIsdCode(d.getCountryIsdCode());
+            l.setIsDefaultWhatsappNum(d.getIsDefaultWhatsappNum());
+            l.setBankName(d.getBankName());
+            l.setCreditLimit(d.getCreditLimit());
+            l.setGstTaxability(d.getGstTaxability());
+            l.setGstCalculationType(d.getGstCalculationType());
+            l.setGstSource(d.getGstSource());
+            l.setHsnSource(d.getHsnSource());
+            l.setIsReverseChargeApplicable(d.getIsReverseChargeApplicable());
+            l.setCessRatePerUnit(d.getCessRatePerUnit());
+            l.setIgstRatePerUnit(d.getIgstRatePerUnit());
+            l.setCgstRatePerUnit(d.getCgstRatePerUnit());
+            l.setSgstRatePerUnit(d.getSgstRatePerUnit());
+            l.setIsGstIneligibleItc(d.getIsGstIneligibleItc());
             ledgerRepository.findByGuidAndTenantId(l.getGuid(), tenantId)
                     .ifPresent(existing -> l.setId(existing.getId()));
             ledgerRepository.save(l);
         }
         if (!dtos.isEmpty() && dtos.get(0).getCompanyGuid() != null) {
-            updateLastSyncTime(tenantId, dtos.get(0).getCompanyGuid());
+            String companyId = dtos.get(0).getCompanyGuid();
+            updateLastSyncTime(tenantId, companyId);
+
+            // Update Max AlterID for Ledgers
+            long maxAlterId = dtos.stream()
+                    .mapToLong(d -> d.getAlterId() != null ? d.getAlterId() : 0L)
+                    .max().orElse(0L);
+
+            if (maxAlterId > 0) {
+                SyncState state = syncStateRepository.findByTenantIdAndCompanyId(tenantId, companyId)
+                        .orElse(new SyncState());
+                if (state.getId() == null) {
+                    state.setTenantId(tenantId);
+                    state.setCompanyId(companyId);
+                    state.setLastAlterId(0L);
+                    state.setLastStockItemAlterId(0L);
+                    state.setLastLedgerAlterId(0L);
+                }
+                if (state.getLastLedgerAlterId() == null || maxAlterId > state.getLastLedgerAlterId()) {
+                    state.setLastLedgerAlterId(maxAlterId);
+                }
+                state.setLastSyncTime(java.time.LocalDateTime.now());
+                syncStateRepository.save(state);
+            }
         }
     }
 
@@ -253,6 +301,12 @@ public class TallySyncService {
             s.setGuid(d.getGuid());
             s.setName(d.getName());
             s.setAlias(d.getAlias());
+            s.setCompanyId(d.getCompanyGuid());
+            s.setPartNo(d.getPartNo());
+            s.setDescription(d.getDescription());
+            s.setNotes(d.getNotes());
+            s.setAlterId(d.getAlterId());
+
             s.setStockGroupGuid(d.getStockGroupGuid());
             s.setStockGroupName(d.getStockGroupName());
             s.setCategoryName(d.getCategoryName());
@@ -263,11 +317,15 @@ public class TallySyncService {
             s.setOpeningRate(d.getOpeningRate());
             s.setOpeningValue(d.getOpeningValue());
             s.setGstHsnCode(d.getGstHsnCode());
+            s.setGstHsnDescription(d.getGstHsnDescription());
             s.setGstTaxability(d.getGstTaxability());
+            s.setGstCalculationType(d.getGstCalculationType());
+            s.setGstSupplyType(d.getGstSupplyType());
             s.setGstRate(d.getGstRate());
             s.setIsBatchwise(d.getIsBatchwise());
             s.setIsGodownTracking(d.getIsGodownTracking());
             s.setIsReserved(d.getIsReserved());
+            s.setDefaultDiscountRate(d.getDefaultDiscountRate());
             s.setCompanyId(d.getCompanyGuid());
 
             s.setCostingMethod(d.getCostingMethod());
@@ -279,6 +337,13 @@ public class TallySyncService {
             s.setClosingQuantity(d.getClosingQuantity());
             s.setClosingRate(d.getClosingRate());
             s.setClosingValue(d.getClosingValue());
+
+            // Behaviour Fields
+            s.setIgnorePhysicalDifference(d.getIgnorePhysicalDifference());
+            s.setIgnoreNegativeStock(d.getIgnoreNegativeStock());
+            s.setTreatSalesAsManufactured(d.getTreatSalesAsManufactured());
+            s.setTreatPurchasesAsConsumed(d.getTreatPurchasesAsConsumed());
+            s.setTreatRejectsAsScrap(d.getTreatRejectsAsScrap());
             s.setLastSaleDate(d.getLastSaleDate());
             s.setLastSaleParty(d.getLastSaleParty());
             s.setLastSaleQuantity(d.getLastSaleQuantity());
@@ -297,7 +362,30 @@ public class TallySyncService {
             stockItemRepository.save(s);
         }
         if (!dtos.isEmpty() && dtos.get(0).getCompanyGuid() != null) {
-            updateLastSyncTime(tenantId, dtos.get(0).getCompanyGuid());
+            String companyId = dtos.get(0).getCompanyGuid();
+            updateLastSyncTime(tenantId, companyId);
+
+            // Update Max AlterID for Stock Items
+            long maxAlterId = dtos.stream()
+                    .mapToLong(d -> d.getAlterId() != null ? d.getAlterId() : 0L)
+                    .max().orElse(0L);
+
+            if (maxAlterId > 0) {
+                SyncState state = syncStateRepository.findByTenantIdAndCompanyId(tenantId, companyId)
+                        .orElse(new SyncState());
+                if (state.getId() == null) {
+                    state.setTenantId(tenantId);
+                    state.setCompanyId(companyId);
+                    state.setLastAlterId(0L);
+                    state.setLastStockItemAlterId(0L);
+                    state.setLastLedgerAlterId(0L);
+                }
+                if (state.getLastStockItemAlterId() == null || maxAlterId > state.getLastStockItemAlterId()) {
+                    state.setLastStockItemAlterId(maxAlterId);
+                }
+                state.setLastSyncTime(java.time.LocalDateTime.now());
+                syncStateRepository.save(state);
+            }
         }
     }
 
@@ -579,6 +667,8 @@ public class TallySyncService {
                 state.setTenantId(tenantId);
                 state.setCompanyId(companyId);
                 state.setLastAlterId(0L);
+                state.setLastStockItemAlterId(0L);
+                state.setLastLedgerAlterId(0L);
             }
 
             state.setLastSyncTime(java.time.LocalDateTime.now());
@@ -744,6 +834,7 @@ public class TallySyncService {
         v.setPaymentTerms(d.getPaymentTerms());
         v.setConsigneeName(d.getConsigneeName());
         v.setConsigneeAddress(d.getConsigneeAddress());
+        v.setConsigneeMailingName(d.getConsigneeMailingName());
 
         // New Fields Mapping
         v.setPartyMailingName(d.getPartyMailingName());
@@ -786,6 +877,13 @@ public class TallySyncService {
         v.setIrpSource(d.getIrpSource());
         v.setIsEwayApplicable(d.getIsEwayApplicable());
         v.setBasicBuyerName(d.getBasicBuyerName());
+        v.setBuyerPanNumber(d.getBuyerPanNumber());
+        v.setPartyStateName(d.getPartyStateName());
+        v.setPartyCountryName(d.getPartyCountryName());
+        v.setConsigneePincode(d.getConsigneePincode());
+        v.setConsigneeStateName(d.getConsigneeStateName());
+        v.setConsigneeCountryName(d.getConsigneeCountryName());
+        v.setConsigneePanNumber(d.getConsigneePanNumber());
 
         // Business Flags
         v.setIsCancelled(d.getIsCancelled() != null ? d.getIsCancelled() : d.getIsCancelled());

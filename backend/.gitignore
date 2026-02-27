@@ -38,3 +38,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+*.log
+*.txt
+*.json
+*.sql

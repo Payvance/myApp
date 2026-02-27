@@ -57,6 +57,30 @@ public class LedgerDTO {
     private String bankBranchName;
     private String bankBSRCode;
     private String swiftCode;
+    private Boolean isInterestOn;
+    private String placeOfSupply;
+    private String countryOfResidence;
+    private String gstApplicable;
+    private String taxType;
+    private String currencyName;
+    private String alteredOn;
+    private String enteredBy;
+    private String alteredBy;
+    private String mailingName;
+    private String countryIsdCode;
+    private Boolean isDefaultWhatsappNum;
+    private String bankName;
+    private String gstTaxability;
+    private String gstCalculationType;
+    private String gstSource;
+    private String hsnSource;
+    private Boolean isReverseChargeApplicable;
+    private BigDecimal cessRatePerUnit;
+    private BigDecimal igstRatePerUnit;
+    private BigDecimal cgstRatePerUnit;
+    private BigDecimal sgstRatePerUnit;
+    private Boolean isGstIneligibleItc;
+    private Long alterId;
 
     @Override
     public String toString() {

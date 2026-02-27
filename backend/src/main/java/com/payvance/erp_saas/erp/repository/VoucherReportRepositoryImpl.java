@@ -64,9 +64,11 @@ public class VoucherReportRepositoryImpl implements VoucherReportRepositoryCusto
                 if (map.containsKey(q.getName())) {
                     VoucherReportDTO existing = map.get(q.getName());
                     map.put(q.getName(),
-                            new VoucherReportDTO(existing.getName(), q.getQuantity(), existing.getAmount()));
+                            new VoucherReportDTO(existing.getName(), q.getQuantity(), existing.getAmount(),
+                                    q.isCancelled()));
                 } else {
-                    map.put(q.getName(), new VoucherReportDTO(q.getName(), q.getQuantity(), BigDecimal.ZERO));
+                    map.put(q.getName(),
+                            new VoucherReportDTO(q.getName(), q.getQuantity(), BigDecimal.ZERO, q.isCancelled()));
                 }
             }
 
@@ -189,7 +191,8 @@ public class VoucherReportRepositoryImpl implements VoucherReportRepositoryCusto
                 groupColumn = "v.id";
                 sql.append(
                         "SELECT CONCAT(v.voucher_number, '|', v.id, '|', DATE_FORMAT(v.date, '%Y-%m-%d'), '|', v.voucher_type), ")
-                        .append(qtySql).append(", ").append(amountSql).append(" FROM tally_vouchers v ");
+                        .append(qtySql).append(", ").append(amountSql).append(", ").append("v.is_cancelled")
+                        .append(" FROM tally_vouchers v ");
                 if (useInventoryTable)
                     sql.append("LEFT JOIN tally_inventory_entries ie ON ie.voucher_id = v.id ");
                 break;
@@ -360,7 +363,11 @@ public class VoucherReportRepositoryImpl implements VoucherReportRepositoryCusto
             String name = (String) row[0];
             BigDecimal quantity = toBigDecimal(row[1]);
             BigDecimal amount = toBigDecimal(row[2]);
-            dtos.add(new VoucherReportDTO(name, quantity, amount));
+            boolean isCancelled = false;
+            if (row.length > 3) {
+                isCancelled = (Boolean) row[3];
+            }
+            dtos.add(new VoucherReportDTO(name, quantity, amount, isCancelled));
 
         }
         return dtos;

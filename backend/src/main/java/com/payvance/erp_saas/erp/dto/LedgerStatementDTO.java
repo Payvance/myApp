@@ -19,7 +19,7 @@ public class LedgerStatementDTO {
     @Data
     @Builder
     public static class LedgerStatementEntryDTO {
-        private String voucherId; // GUID
+        private Long voucherId; // ID
         private String voucherNumber;
         private String voucherType;
         private LocalDate date;
