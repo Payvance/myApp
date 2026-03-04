@@ -100,6 +100,34 @@ public interface VendorActivationBatchRepository
         """)
     List<Map<String, Object>> findRecentBatchesByVendorId(@Param("vendorId") Long vendorId);
     
+    @Query("SELECT COUNT(v) FROM VendorActivationBatch v WHERE v.status = :status")
+    Long countByStatus(@Param("status") String status);
+
+    @Query("""
+        SELECT v.id, v.vendorId, p.name, v.totalActivations, v.usedActivations, v.costPrice,
+               t.tenantId, t.activatedAt, t.status,
+               ten.name, ten.email, sp.name,
+               spl.allowedUserCount, spl.allowedCompanyCount, spp.billingPeriod, spp.duration
+        FROM VendorActivationBatch v
+        JOIN v.plan p
+        LEFT JOIN TenantActivation t ON v.id = t.vendorBatchId
+        LEFT JOIN Tenant ten ON t.tenantId = ten.id
+        LEFT JOIN Subscription s ON ten.id = s.tenantId AND s.status = 'active'
+        LEFT JOIN s.plan sp
+        LEFT JOIN sp.planLimitation spl
+        LEFT JOIN sp.planPrice spp
+        ORDER BY v.createdAt DESC
+    """)
+    List<Object[]> findBatchWithTenantDetails();
+
+    @Query("""
+        SELECT FUNCTION('MONTH', v.issuedAt) as month, SUM(v.costPrice) as revenue
+        FROM VendorActivationBatch v
+        WHERE LOWER(v.status) = 'approved'
+          AND v.issuedAt BETWEEN :startDate AND :endDate
+        GROUP BY FUNCTION('MONTH', v.issuedAt)
+    """)
+    List<Object[]> findMonthlyRevenue(@Param("startDate") java.time.LocalDateTime startDate, @Param("endDate") java.time.LocalDateTime endDate);
     /*
      * Find highest selling plans by vendor ID
      */

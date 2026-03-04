@@ -45,4 +45,7 @@ public interface VendorRepository extends JpaRepository<Vendor, Long> {
     @Query("SELECT COUNT(v) FROM Vendor v WHERE v.status = :status")
     Long countByStatus(@Param("status") String status);
     
+    @Query("SELECT COUNT(v) FROM Vendor v ")
+    Long getTotalVendors();
+    
 }

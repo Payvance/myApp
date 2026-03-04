@@ -17,6 +17,45 @@ public interface TenantActivationRepository extends JpaRepository<TenantActivati
     boolean existsByTenantIdAndStatus(Long tenantId, String status);
     java.util.List<com.payvance.erp_saas.core.entity.TenantActivation> findByTenantIdAndStatus(Long tenantId, String status);
     Optional<TenantActivation> findFirstByTenantIdOrderByCreatedAtDesc(Long tenantId);
+    @org.springframework.data.jpa.repository.Query("""
+        SELECT FUNCTION('MONTH', t.activatedAt) as month, SUM(t.activationPrice) as revenue
+        FROM TenantActivation t
+        WHERE LOWER(t.status) = 'active'
+          AND t.activatedAt BETWEEN :startDate AND :endDate
+        GROUP BY FUNCTION('MONTH', t.activatedAt)
+    """)
+    java.util.List<Object[]> findMonthlyRevenue(@org.springframework.data.repository.query.Param("startDate") java.time.LocalDateTime startDate, @org.springframework.data.repository.query.Param("endDate") java.time.LocalDateTime endDate);
+
+    @org.springframework.data.jpa.repository.Query("SELECT COALESCE(SUM(t.activationPrice), 0) FROM TenantActivation t WHERE LOWER(t.status) = LOWER(:status)")
+    java.math.BigDecimal sumActivationPriceByStatus(@org.springframework.data.repository.query.Param("status") String status);
+
+    @org.springframework.data.jpa.repository.Query("""
+        SELECT COUNT(t.id) 
+        FROM TenantActivation t 
+        WHERE LOWER(t.status) = 'active' 
+          AND t.activatedAt BETWEEN :startDate AND :endDate
+          AND NOT EXISTS (
+              SELECT 1 FROM TenantActivation t2 
+              WHERE t2.tenantId = t.tenantId 
+                AND LOWER(t2.status) = 'active' 
+                AND t2.id < t.id
+          )
+    """)
+    Long countNewSales(@org.springframework.data.repository.query.Param("startDate") java.time.LocalDateTime startDate, @org.springframework.data.repository.query.Param("endDate") java.time.LocalDateTime endDate);
+
+    @org.springframework.data.jpa.repository.Query("""
+        SELECT COUNT(t.id) 
+        FROM TenantActivation t 
+        WHERE LOWER(t.status) = 'active' 
+          AND t.activatedAt BETWEEN :startDate AND :endDate
+          AND EXISTS (
+              SELECT 1 FROM TenantActivation t2 
+              WHERE t2.tenantId = t.tenantId 
+                AND LOWER(t2.status) = 'active' 
+                AND t2.id < t.id
+          )
+    """)
+    Long countRenewals(@org.springframework.data.repository.query.Param("startDate") java.time.LocalDateTime startDate, @org.springframework.data.repository.query.Param("endDate") java.time.LocalDateTime endDate);
 
     /*
      * Top 5 tenants by revenue (activationPrice) for a given vendor
