@@ -2,16 +2,22 @@ import React, { useState } from "react";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import "./BarChartComponent.css";
+import "./CardHeader.css";
 
 const BarChartComponent = ({
   title,
   data = [],
   xAxis,
   yAxis,
+  stacked = false,
   size = "medium",
   loading,
   onYearChange
 }) => {
+
+  // Check if dark mode is active
+  const isDarkMode = document.documentElement.classList.contains('dark') || 
+                    window.matchMedia('(prefers-color-scheme: dark)').matches;
 
   // Base year (start of financial tracking)
   const baseYear = 2025;
@@ -64,69 +70,116 @@ const BarChartComponent = ({
   }
 
   const categories = data.map(item => item[xAxis]);
-  const values = data.map(item => Number(item[yAxis]));
+
+  // Detect series automatically if yAxis is not provided
+  let series = [];
+  if (yAxis) {
+    series = [{
+      name: title || "Data",
+      data: data.map(item => Number(item[yAxis]))
+    }];
+  } else if (data.length > 0) {
+    const keys = Object.keys(data[0]).filter(k => k !== xAxis && k !== 'stacked');
+    series = keys.map(key => ({
+      name: key || "Data",
+      data: data.map(item => Number(item[key]))
+    }));
+  }
 
   const options = {
     chart: {
       type: "column",
-      height: 200
+      height: 200,
+      style: {
+        fontFamily: "Inter, sans-serif",
+        color: isDarkMode ? "#ffffff" : "#2c3e50"
+      },
+      backgroundColor: "transparent"
     },
 
     title: {
-      text: null
+      text: null,
+      style: {
+        color: isDarkMode ? "#ffffff" : "#2c3e50"
+      }
     },
 
     xAxis: {
-      categories
+      categories,
+      labels: {
+        style: {
+          color: isDarkMode ? "#9ca3af" : "#6c757d"
+        }
+      },
+      lineColor: isDarkMode ? "#374151" : "transparent",
+      tickColor: isDarkMode ? "#374151" : "transparent"
     },
 
     yAxis: {
       min: 0,
-      title: { text: null }
+      title: { text: null },
+      labels: {
+        style: {
+          color: isDarkMode ? "#9ca3af" : "#6c757d"
+        }
+      },
+      gridLineColor: isDarkMode ? "#374151" : "#e5e7eb",
+      lineColor: isDarkMode ? "#374151" : "#e5e7eb"
     },
 
     plotOptions: {
       column: {
-        borderRadius: 8,
+        stacking: stacked ? 'normal' : undefined,
+        borderRadius: 4,
         dataLabels: {
-          enabled: true
+          enabled: false,
+          style: {
+            color: isDarkMode ? "#ffffff" : "#2c3e50"
+          }
         }
       }
     },
 
     tooltip: {
-      formatter: function () {
-        return `<b>${this.x}</b><br/>${title}: ${this.y}`;
+      shared: true,
+      headerFormat: '<b>{point.x}</b><br/>',
+      pointFormat: '{series.name}: ₹{point.y}<br/>',
+      footerFormat: stacked ? 'Total: ₹{point.total}' : undefined,
+      backgroundColor: isDarkMode ? "rgba(31, 41, 55, 0.95)" : "rgba(255, 255, 255, 0.95)",
+      borderColor: isDarkMode ? "#374151" : "#e5e7eb",
+      borderRadius: 8,
+      style: {
+        color: isDarkMode ? "#ffffff" : "#2c3e50",
+        fontSize: "12px"
       }
     },
 
-    legend: { enabled: false },
+    legend: {
+      enabled: false // Hide legend
+    },
 
-    series: [
-      {
-        name: title,
-        data: values
-      }
-    ]
+    series: series
   };
 
   return (
     <div className={`bar-chart-card bar-chart-card--${size}`}>
-      <div className="bar-chart__header">
-        <h3 className="bar-chart__title">{title}</h3>
+      <div className="card-header">
+        <h3 className="card-title">{title}</h3>
 
         {onYearChange && (
-          <select
-            className="bar-chart__year-select"
-            value={selectedPair}
-            onChange={handleYearChange}
-          >
-            {yearPairs.map(pair => (
-              <option key={pair} value={pair}>
-                FY {pair}
-              </option>
-            ))}
-          </select>
+          <div className="card-header__trail">
+            <select
+              className="bar-chart__year-select"
+              value={selectedPair}
+              onChange={handleYearChange}
+            >
+              {yearPairs.map(pair => (
+                <option key={pair} value={pair}>
+                  FY {pair}
+                </option>
+              ))}
+            </select>
+          </div>
         )}
       </div>
 

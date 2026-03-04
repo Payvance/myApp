@@ -27,6 +27,7 @@ import { formConfig } from "../../../config/formConfig.js";
 import useOtp from "../../../hooks/useOtp";
 import OtpModal from "../../../components/common/otpModal/OtpModal.jsx";
 import "../login/signin/SignIn.css";
+import "./PartnerSignup.css";
 import { COMPANY_INFO } from "../../../config/Config.js";
 
 const PartnerWithUs = () => {
@@ -101,14 +102,14 @@ const PartnerWithUs = () => {
   };
 
   return (
-    <div className="signin-wrapper">
+    <div className="signin-wrapper partner-page">
       {/* SINGLE COLUMN CARD */}
-      <div className="signin-card" style={{ width: "420px", gridTemplateColumns: "1fr", }}>
-        <div className="signup-panel" style={{ position: "static", width: "100%" }}>
-          <div className="signup-inner" style={{ marginLeft: "-20%" }}>
+      <div className="signin-card partner-card-layout">
+        <div className="signup-panel partner-panel">
+          <div className="signup-inner partner-inner">
 
             {/* HEADER */}
-            <div className="welcome-header" >
+            <div className="welcome-header">
               <h2>Partner With Us</h2>
               <div className="gradient-line"></div>
               <p>Create your partner account</p>
@@ -168,6 +169,7 @@ const PartnerWithUs = () => {
                 value={password}
                 onChange={setPassword}
                 onValidationChange={setIsPasswordValid}
+                classN="large"
               />
               <i
                 className={`bi ${showPassword ? "bi-eye" : "bi-eye-slash"} eye-icon-signup`}
@@ -198,13 +200,15 @@ const PartnerWithUs = () => {
             </div>
 
             {/* BACK TO LOGIN */}
-            <button className="forgot" onClick={() => navigate("/signin")} style={{ marginLeft: "35%" }}>
-              Back to Sign In
-            </button>
+            <div className="partner-back-links">
+              <button className="forgot" onClick={() => navigate("/signin")}>
+                Back to Sign In
+              </button>
 
-            <button className="forgot" onClick={() => navigate("/")} style={{ marginLeft: "30%" }}>
-              Back to Homepage
-            </button>
+              <button className="forgot" onClick={() => navigate("/")}>
+                Back to Homepage
+              </button>
+            </div>
           </div>
 
         </div>
