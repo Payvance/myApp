@@ -322,10 +322,20 @@ const SignIn = () => {
             <Button text="Sign In" onClick={handleLogin} />
           </div>
 
-          <button className="forgot" onClick={() => navigate("/")} style={{ marginLeft: "30%", marginTop: "10px" }}>
-            Back to Homepage
-          </button>
-
+          {/* Bottom links */}
+          <div className="signin-bottom-links">
+            {!showRegister && (
+              <div className="mobile-register-link">
+                <p>Don't have an account?</p>
+                <button type="button" className="forgot" onClick={handleRegister}>
+                  Create Account
+                </button>
+              </div>
+            )}
+            <button className="forgot" type="button" onClick={() => navigate("/")}>
+              Back to Homepage
+            </button>
+          </div>
           {/* footer */}
         </div>
 
@@ -423,6 +433,7 @@ const SignIn = () => {
                 name="signupPassword"
                 validationType="PASSWORD"
                 onValidationChange={setIsPasswordValid}
+                classN="large"
               />
               <i className={`bi ${showSignupPassword ? "bi-eye" : "bi-eye-slash"} eye-icon-signup`}
                 onClick={() => setShowSignupPassword(!showSignupPassword)}></i>

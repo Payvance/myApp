@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getRoleId } from '../../services/authService';
 import DashboardLayout from './DashboardLayout';
 import DashboardCard from './DashboardCard';
@@ -18,10 +19,11 @@ import {
 import './CommonDashboard.css';
 import { applyHighchartsTheme } from '../../theme/highchartsTheme';
 import RecentUsersTable from './hooks/RecentUsersTable';
-import DashboardModal from './hooks/DashboardModal';
+import DashboardDetailModal from './hooks/DashboardDetailModal';
 
 
 const CommonDashboard = () => {
+  const navigate = useNavigate();
 
   useEffect(() => {
     applyHighchartsTheme();
@@ -37,12 +39,69 @@ const CommonDashboard = () => {
     endYear: new Date().getFullYear() // Default: 2026
   });
 
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selectedCard, setSelectedCard] = useState(null);
+  const [detailModalOpen, setDetailModalOpen] = useState(false);
+  const [selectedDetail, setSelectedDetail] = useState(null);
+  const [detailType, setDetailType] = useState(null);
 
   const handleCardClick = (card) => {
-    setSelectedCard(card);
-    setModalOpen(true);
+    const roleIdNum = Number(roleId);
+
+    // Comprehensive route map by role
+    const routeMatrix = {
+      // SuperAdmin (Role 1)
+      1: {
+        'total_tenants': '/tenantmanagement',
+        'total_vendors': '/partners',
+        'total_cas': '/partners',
+        'vendor_approval_requests': '/users/pending',
+        'ca_approval_requests': '/users/pending',
+        'vendor_batches_pending_approval': '/licenseinventory',
+        'active_plans': '/subscriptionplan',
+        'total_revenue_generated': '/audits',
+        'guest_users': '/users/pending',
+        'sale_vs_renewal': '/audits'
+      },
+      // Tenant (Role 2)
+      2: {
+        'total_users': '/usermanagement',
+        'active_users': '/usermanagement',
+        'inactive_users': '/usermanagement',
+        'plan': '/tenantplanss',
+        'addons': '/addonplans',
+        'companies_allowed': '/BuyPlan'
+      },
+      // Vendor (Role 3)
+      4: {
+        'total_activations': '/licenseinventory',
+        'used_activations': '/licenseinventory',
+        'remaining_activations': '/licenseinventory',
+        'batch_approval_requests': '/licenseinventory',
+        'approved_batches': '/licenseinventory',
+        'rejected_batches': '/licenseinventory',
+        'total_profit': '/audits'
+      },
+      // CA (Role 5)
+      5: {
+        'tenants_referred': '/tenantrequests',
+        'wallet_balance': '/redemption',
+        'total_earnings': '/redemption',
+        'enchashment_requests': '/redemption/pending',
+        'total_creditpoints': '/redemption'
+      }
+    };
+
+    const roleMap = routeMatrix[roleIdNum] || {};
+    const targetRoute = roleMap[card.id];
+
+    if (targetRoute) {
+      navigate(targetRoute);
+    }
+  };
+
+  const handleDetailViewClick = (data, type) => {
+    setSelectedDetail(data);
+    setDetailType(type);
+    setDetailModalOpen(true);
   };
 
   // Hooks now use getRoleId() internally, no need to pass roleId
@@ -152,6 +211,28 @@ const CommonDashboard = () => {
                     loading={dataLoading}
                   />
                 );
+              } else if (view.id === "vendor_batch_tenants") {
+                return (
+                  <RecentUsersTable
+                    key={view.id}
+                    title={view.title}
+                    data={view.data}
+                    type="vendor_batch_tenants"
+                    loading={dataLoading}
+                    onViewClick={(data) => handleDetailViewClick(data, 'batch')}
+                  />
+                );
+              } else if (view.id === "detailed_tenants" && Number(roleId) === 1) {
+                return (
+                  <RecentUsersTable
+                    key={view.id}
+                    title={view.title}
+                    data={view.data}
+                    type="detailed_tenants"
+                    loading={dataLoading}
+                    onViewClick={(data) => handleDetailViewClick(data, 'tenant')}
+                  />
+                );
               } else {
                 return (
                   <DataViewComponent
@@ -165,11 +246,12 @@ const CommonDashboard = () => {
           </div>
         )}
       </div>
-      {modalOpen && selectedCard && (
-        <DashboardModal
-          show={modalOpen}
-          data={selectedCard}
-          onClose={() => setModalOpen(false)}
+      {detailModalOpen && selectedDetail && (
+        <DashboardDetailModal
+          show={detailModalOpen}
+          data={selectedDetail}
+          type={detailType}
+          onClose={() => setDetailModalOpen(false)}
         />
       )}
     </DashboardLayout>

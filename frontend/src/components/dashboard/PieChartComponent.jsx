@@ -1,6 +1,8 @@
 import React from "react";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
+import "./CardHeader.css";
+import "./PieChartComponent.css";
 
 const PieChartComponent = ({ title, data, loading }) => {
   if (loading) return <div className="chart-loader">Loading...</div>;
@@ -9,15 +11,15 @@ const PieChartComponent = ({ title, data, loading }) => {
     chart: {
       type: "pie",
       backgroundColor: "transparent",
-      height: 240
+      height: 200
     },
     title: {
-      text: title
+      text: null
     },
     plotOptions: {
       pie: {
         innerSize: "65%",
-        size: "100%",   // 🔥 reduce pie size
+        size: "100%",
         showInLegend: true,
         borderWidth: 0,
         dataLabels: {
@@ -47,7 +49,14 @@ const PieChartComponent = ({ title, data, loading }) => {
     ]
   };
 
-  return <HighchartsReact highcharts={Highcharts} options={options} />;
+  return (
+    <div className="pie-chart-card">
+      <div className="card-header">
+        <h3 className="card-title">{title}</h3>
+      </div>
+      <HighchartsReact highcharts={Highcharts} options={options} />
+    </div>
+  );
 };
 
 export default PieChartComponent;

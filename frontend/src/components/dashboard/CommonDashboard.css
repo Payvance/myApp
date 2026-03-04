@@ -13,26 +13,21 @@
   box-sizing: border-box;
 }
 
-.dashboard-section {
-  margin-bottom: 6px;
-}
 
 .dashboard-charts-section {
   display: grid;
-  /* grid-template-columns: 1fr 1.5fr; */
-  gap: 20px;
+  gap: 15px;
 }
 
 .charts-left,
 .charts-right {
-  background: #ffffff;
+  background: var(--card-bg, #ffffff);
   border-radius: 16px;
   padding: 20px;
   height: 60%;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
   display: flex;
- justify-content: space-evenly
-  ;
+  justify-content: space-evenly;
 }
 
 .chart-loader {
@@ -43,6 +38,7 @@
   font-weight: 500;
   color: #64748b;
 }
+
 .dashboard-error__icon {
   font-size: 36px;
   color: var(--danger-color, #ff6b6b);
@@ -71,7 +67,7 @@
   .dashboard-charts-section {
     grid-template-columns: 1fr;
   }
-  
+
   .charts-left,
   .charts-right {
     width: 100%;
@@ -83,16 +79,16 @@
     min-height: 200px;
     padding: 16px;
   }
-  
+
   .dashboard-error__icon {
     font-size: 28px;
     margin-bottom: 10px;
   }
-  
+
   .dashboard-error h3 {
     font-size: 16px;
   }
-  
+
   .dashboard-error p {
     font-size: 13px;
     max-width: 300px;
@@ -103,7 +99,7 @@
 .dashboard-ca-section {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 15px;
   height: 100%;
   margin-top: -130px;
 }

@@ -1,22 +1,15 @@
 .data-view-card {
-  background: #ffffff;;
+  background: var(--card-bg, #ffffff);
   border-radius: 18px;
   padding: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
   box-sizing: border-box;
   flex: 1;
   min-width: 0;
-  height: 277px;
+  height: 290px;
 }
 
-.data-view__title {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-primary, #2c3e50);
-  margin: 0 0 12px 0;
-  padding-bottom: 8px;
-  border-bottom: 2px solid var(--border-color, #e0e0e0);
-}
+/* title now handled by shared .card-header / .card-title in CardHeader.css */
 
 .data-view__content {
   display: flex;
@@ -106,6 +99,7 @@
   0% {
     background-position: 200% 0;
   }
+
   100% {
     background-position: -200% 0;
   }
@@ -116,20 +110,20 @@
   .data-view-card {
     padding: 10px;
   }
-  
+
   .data-view__title {
     font-size: 12px;
   }
-  
+
   .data-view__row {
     padding: 6px 0;
   }
-  
+
   .data-view__row:hover {
     margin: 0 -4px;
     padding: 6px 4px;
   }
-  
+
   .data-view__name,
   .data-view__value {
     font-size: 10px;
@@ -140,20 +134,20 @@
   .data-view-card {
     padding: 8px;
   }
-  
+
   .data-view__title {
     font-size: 11px;
   }
-  
+
   .data-view__row {
     padding: 4px 0;
   }
-  
+
   .data-view__row:hover {
     margin: 0 -2px;
     padding: 4px 2px;
   }
-  
+
   .data-view__name,
   .data-view__value {
     font-size: 9px;

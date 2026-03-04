@@ -2,19 +2,12 @@
 
   background: var(--card-bg, #ffffff);
 
-  border: 1px solid var(--border-color, #e0e0e0);
-
-  border-radius: 6px;
-
-  padding: 12px;
-
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-
-  box-sizing: border-box;
+  padding: 5px;
 
   flex: 1;
 
   min-width: 0;
+
 
 }
 
@@ -204,7 +197,7 @@
 
   }
 
-  
+
 
   .pie-chart__title {
 
@@ -212,7 +205,7 @@
 
   }
 
-  
+
 
   .pie-chart__container {
 
@@ -220,7 +213,7 @@
 
   }
 
-  
+
 
   .pie-chart__skeleton-chart {
 
@@ -240,7 +233,7 @@
 
   }
 
-  
+
 
   .pie-chart__title {
 
@@ -248,7 +241,7 @@
 
   }
 
-  
+
 
   .pie-chart__container {
 
@@ -256,7 +249,7 @@
 
   }
 
-  
+
 
   .pie-chart__skeleton-chart {
 
@@ -265,4 +258,3 @@
   }
 
 }
-

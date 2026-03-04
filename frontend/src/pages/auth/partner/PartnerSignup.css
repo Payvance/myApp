@@ -1,172 +1,208 @@
 /* ===============================
-   Partner Signup Page Wrapper
+   Partner Signup Page
    =============================== */
 
-.partner-wrapper {
+/* ── Desktop defaults ──────────── */
+
+/* Wrapper: override signin-wrapper for the partner page */
+.partner-page.signin-wrapper {
   min-height: 100vh;
-  background: #F8F9FA;
+  height: auto;
+  overflow-y: auto;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
 
-/* ===============================
-   Main Card Container
-   =============================== */
-
-.partner-card {
+/* Card: single-column, fixed desktop width */
+.partner-card-layout.signin-card {
   width: 420px;
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(31, 45, 61, 0.12);
+  max-width: 100%;
+  grid-template-columns: 1fr;
+  overflow: visible;
+}
+
+/* Panel: always visible, never hidden */
+.partner-panel.signup-panel {
+  display: flex !important;
+  position: static;
+  width: 100%;
+  height: auto;
+  border-radius: 15px;
   padding: 40px 36px;
+  box-sizing: border-box;
 }
 
-/* ===============================
-   Header Section
-   =============================== */
+/* Inner container: full width, centered */
+.partner-inner.signup-inner {
+  max-width: 100%;
+  width: 100%;
+  margin-left: 0;
+}
 
-.partner-header {
+/* ── Header ────────────────────── */
+
+.partner-page .welcome-header {
   margin-bottom: 24px;
-  text-align: center;
 }
 
-.partner-header h2 {
-  margin: 0 0 6px;
+.partner-page .welcome-header h2 {
   font-size: 30px;
-  background: linear-gradient(
-    90deg,
-    #7E56E4 0%,
-    #9F52D0 50%,
-    #BF4FBB 100%
-  );
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
 }
 
-.partner-header p {
+.partner-page .welcome-header p {
   font-size: 13px;
   color: #6b7280;
   margin: 0;
 }
 
-/* Gradient divider */
-.partner-divider {
-  width: 80px;
-  height: 2px;
-  margin: 10px auto 0;
-  background: linear-gradient(
-    90deg,
-    #7E56E4 0%,
-    #9F52D0 50%,
-    #BF4FBB 100%
-  );
-}
+/* ── Back links ────────────────── */
 
-/* ===============================
-   Form Styling
-   =============================== */
-
-.partner-form {
-  margin-top: 28px;
-}
-
-.partner-form .form-group {
-  margin-bottom: 16px;
-}
-
-/* ===============================
-   Submit Button
-   =============================== */
-
-.partner-submit {
-  margin-top: 18px;
-}
-
-/* ===============================
-   Footer & Back Link
-   =============================== */
-
-.partner-footer {
-  margin-top: 18px;
-  text-align: center;
-}
-
-.partner-footer .back-link {
-  display: inline-block;
-  font-size: 13px;
-  color: #7E56E4;
-  cursor: pointer;
-  background: transparent;
-  border: none;
-  padding: 0;
-  margin-bottom: 10px;
-}
-
-.partner-footer .back-link:hover {
-  color: #9F52D0;
-  text-decoration: underline;
-}
-/* ============================= */
-/* Partner OTP Layout ONLY       */
-/* ============================= */
-
-.partner-otp-row {
-  display: grid;
-  grid-template-columns: 1fr 120px;
-  gap: 12px;
-  margin-top: -2px;
-  margin-bottom: -2px;
-}
-
-.partner-otp-input {
-  width: 110%;
-}
-
-.partner-otp-btn-wrapper {
+.partner-back-links {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  margin-left: 32px;
-  margin-top: -17px;
+  gap: 8px;
+  margin-top: 14px;
 }
 
-.partner-otp-btn {
-  height: 38px;
-  padding: 0 14px;
-  border-radius: 6px;
-  background: linear-gradient(90deg, #7E56E4, #BF4FBB);
-  color: #fff;
-  border: none;
-  font-size: 12px;
-  white-space: nowrap;
-  cursor: pointer;
+/* ── OTP row layout ──────────── */
+
+.partner-page .otp-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  margin-bottom: 4px;
 }
 
-.partner-otp-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+.partner-page .otp-input-col {
+  flex: 1;
+  min-width: 0;
 }
 
-.partner-otp-verified {
-  color: #22c55e;
-  font-size: 13px;
-  font-weight: 600;
-}
-/* Cancel button inside OTP modal */
-.partner-otp-cancel {
-  margin-top: 10px;
-  background: none;
-  border: none;
-  color: #7E56E4;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
+.partner-page .otp-btn-col {
+  display: flex;
+  align-items: center;
 }
 
-.partner-otp-cancel:hover {
-  text-decoration: underline;
+/* ── Footer placement ──────────── */
+
+.partner-page .footer {
+  margin-top: 6px;
+  width: 100%;
+  position: relative;
+  flex-shrink: 0;
 }
+
+/* ===============================
+   Responsive – Tablet & Mobile
+   (≤ 901px)
+   =============================== */
+
+@media (max-width: 901px) {
+
+  .partner-page.signin-wrapper {
+    min-height: 100vh;
+    height: auto;
+    overflow-y: auto;
+    padding: 24px 16px 40px;
+  }
+
+  /* Card fills available width, capped at 400px */
+  .partner-card-layout.signin-card {
+    width: 90%;
+    max-width: 400px;
+    grid-template-columns: 1fr;
+    margin: 0 auto;
+    box-sizing: border-box;
+    overflow: visible;
+  }
+
+  /* Panel: MUST stay visible on mobile */
+  .partner-panel.signup-panel {
+    display: flex !important;
+    position: static;
+    width: 100%;
+    height: auto;
+    padding: 32px 24px;
+    transform: none;
+    opacity: 1;
+    box-sizing: border-box;
+  }
+
+  /* Inner container: full width, no negative offsets */
+  .partner-inner.signup-inner {
+    max-width: none;
+    width: 100%;
+    margin-left: 0;
+  }
+
+  /* Ensure inputs stretch full width */
+  .partner-inner input,
+  .partner-inner select {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .partner-page .welcome-header h2 {
+    font-size: 24px;
+  }
+
+  .partner-page .welcome-header p {
+    font-size: 12px;
+  }
+}
+
+/* ===============================
+   Responsive – Small Mobile
+   (≤ 600px)
+   =============================== */
+
+@media (max-width: 600px) {
+
+  .partner-page.signin-wrapper {
+    padding: 16px 12px 32px;
+  }
+
+  .partner-card-layout.signin-card {
+    width: 95%;
+    max-width: 400px;
+    border-radius: 12px;
+  }
+
+  .partner-panel.signup-panel {
+    padding: 28px 16px;
+  }
+
+  .partner-page .welcome-header h2 {
+    font-size: 22px;
+  }
+
+  /* OTP row stacks vertically on very small screens */
+  .partner-page .otp-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .partner-page .otp-btn-col {
+    justify-content: flex-start;
+  }
+
+  .partner-page .otp-btn-col .otp-btn {
+    width: 100%;
+  }
+
+  /* OTP boxes smaller on phones */
+  .partner-page .otp-box {
+    width: 36px;
+    height: 42px;
+    font-size: 18px;
+  }
+}
+
+/* ── Disabled states ───────────── */
 
 .disabled-link {
   color: #9ca3af;
@@ -174,44 +210,9 @@
   pointer-events: none;
   text-decoration: none;
 }
-.input-container {
-    width: 127%;
-}
 
-/* Responsive */
-@media (max-width: 600px) {
-  .partner-otp-row {
-    grid-template-columns: 1fr;
-  }
-
-  .partner-otp-btn-wrapper {
-    padding-top: 0;
-  }
-
-  .partner-otp-btn {
-    width: 100%;
-  }
-}
-
-/* ===============================
-   Responsive
-   =============================== */
-
-@media (max-width: 480px) {
-  .partner-card {
-    width: 100%;
-    margin: 16px;
-    padding: 28px 22px;
-  }
-
-  .partner-header h2 {
-    font-size: 24px;
-  }
-}
-/* Style for disabled buttons */
 button:disabled,
 .button-disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
-

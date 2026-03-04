@@ -10,6 +10,8 @@
   transition: all 0.3s ease;
   cursor: default;
   box-sizing: border-box;
+  flex: 0 0 auto;
+  min-width: 180px;
 }
 
 .dashboard-card:hover {
@@ -140,17 +142,17 @@
     padding: 8px;
     gap: 8px;
   }
-  
+
   .dashboard-card__icon {
     width: 28px;
     height: 28px;
     font-size: 12px;
   }
-  
+
   .dashboard-card__value {
     font-size: 14px;
   }
-  
+
   .dashboard-card__title {
     font-size: 10px;
   }
@@ -161,17 +163,17 @@
     padding: 6px;
     gap: 6px;
   }
-  
+
   .dashboard-card__icon {
     width: 24px;
     height: 24px;
     font-size: 10px;
   }
-  
+
   .dashboard-card__value {
     font-size: 12px;
   }
-  
+
   .dashboard-card__title {
     font-size: 9px;
   }

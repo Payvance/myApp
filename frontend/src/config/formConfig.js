@@ -293,6 +293,22 @@ export const formConfig = {
     verifyItp : {
       label: "Verify OTP"
     },
+  },
+
+  ResetPassword : {
+      back : {
+        label : "Cancel and go back"
+      },
+      create: {
+        label : "Create New Password"
+      },
+      recover: {
+        label : "Recover Your Account"
+      },
+      backToSignin : {
+        label : "Back to Sign In"
+      }
   }
+
 };
 export default formConfig;

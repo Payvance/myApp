@@ -1,29 +1,12 @@
 .users-card {
-  background: #ffffff;
+  background: var(--card-bg, #ffffff);
   border-radius: 18px;
   padding: 22px;
   box-shadow: 0 10px 35px rgba(0, 0, 0, 0.05);
-  height: 235px;
+  height: 250px;
 }
 
-/* Header */
-.users-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-}
-
-.users-header h3 {
-  font-size: 15px;
-  font-weight: 600;
-  margin: 0;
-}
-
-.users-count {
-  font-size: 13px;
-  color: #64748b;
-}
+/* Header & count now handled by shared .card-header / .card-header__count in CardHeader.css */
 
 /* Table */
 .users-table-wrapper {

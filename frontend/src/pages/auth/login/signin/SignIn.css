@@ -1,11 +1,10 @@
-
 /* ===============================
    Page Wrapper
    Centers the sign-in card both
    vertically and horizontally
    =============================== */
 
-  .signin-wrapper {
+.signin-wrapper {
   min-height: 100vh;
   background: #f2f5f9;
   display: flex;
@@ -24,9 +23,11 @@
   border-radius: 16px;
   box-shadow: 0 10px 30px rgba(31, 45, 61, 0.12);
   display: grid;
-  grid-template-columns: 1fr 1fr; /* 50/50 split between left and right panels */
+  grid-template-columns: 1fr 1fr;
+  /* 50/50 split between left and right panels */
   overflow: hidden;
-  position: relative; /* enable absolute children for sliding panels */
+  position: relative;
+  /* enable absolute children for sliding panels */
 }
 
 /* ===============================
@@ -34,15 +35,20 @@
    =============================== */
 .signin-left {
   padding: 100px 48px;
-  background: #F8F9FA; /* left panel background */
-  color: #212529; /* left panel text */
+  background: #F8F9FA;
+  /* left panel background */
+  color: #212529;
+  /* left panel text */
   position: relative;
-  z-index: 1; /* ensure left content stays above base */
+  z-index: 1;
+  /* ensure left content stays above base */
 }
+
 /* Welcome header section */
 .welcome-header {
   margin-bottom: 12px;
 }
+
 .welcome-header p {
   color: #6B7280;
   margin: 0 0 24px;
@@ -75,6 +81,7 @@
   margin: 0 0 24px;
   font-size: 12px;
 }
+
 /* ===============================
    Remember Me & Forgot Password
    =============================== */
@@ -92,7 +99,7 @@
 
 .form-select {
   width: 100%;
-  padding: 10px  12px;
+  padding: 10px 12px;
   border: 1.5px solid var(--border-primary);
   border-radius: 6px;
   background: var(--bg-primary);
@@ -122,7 +129,7 @@
 
 /* Forgot password link */
 .forgot {
-  color: #7E56E4; 
+  color: #7E56E4;
   cursor: pointer;
   background: transparent;
   border: none;
@@ -136,6 +143,7 @@
   color: #9F52D0;
   text-decoration: underline;
 }
+
 /* focus state */
 .forgot:focus-visible {
   outline: 2px solid rgba(59, 91, 219, 0.35);
@@ -143,7 +151,9 @@
 }
 
 /* Login button wrapper */
-.signin-submit { margin-top: 14px; }
+.signin-submit {
+  margin-top: 14px;
+}
 
 .signin-divider {
   display: flex;
@@ -160,7 +170,9 @@
   background: #e6eaf0;
 }
 
-.signin-divider .or-text { white-space: nowrap; }
+.signin-divider .or-text {
+  white-space: nowrap;
+}
 
 /* ===============================
    Login Buttons
@@ -169,7 +181,8 @@
   display: flex;
   gap: 12px;
   margin-bottom: 16px;
-  justify-content: center; /* center horizontally */
+  justify-content: center;
+  /* center horizontally */
   align-items: center;
 }
 
@@ -187,7 +200,9 @@
   cursor: pointer;
 }
 
-.social-btn:hover { background: #f7f9fb; }
+.social-btn:hover {
+  background: #f7f9fb;
+}
 
 .signin-footer {
   color: #b0b7c3;
@@ -198,22 +213,26 @@
    Right Panel (Welcome Section)
    =============================== */
 .signin-right {
-  position: absolute; /* float over the card to allow sliding */
+  position: absolute;
+  /* float over the card to allow sliding */
   top: 0;
   right: 0;
   width: 41%;
   height: 88%;
   padding: 40px;
 
-background: linear-gradient(
-  135deg,
-  #6F5AE8 0%,     /* strong soft purple (top-left) */
-  #8B63E6 40%,    /* smooth mid purple */
-  #c565c1 100%    /* soft light pink (bottom-right) */
-);
+  background: linear-gradient(135deg,
+      #6F5AE8 0%,
+      /* strong soft purple (top-left) */
+      #8B63E6 40%,
+      /* smooth mid purple */
+      #c565c1 100%
+      /* soft light pink (bottom-right) */
+    );
 
-  
-  color: #ffffff; /* right panel text */
+
+  color: #ffffff;
+  /* right panel text */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -221,7 +240,8 @@ background: linear-gradient(
   text-align: center;
   gap: 12px;
   transition: transform 0.5s ease;
-  z-index: 2; /* above left by default */
+  z-index: 2;
+  /* above left by default */
 }
 
 /* Sign Up panel initially hidden off canvas to the right */
@@ -236,16 +256,26 @@ background: linear-gradient(
   z-index: 1;
 }
 
-.pop-pannel{
+.pop-pannel {
   background: var(--primary-50) !important;
   padding: 0px !important;
 }
 
-.signup-inner { width: 100%; max-width: 320px; margin-top: 0px;}
-.signup-back { margin-top: 10px; text-align: center; }
+.signup-inner {
+  width: 100%;
+  max-width: 320px;
+  margin-top: 0px;
+}
+
+.signup-back {
+  margin-top: 10px;
+  text-align: center;
+}
 
 /* When register is active: slide gradient left, reveal signup panel */
-.register-active .signin-right { transform: translateX(-100%); }
+.register-active .signin-right {
+  transform: translateX(-100%);
+}
 
 .signin-right h2 {
   margin: 8px 0 8px;
@@ -263,54 +293,159 @@ background: linear-gradient(
   line-height: 1;
 }
 
-.signin-right-action { width: 180px; margin: 8px auto 0; }
+.signin-right-action {
+  width: 180px;
+  margin: 8px auto 0;
+}
+
+/* Mobile-only signup prompt – hidden on desktop */
+.mobile-register-link {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+}
+
+.mobile-register-link p {
+  color: #6B7280;
+  font-size: 13px;
+  margin: 0;
+}
+
+.mobile-register-link .forgot {
+  font-size: 13px;
+}
+
+/* Bottom links container */
+.signin-bottom-links {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+}
 
 /* ===============================
-    Added media queries for responsive design
-    Tablet & Small Desktop View
+    Responsive Design
+    Tablet & Mobile (≤ 901px)
    =============================== */
 
-@media (max-width: 900px) {
+@media (max-width: 901px) {
+
+  /* Prevent horizontal scroll */
+  .signin-wrapper {
+    overflow-x: hidden;
+    padding: 24px 16px 40px;
+  }
+
+  /* Single-column layout */
   .signin-card {
-    width: min(100%, 680px);
-    grid-template-columns: 1fr 1fr;
-    margin: 20px;
+    width: 100%;
+    max-width: 480px;
+    grid-template-columns: 1fr;
+    margin: 0 auto;
+    box-sizing: border-box;
   }
 
+  /* Full-width form with comfortable padding */
   .signin-left {
-    padding: 28px 24px;
+    padding: 36px 24px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
-  /* On small screens, avoid overlay: stack panels and toggle visibility */
+  /* Hide the right "Create Account" panel */
   .signin-right {
-    position: static;
-    width:50%;
-    height: auto;
-    padding: 28px 24px 36px;
-    text-align: center;
-    transform: none !important;
-    z-index: auto;
+    display: none;
   }
 
-  .signin-right h2 { font-size: 28px; }
-  .signin-left h2 { font-size: 28px; }
+  /* Slightly smaller headings */
+  .signin-left h2,
+  .signup-inner h2 {
+    font-size: 22px;
+  }
 
-  .signin-right-action { width: 100%; }
+  .signin-left p {
+    font-size: 12px;
+  }
 
+  /* Full-width submit button */
+  .signin-submit {
+    margin-top: 16px;
+  }
+
+  /* Ensure inputs stretch full width */
+  .signin-left input,
+  .signin-left select,
+  .signup-inner input,
+  .signup-inner select {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Center the "Back to Homepage" link */
+  .signin-bottom-links>.forgot {
+    margin-left: 0 !important;
+    display: block;
+    text-align: center;
+    margin-top: 4px;
+  }
+
+  /* Signup panel: show as full-width single column when toggled */
   .signup-panel {
     position: static;
     width: 100%;
     height: auto;
-    padding: 24px;
+    padding: 36px 24px;
     transform: none;
     opacity: 1;
-    display: none; /* hidden by default on small screens */
+    display: none;
+    /* hidden by default on small screens */
+    box-sizing: border-box;
   }
 
-  .signup-inner { max-width: none; }
-  /* Show signup, hide gradient when active on small screens */
-  .register-active .signin-right { display: none; }
-  .register-active .signup-panel { display: block; }
+  .signup-inner {
+    max-width: none;
+    width: 100%;
+  }
+
+  .signup-back {
+    text-align: center;
+    margin-top: 12px;
+  }
+
+  /* Show signup, hide sign-in form when register is active */
+  .register-active .signin-left {
+    display: none;
+  }
+
+  .register-active .signin-right {
+    display: none;
+  }
+
+  .register-active .signup-panel {
+    display: flex;
+  }
+
+  /* Right panel action button */
+  .signin-right-action {
+    width: 100%;
+  }
+
+  /* OTP modal responsive */
+  .otp-modal {
+    width: min(90vw, 360px);
+  }
+
+  /* Partner link in signup */
+  .partner-link {
+    margin-top: 8px;
+  }
+
+  /* Show mobile-only Create Account link */
+  .mobile-register-link {
+    display: flex;
+  }
 }
 
 /* OTP field */
@@ -370,7 +505,7 @@ background: linear-gradient(
 .otp-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.45);
+  background: rgba(0, 0, 0, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -383,7 +518,7 @@ background: linear-gradient(
   border-radius: 16px;
   width: 360px;
   text-align: center;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
 .otp-modal h3 {
@@ -437,32 +572,68 @@ background: linear-gradient(
 
 /* Disabled resend OTP (popup) */
 .disabled-link {
-  color: #9ca3af;           /* grey */
+  color: #9ca3af;
+  /* grey */
   cursor: not-allowed;
   pointer-events: none;
   text-decoration: none;
 }
 
-/* Mobile friendly */
+/* ===============================
+    Small Mobile (≤ 600px)
+   =============================== */
 @media (max-width: 600px) {
+
+  .signin-wrapper {
+    padding: 16px 12px 32px;
+  }
+
+  .signin-card {
+    max-width: 100%;
+    border-radius: 12px;
+  }
+
+  .signin-left {
+    padding: 28px 16px;
+  }
+
+  .signin-left h2,
+  .signup-inner h2 {
+    font-size: 20px;
+  }
+
+  .signin-left p {
+    font-size: 11px;
+  }
+
+  .signin-options {
+    font-size: 12px;
+  }
+
+  /* OTP boxes smaller on phones */
   .otp-box {
-    width: 38px;
-    height: 44px;
+    width: 36px;
+    height: 42px;
+    font-size: 18px;
+  }
+
+  /* Signup panel tighter on phones */
+  .signup-panel {
+    padding: 28px 16px;
+  }
+
+  .signin-divider {
+    gap: 8px;
+    margin: 14px 0 10px;
+    font-size: 11px;
+  }
+
+  .social-btn {
+    width: 32px;
+    height: 32px;
   }
 }
 
-@media (max-width: 600px) {
-  .signin-card { margin: 12px; }
-  .signin-left { padding: 20px 16px; }
-  .signin-right { padding: 20px 16px 28px; }
-
-  .signin-left h2,
-  .signin-right h2 { font-size: 24px; }
-
-  .signin-divider { gap: 8px; margin: 14px 0 10px; font-size: 11px; }
-  .social-btn { width: 32px; height: 32px; }
-  .signin-right p { max-width: none; font-size: 14px; }
-}
 /* Style for disabled buttons */
 button:disabled,
 .button-disabled {
@@ -477,17 +648,20 @@ input::-ms-clear {
 }
 
 /* 2. SHARED POSITIONING FOR ALL THREE EYES */
-.eye-icon-signin, 
-.eye-icon-signup, 
+.eye-icon-signin,
+.eye-icon-signup,
 .eye-icon-confirm {
   position: absolute;
-  right: 15px;      /* Distance from the right edge */
-  bottom: 27px;     /* Aligns it to the bottom of the container, inside the input */
+  right: 15px;
+  /* Distance from the right edge */
+  bottom: 27px;
+  /* Aligns it to the bottom of the container, inside the input */
   cursor: pointer;
   color: #6c757d;
   font-size: 1.2rem;
   z-index: 10;
-  height: 24px;     /* Fixed height to prevent shifting */
+  height: 24px;
+  /* Fixed height to prevent shifting */
   display: flex;
   align-items: center;
   transition: color 0.2s ease;

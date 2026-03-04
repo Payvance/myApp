@@ -1,0 +1,232 @@
+.dashboard-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1050;
+    animation: dashboardFadeIn 0.25s ease-out;
+}
+
+.dashboard-modal {
+    background: #ffffff;
+    width: 95%;
+    max-width: 800px;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    animation: dashboardSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dashboard-modal-header {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fcfcfc;
+}
+
+.dashboard-modal-header h3 {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    letter-spacing: -0.5px;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #999;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+.close-btn:hover {
+    background: #f0f0f0;
+    color: #333;
+}
+
+.dashboard-modal-body {
+    padding: 2rem;
+    max-height: 75vh;
+    overflow-y: auto;
+}
+
+.dashboard-details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+}
+
+@media (max-width: 700px) {
+    .dashboard-details-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+}
+
+.detail-section h4 {
+    margin: 0 0 1.25rem 0;
+    padding-bottom: 0.6rem;
+    border-bottom: 2px solid #3498db;
+    color: #2980b9;
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.9rem;
+    font-size: 0.95rem;
+}
+
+.spec-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1.5rem;
+    background: #f8fbfe;
+    padding: 1.25rem;
+    border-radius: 12px;
+    border: 1px solid #e1f0fa;
+}
+
+.spec-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.label {
+    color: #7f8c8d;
+    font-weight: 500;
+    font-size: 0.85rem;
+}
+
+.value {
+    color: #2c3e50;
+    font-weight: 600;
+    word-break: break-word;
+}
+
+.highlight-plan {
+    color: #e67e22;
+    background: #fff5e6;
+    padding: 2px 8px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.full-width {
+    grid-column: 1 / -1;
+}
+
+.users-list-container {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 0.5rem;
+    border: 1px solid #e9ecef;
+    margin-top: 0.5rem;
+}
+
+.modal-users-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.modal-users-table th {
+    text-align: left;
+    padding: 1rem 0.75rem;
+    border-bottom: 2px solid #dee2e6;
+    color: #495057;
+    font-weight: 600;
+}
+
+.modal-users-table td {
+    padding: 1rem 0.75rem;
+    border-bottom: 1px solid #edf2f7;
+    color: #2d3748;
+}
+
+.modal-users-table tr:hover {
+    background: #ffffff;
+}
+
+.modal-users-table tr:last-child td {
+    border-bottom: none;
+}
+
+.dashboard-modal-footer {
+    padding: 1.25rem 2rem;
+    border-top: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: flex-end;
+    background: #fcfcfc;
+}
+
+.done-btn {
+    padding: 0.75rem 2.5rem;
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+    box-shadow: 0 4px 6px rgba(52, 152, 219, 0.2);
+}
+
+.done-btn:hover {
+    background: #2980b9;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 12px rgba(52, 152, 219, 0.3);
+}
+
+.no-users-msg {
+    text-align: center;
+    padding: 2rem;
+    color: #94a3b8;
+    font-style: italic;
+}
+
+@keyframes dashboardFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes dashboardSlideUp {
+    from {
+        transform: translateY(40px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

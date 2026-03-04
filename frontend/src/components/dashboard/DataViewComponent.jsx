@@ -1,6 +1,7 @@
 import React from 'react';
 import { formatDateStandardSpace } from '../../utils/dateUtils';
 import './DataViewComponent.css';
+import './CardHeader.css';
 
 const DataViewComponent = ({ title, data, loading }) => {
   if (loading) {
@@ -35,7 +36,9 @@ const DataViewComponent = ({ title, data, loading }) => {
 
   return (
     <div className="data-view-card">
-      <h3 className="data-view__title">{title}</h3>
+      <div className="card-header">
+        <h3 className="card-title">{title}</h3>
+      </div>
       <div className="data-view__content">
         {isTopTenants ? (
           data.map((item, index) => (

@@ -1,8 +1,9 @@
 import React from "react";
 import { formatDateStandardSpace } from '../../../utils/dateUtils';
 import "./RecentUsersTable.css";
+import "../CardHeader.css";
 
-const RecentUsersTable = ({ title = "Recent Users", data = [], loading, type = "users" }) => {
+const RecentUsersTable = ({ title = "Recent Users", data = [], loading, type = "users", onViewClick }) => {
 
   if (loading) {
     return (
@@ -14,15 +15,22 @@ const RecentUsersTable = ({ title = "Recent Users", data = [], loading, type = "
 
   const isBatches = type === "batches";
   const isTenants = type === "tenants";
-  const entityName = isBatches ? "Batches" : isTenants ? "Tenants" : "Users";
+  const isVendorBatchTenants = type === "vendor_batch_tenants";
+  const isDetailedTenants = type === "detailed_tenants";
+  const entityName = isBatches ? "Batches"
+    : isTenants ? "Tenants"
+      : isVendorBatchTenants ? "Recordings"
+        : isDetailedTenants ? "Tenants"
+          : "Users";
 
   return (
     <div className="users-card">
 
-      {/* Header */}
-      <div className="users-header">
-        <h3>{title}</h3>
-        <span className="users-count">{data.length} {entityName}</span>
+      <div className="card-header">
+        <h3 className="card-title">{title}</h3>
+        <div className="card-header__trail">
+          <span className="card-header__count">{data.length} {entityName}</span>
+        </div>
       </div>
 
       {/* Table */}
@@ -36,12 +44,30 @@ const RecentUsersTable = ({ title = "Recent Users", data = [], loading, type = "
                   <th>Activations</th>
                   <th>Status</th>
                   <th>Issued Date</th>
+                  {onViewClick && <th>Action</th>}
                 </>
               ) : isTenants ? (
                 <>
                   <th>Tenant</th>
                   <th>Revenue (₹)</th>
                   <th>Activations</th>
+                  {onViewClick && <th>Action</th>}
+                </>
+              ) : isVendorBatchTenants ? (
+                <>
+                  <th>Batch ID</th>
+                  <th>Vendor ID</th>
+                  <th>Plan</th>
+                  <th>Keys (Used/Total)</th>
+                  <th>Status</th>
+                  {onViewClick && <th>Action</th>}
+                </>
+              ) : isDetailedTenants ? (
+                <>
+                  <th>Admin</th>
+                  <th>Tenant</th>
+                  <th>Status</th>
+                  {onViewClick && <th>Action</th>}
                 </>
               ) : (
                 <>
@@ -49,6 +75,7 @@ const RecentUsersTable = ({ title = "Recent Users", data = [], loading, type = "
                   <th>Mobile No.</th>
                   <th>Status</th>
                   <th>Joined</th>
+                  {onViewClick && <th>Action</th>}
                 </>
               )}
             </tr>
@@ -56,10 +83,9 @@ const RecentUsersTable = ({ title = "Recent Users", data = [], loading, type = "
 
           <tbody>
             {data.map((item, index) => (
-              <tr key={item.id || item.batchId || index}>
+              <tr key={item.id || item.tenantId || item.batchId || index}>
                 {isBatches ? (
                   <>
-                    {/* Plan Name with Avatar */}
                     <td>
                       <div className="user-cell">
                         <div className="avatar">
@@ -70,25 +96,25 @@ const RecentUsersTable = ({ title = "Recent Users", data = [], loading, type = "
                         </div>
                       </div>
                     </td>
-
-                    {/* Total Activations */}
                     <td>{item.totalActivations} keys</td>
-
-                    {/* Status */}
                     <td>
                       <span className={`status-badge ${item.status?.toLowerCase()}`}>
                         {item.status}
                       </span>
                     </td>
-
-                    {/* Date */}
                     <td className="joined-date">
                       {item.issuedAt ? formatDateStandardSpace(item.issuedAt) : 'N/A'}
                     </td>
+                    {onViewClick && (
+                      <td>
+                        <button className="view-action-btn" onClick={() => onViewClick(item)} title="View Details">
+                          <i className="bi bi-eye"></i>
+                        </button>
+                      </td>
+                    )}
                   </>
                 ) : isTenants ? (
                   <>
-                    {/* Tenant Name with Avatar */}
                     <td>
                       <div className="user-cell">
                         <div className="avatar">
@@ -100,18 +126,73 @@ const RecentUsersTable = ({ title = "Recent Users", data = [], loading, type = "
                         </div>
                       </div>
                     </td>
-
-                    {/* Revenue */}
                     <td className="user-name">
                       ₹{Number(item.revenue).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </td>
-
-                    {/* Activations count */}
                     <td>{item.activations} key{item.activations !== 1 ? 's' : ''}</td>
+                    {onViewClick && (
+                      <td>
+                        <button className="view-action-btn" onClick={() => onViewClick(item)} title="View Details">
+                          <i className="bi bi-eye"></i>
+                        </button>
+                      </td>
+                    )}
+                  </>
+                ) : isVendorBatchTenants ? (
+                  <>
+                    <td className="joined-date">{item.batchId}</td>
+                    <td className="joined-date">{item.vendorId}</td>
+                    <td>{item.batchPlan}</td>
+                    <td>{item.used} / {item.total}</td>
+                    <td>
+                      <span className={`status-badge ${item.activationStatus?.toLowerCase()}`}>
+                        {item.activationStatus}
+                      </span>
+                    </td>
+                    {onViewClick && (
+                      <td>
+                        <button
+                          className="view-action-btn"
+                          onClick={() => onViewClick(item)}
+                          title="View Details"
+                        >
+                          <i className="bi bi-eye"></i>
+                        </button>
+                      </td>
+                    )}
+                  </>
+                ) : isDetailedTenants ? (
+                  <>
+                    <td>
+                      <div className="user-cell">
+                        <div className="avatar">
+                          {item.adminName?.charAt(0).toUpperCase() || 'A'}
+                        </div>
+                        <div>
+                          <div className="user-name">{item.adminName}</div>
+                          <div className="user-email">{item.adminEmail}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="user-name" style={{ fontSize: '0.9rem' }}>{item.tenantName}</div>
+                      <div className="user-email" style={{ fontSize: '0.75rem' }}>ID: {item.tenantId}</div>
+                    </td>
+                    <td>
+                      <span className={`status-badge ${item.status?.toLowerCase()}`}>
+                        {item.status}
+                      </span>
+                    </td>
+                    {onViewClick && (
+                      <td>
+                        <button className="view-action-btn" onClick={() => onViewClick(item)} title="View Details">
+                          <i className="bi bi-eye"></i>
+                        </button>
+                      </td>
+                    )}
                   </>
                 ) : (
                   <>
-                    {/* User Info */}
                     <td>
                       <div className="user-cell">
                         <div className="avatar">
@@ -123,21 +204,22 @@ const RecentUsersTable = ({ title = "Recent Users", data = [], loading, type = "
                         </div>
                       </div>
                     </td>
-
-                    {/* Mobile No. */}
                     <td>{item.phone}</td>
-
-                    {/* Status */}
                     <td>
                       <span className={`status-badge ${item.status?.toLowerCase()}`}>
                         {item.status}
                       </span>
                     </td>
-
-                    {/* Date */}
                     <td className="joined-date">
                       {item.createdAt ? formatDateStandardSpace(item.createdAt) : 'N/A'}
                     </td>
+                    {onViewClick && (
+                      <td>
+                        <button className="view-action-btn" onClick={() => onViewClick(item)} title="View Details">
+                          <i className="bi bi-eye"></i>
+                        </button>
+                      </td>
+                    )}
                   </>
                 )}
               </tr>
