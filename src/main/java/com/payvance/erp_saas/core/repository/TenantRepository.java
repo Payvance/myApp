@@ -91,11 +91,37 @@ public interface TenantRepository extends JpaRepository<Tenant, Long> {
     	);
 
     /**
-     * Get total count of tenants
+     * Get total count of tenants who have an assigned administrator
      */
-    @Query("SELECT COUNT(t) FROM Tenant t")
+    @Query("""
+        SELECT COUNT(DISTINCT t.id) 
+        FROM Tenant t 
+        JOIN TenantUserRole tur ON t.id = tur.tenantId 
+        WHERE tur.roleId = 2
+    """)
     Long getTotalTenants();
     
+    /*
+     * Fetch core tenant administrator details and organization info, deduplicated by tenant
+     */
+    @Query("""
+        SELECT t.id, t.name, t.email, t.status,
+               u.name, u.email,
+               tu.lastSyncedAt,
+               sp.name
+        FROM Tenant t
+        JOIN TenantUserRole tur ON t.id = tur.tenantId 
+            AND tur.roleId = 2 
+            AND tur.id = (SELECT MIN(tur2.id) FROM TenantUserRole tur2 WHERE tur2.tenantId = t.id AND tur2.roleId = 2)
+        JOIN User u ON tur.userId = u.id
+        LEFT JOIN TenantUsage tu ON t.id = tu.tenantId
+        LEFT JOIN Subscription s ON t.id = s.tenantId AND s.status = 'active' 
+            AND s.id = (SELECT MAX(s2.id) FROM Subscription s2 WHERE s2.tenantId = t.id AND s2.status = 'active')
+        LEFT JOIN s.plan sp
+        ORDER BY t.createdAt DESC
+    """)
+    List<Object[]> findDetailedTenants();
+
     /*
      * Fetch tenant by ID and status
      */

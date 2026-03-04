@@ -93,7 +93,7 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     		List<Long> findTenantIdsByPlanId(@Param("planId") Long planId);
 
 
-     @Query("""
+    @Query("""
     		    SELECT s.plan.id
     		    FROM Subscription s
     		    WHERE s.tenantId = :tenantId
@@ -101,7 +101,12 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     		""")
     		Optional<Long> findActivePlanIdByTenantId(Long tenantId);
 
-
-    	
-
+     @Query("""
+        SELECT p.name, COUNT(s) as count
+        FROM Subscription s
+        JOIN s.plan p
+        GROUP BY p.name
+        ORDER BY count DESC
+    """)
+    List<Object[]> findPlanPopularity();
 }

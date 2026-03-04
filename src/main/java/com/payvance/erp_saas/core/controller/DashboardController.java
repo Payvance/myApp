@@ -34,8 +34,21 @@ public class DashboardController {
             throw new IllegalArgumentException("Invalid userId type");
         }
         
-        Integer startYear = (Integer) payload.get("startYear");
-        Integer endYear = (Integer) payload.get("endYear");
+        Integer startYear = null;
+        Object startYearObj = payload.get("startYear");
+        if (startYearObj instanceof Number) {
+            startYear = ((Number) startYearObj).intValue();
+        } else if (startYearObj instanceof String) {
+            startYear = Integer.valueOf((String) startYearObj);
+        }
+
+        Integer endYear = null;
+        Object endYearObj = payload.get("endYear");
+        if (endYearObj instanceof Number) {
+            endYear = ((Number) endYearObj).intValue();
+        } else if (endYearObj instanceof String) {
+            endYear = Integer.valueOf((String) endYearObj);
+        }
         
         Map<String, Object> dashboardData = getDashboardDataByRole(roleId, userId, startYear, endYear);
         return ResponseEntity.ok(dashboardData);
@@ -45,7 +58,7 @@ public class DashboardController {
         int roleIdInt = roleId.intValue();
         switch (roleIdInt) {
             case 1: // Superadmin
-                return superAdminDashboardService.getDashboardData();
+                return superAdminDashboardService.getDashboardData(startYear, endYear);
             case 4: // Vendor
                 return vendorDashboardService.getDashboardData(userId, startYear, endYear);
             case 2: // Tenant

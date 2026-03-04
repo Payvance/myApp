@@ -34,5 +34,8 @@ public interface CaRepository extends JpaRepository<Ca, Long> {
      */
     @Query("SELECT COUNT(c) FROM Ca c WHERE c.status = :status")
     Long countByStatus(@Param("status") String status);
+    
+    @Query("SELECT COUNT(c) FROM Ca c")
+    Long getTotalCAs();
 
 }

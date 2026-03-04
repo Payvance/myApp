@@ -81,13 +81,15 @@ public class TenantSignupService {
 
     @Transactional
     public void registerTenant(TenantSignupRequest req) {
-
+    	 System.out.println("========== START registerTenant ==========");
+    	 System.out.println("[INPUT] Email: " + req.getEmail());
         if (userRepository.existsByEmail(req.getEmail())) {
             throw new DuplicateEntryException("Email already registered");
         }
 
         try {
             // Step 1: Create User
+        	 System.out.println("[STEP 1] Creating User...");
             User user = new User();
             user.setName(req.getName());
             user.setEmail(req.getEmail());
@@ -96,7 +98,8 @@ public class TenantSignupService {
             user.setActive(true);
             user.setSuperadmin(false);
             userRepository.save(user);
-
+            System.out.println("[SUCCESS] User created with ID: " + user.getId());
+            System.out.println("[STEP 2] Creating Tenant...");
             // Step 2: Create Tenant
             Tenant tenant = new Tenant();
             tenant.setName(req.getName());
@@ -104,42 +107,49 @@ public class TenantSignupService {
             tenant.setPhone(req.getPhone());
             tenant.setStatus("inactive");
             tenantRepository.save(tenant);
-            
+            System.out.println("[SUCCESS] Tenant created with ID: " + tenant.getId());
+            System.out.println("[SUCCESS] Wallet created for Tenant ID: " + tenant.getId());
             walletService.createWalletIfNotExists(
                     tenant,
                     tenant.getId()
             );
 
             // Step 3: Map User ↔ Tenant
+            System.out.println("[STEP 3] Mapping User to Tenant...");
             TenantUserRole tur = new TenantUserRole();
             tur.setTenantId(tenant.getId());
             tur.setUserId(user.getId());
             tur.setRoleId(2L); // TENANT_ADMIN
             tur.setIsActive(true);
             tenantUserRoleRepository.save(tur);
-
+            System.out.println("[SUCCESS] TenantUserRole created");
             // Step 4: Default Integration
+            System.out.println("[STEP 4] Creating default integration...");
             TenantIntegration ti = new TenantIntegration();
             ti.setTenantId(tenant.getId());
             ti.setIntegrationId(1L);
             ti.setStatus("active");
             tenantIntegrationRepository.save(ti);
+            System.out.println("[SUCCESS] Default integration created");
 
-            
+            System.out.println("[STEP 5] Fetching active referral program...");  
          // Fetch ACTIVE referral program for tenant role 
             ReferralProgram tenantProgram = referralProgramRepository
                     .findTopByStatusAndRoleIdOrderByCreatedAtDesc("ACTIVE", 2L)
                     .orElseThrow(() -> new RuntimeException("No active referral program found for TENANT_ADMIN"));
-
+            System.out.println("[SUCCESS] Referral Program ID: " + tenantProgram.getId());
             // Resolve role dynamically
             Role tenantRole = roleRepository.findById(tenantProgram.getRoleId())
                     .orElseThrow(() -> new RuntimeException("Role not found for id: " + tenantProgram.getRoleId()));
 
             String tenantRoleCode = tenantRole.getCode();
+            System.out.println("[INFO] Tenant Role Code: " + tenantRoleCode);
 
             // Check if referral code exists
             boolean tenantExists = referralCodeRepository.existsByProgramIdAndOwnerId(tenantProgram.getId(), tenant.getId());
             if (!tenantExists) {
+            	System.out.println("[STEP 6] Creating referral code...");
+
                 ReferralCode tenantReferral = new ReferralCode();
                 tenantReferral.setProgramId(tenantProgram.getId());
                 tenantReferral.setOwnerId(user.getId());
@@ -151,6 +161,7 @@ public class TenantSignupService {
 
                 referralCodeRepository.save(tenantReferral);
              // Fetch the active TenantUserRole for the tenant
+                System.out.println("[SUCCESS] Referral Code Generated: " + tenantReferral.getCode());
                 Optional<TenantUserRole> optionalTur = tenantUserRoleRepository
                         .findFirstByTenantIdAndIsActiveTrue(tenant.getId());
 
@@ -168,24 +179,29 @@ public class TenantSignupService {
                 String tenantUserName = tenantUser.getName() != null && !tenantUser.getName().isBlank()
                         ? tenantUser.getName()
                         : "User";
-
+                System.out.println("[STEP 7] Sending referral email...");
                 // Send the email
                 emailService.sendTenantReferralEmail(
                         tenant.getEmail(),      // Tenant email
                         tenantUserName,         // Name from User table
                         tenantReferral.getCode() // Generated referral code
                 );
-
+                System.out.println("[SUCCESS] Referral email sent");
 
             }
-            
+            System.out.println("[STEP 8] Sending verification email...");
             // Step 5: Send Email Verification
             String token = jwtUtil.generateEmailVerificationToken(user.getId(), user.getEmail());
             emailService.sendVerificationEmail(user.getEmail(), token);
+            System.out.println("[SUCCESS] Verification email sent");
+
+            System.out.println("========== END registerTenant SUCCESS ==========");
 
         } catch (DataIntegrityViolationException ex) {
+        	System.out.println("[DB ERROR] " + ex.getMessage());
             throw new DuplicateEntryException("Duplicate data detected");
         } catch (MailException ex) {
+        	System.out.println("[MAIL ERROR] " + ex.getMessage());
             throw new UserNotAllowedException("Verification email could not be sent");
         }
     }

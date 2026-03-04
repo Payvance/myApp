@@ -29,4 +29,22 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
      * Find all invoices by subscription ID
      */
     List<Invoice> findBySubscriptionId(Long subscriptionId);
+
+    @Query("""
+        SELECT FUNCTION('MONTH', i.paidAt) as month, SUM(i.totalPayable) as revenue
+        FROM Invoice i
+        WHERE i.status = 'paid' 
+          AND ((FUNCTION('YEAR', i.paidAt) = :startYear AND FUNCTION('MONTH', i.paidAt) >= 4)
+               OR (FUNCTION('YEAR', i.paidAt) = :endYear AND FUNCTION('MONTH', i.paidAt) <= 3))
+        GROUP BY FUNCTION('MONTH', i.paidAt)
+    """)
+    List<Object[]> findMonthlyRevenue(@Param("startYear") Integer startYear, @Param("endYear") Integer endYear);
+    @Query("""
+        SELECT i.tenantId, SUM(i.totalPayable) as revenue
+        FROM Invoice i
+        WHERE i.status = 'paid'
+        GROUP BY i.tenantId
+        ORDER BY revenue DESC
+    """)
+    List<Object[]> findTopTenantsByRevenue();
 }
