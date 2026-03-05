@@ -3,12 +3,15 @@ package com.payvance.erp_saas.core.service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.payvance.erp_saas.core.entity.AddOn;
@@ -17,18 +20,24 @@ import com.payvance.erp_saas.core.entity.InvoiceItem;
 import com.payvance.erp_saas.core.entity.Plan;
 import com.payvance.erp_saas.core.entity.PlanLimitation;
 import com.payvance.erp_saas.core.entity.PlanPrice;
+import com.payvance.erp_saas.core.entity.ReferralProgram;
 import com.payvance.erp_saas.core.entity.Subscription;
 import com.payvance.erp_saas.core.entity.SubscriptionAddon;
 import com.payvance.erp_saas.core.entity.SubscriptionEvent;
 import com.payvance.erp_saas.core.entity.Tenant;
 import com.payvance.erp_saas.core.entity.TenantActivation;
 import com.payvance.erp_saas.core.entity.TenantUsage;
+import com.payvance.erp_saas.core.repository.ActivationKeyRepository;
 import com.payvance.erp_saas.core.repository.AddOnRepository;
+import com.payvance.erp_saas.core.repository.CouponRepository;
 import com.payvance.erp_saas.core.repository.InvoiceItemRepository;
 import com.payvance.erp_saas.core.repository.InvoiceRepository;
 import com.payvance.erp_saas.core.repository.PlanLimitationRepository;
 import com.payvance.erp_saas.core.repository.PlanPriceRepository;
 import com.payvance.erp_saas.core.repository.PlanRepository;
+import com.payvance.erp_saas.core.repository.ReferralCodeRepository;
+import com.payvance.erp_saas.core.repository.ReferralProgramRepository;
+import com.payvance.erp_saas.core.repository.ReferralRepository;
 import com.payvance.erp_saas.core.repository.SubscriptionAddonRepository;
 import com.payvance.erp_saas.core.repository.SubscriptionEventRepository;
 import com.payvance.erp_saas.core.repository.SubscriptionRepository;
@@ -59,9 +68,27 @@ public class SubscriptionService {
     private final GstRateService gstRateService;
     private final PlanLimitationRepository planLimitationRepository;
     private final ActivationKeyService activationKeyService;
+    private final ActivationKeyRepository activationKeyRepository;
+    private final CouponService couponService;
+    private final ReferralProgramService referralProgramService;
+    private final WalletService walletService;
+    private final CouponRepository couponRepository;
+    private final ReferralRepository referralRepository;
+    private final ReferralProgramRepository referralProgramRepository;
+    private final ReferralCodeRepository referralCodeRepository;
+
+
+    public enum SubscriptionOperation {
+        FIRST_TIME_PAYMENT,
+        UPGRADE_PLAN,
+        RENEWAL_PLAN,
+        ADDON_PURCHASE,
+        PAY_WITHOUT_TRAIL,
+        NO_MATCH
+    }
 
     @Transactional
-    public Invoice startSubscription(Long tenantId, Long planId, List<Map<String, Object>> addonRequests, BigDecimal discountAmount) {
+    public Invoice startSubscription(Long tenantId, Long planId, List<Map<String, Object>> addonRequests, BigDecimal discountAmount, String referralCode) {
         Plan plan = planRepository.findById(planId)
                 .orElseThrow(() -> new RuntimeException("Plan not found"));
         PlanPrice planPrice = plan.getPlanPrice();
@@ -84,7 +111,7 @@ public class SubscriptionService {
         invoice.setTenantId(tenantId);
         invoice.setSubscriptionId(subscription.getId());
         invoice.setInvoiceNumber("INV-" + System.currentTimeMillis());
-        invoice.setGateway("razorpay");  //for now hardcoding, can be dynamic based on request or config
+        invoice.setGateway("cashfree");
         invoice.setStatus("unpaid");
 
         // 3. Handle Addons first to calculate addonsTotal
@@ -143,6 +170,20 @@ public class SubscriptionService {
         BigDecimal gstAmount = subtotalAfterDiscount.multiply(BigDecimal.valueOf(rate)).divide(BigDecimal.valueOf(100));
         
         invoice.setTotalPayable(subtotalAfterDiscount.add(gstAmount));
+        
+        // Use discountBy for persistence without schema changes
+        StringBuilder metadata = new StringBuilder();
+        if (discountAmount != null && discountAmount.compareTo(BigDecimal.ZERO) > 0) {
+            metadata.append("wallet_usage:").append(discountAmount);
+        }
+        if (referralCode != null && !referralCode.isEmpty()) {
+            if (metadata.length() > 0) metadata.append("|");
+            metadata.append("referral_code:").append(referralCode);
+        }
+        
+        if (metadata.length() > 0) {
+            invoice.setDiscountBy(metadata.toString());
+        }
         
         // NOW save the invoice with all fields properly set
         invoice = invoiceRepository.save(invoice);
@@ -308,7 +349,7 @@ public class SubscriptionService {
         invoice.setTenantId(tenantId);
         invoice.setSubscriptionId(sub.getId());
         invoice.setInvoiceNumber("REN-" + System.currentTimeMillis());
-        invoice.setGateway("razorpay");  //for now hardcoding, can be dynamic based on request or config
+        invoice.setGateway("cashfree");
         invoice.setTotalPayable(planPrice.getAmount());
         invoice.setStatus("unpaid");
         invoice = invoiceRepository.save(invoice);
@@ -375,36 +416,43 @@ public class SubscriptionService {
 
         PlanPrice toPrice = planPriceRepository.findById(toPlanPriceId)
                 .orElseThrow(() -> new RuntimeException("Target plan price not found"));
+        
+        PlanPrice currentPrice = planPriceRepository.findById(sub.getPlanPriceId())
+                .orElseThrow(() -> new RuntimeException("Current plan price not found"));
 
-        // Policy A: expiry unchanged
-        BigDecimal amount = toPrice.getAmount(); 
+        // Differential pricing: charge only the difference between new and old plan
+        BigDecimal upgradeAmount = toPrice.getAmount().subtract(currentPrice.getAmount());
+        if (upgradeAmount.compareTo(BigDecimal.ZERO) < 0) {
+            upgradeAmount = BigDecimal.ZERO; // No refund for downgrade in this simplified logic
+        }
 
         Invoice invoice = new Invoice();
         invoice.setTenantId(tenantId);
         invoice.setSubscriptionId(sub.getId());
         invoice.setInvoiceNumber("UPG-" + System.currentTimeMillis());
-        invoice.setGateway("razorpay");  //for now hardcoding, can be dynamic based on request or config
-        invoice.setSubtotal(amount);
+        invoice.setGateway("razorpay");
+        invoice.setSubtotal(upgradeAmount);
         invoice.setStatus("unpaid");
         invoice = invoiceRepository.save(invoice);
 
         InvoiceItem item = new InvoiceItem();
         item.setInvoiceId(invoice.getId());
         item.setItemType("upgrade");
-        item.setDescription("Upgrade to " + toPrice.getPlan().getName());
+        item.setDescription("Upgrade from " + currentPrice.getPlan().getName() + " to " + toPrice.getPlan().getName());
         item.setQuantity(1);
-        item.setUnitPrice(amount);
-        item.setLineTotal(amount);
+        item.setUnitPrice(upgradeAmount);
+        item.setLineTotal(upgradeAmount);
         invoiceItemRepository.save(item);
 
-        // Calculate GST
         calculateGstAndTotal(invoice);
 
         SubscriptionEvent event = new SubscriptionEvent();
         event.setTenantId(tenantId);
         event.setSubscriptionId(sub.getId());
         event.setEventType("upgrade_started");
-        event.setPayloadJson("{\"to_plan_id\":" + toPlanId + ", \"to_plan_price_id\":" + toPlanPriceId + ", \"invoice_id\":" + invoice.getId() + "}");
+        // Store target plan details in payload for applyUpgrade to use
+        event.setPayloadJson(String.format("{\"to_plan_id\":%d, \"to_plan_price_id\":%d, \"invoice_id\":%d}", 
+                toPlanId, toPlanPriceId, invoice.getId()));
         subscriptionEventRepository.save(event);
 
         sendInvoiceEmail(invoice.getId());
@@ -429,25 +477,44 @@ public class SubscriptionService {
                 .orElseThrow(() -> new RuntimeException("Subscription not found"));
 
         SubscriptionEvent ev = subscriptionEventRepository.findFirstBySubscriptionIdAndEventTypeOrderByCreatedAtDesc(sub.getId(), "upgrade_started");
-        // Simplified parsing of to_plan_id and to_plan_price_id from payload or using a different strategy
-        // For now, let's assume we can get it or we store it in invoice metadata if needed.
-        // The user suggested using subscription_events for this.
         
-        // Mocking the extraction for now as I don't have a JSON parser here easily accessible in the same way
-        // but in a real app we'd parse the payload.
-        
-        // Let's assume the payload extraction logic here.
-        // sub.setPlan(toPlan);
-        // sub.setPlanPriceId(toPlanPriceId);
-        // sub.setCurrentPeriodEnd remains same (Policy A)
-        
-        subscriptionRepository.save(sub);
-        
-        SubscriptionEvent successEv = new SubscriptionEvent();
-        successEv.setTenantId(sub.getTenantId());
-        successEv.setSubscriptionId(sub.getId());
-        successEv.setEventType("upgrade_success");
-        subscriptionEventRepository.save(successEv);
+        if (ev != null && ev.getPayloadJson() != null) {
+            try {
+                // Simple parsing of JSON payload
+                String payload = ev.getPayloadJson();
+                Long toPlanId = extractLong(payload, "to_plan_id");
+                Long toPlanPriceId = extractLong(payload, "to_plan_price_id");
+
+                Plan toPlan = planRepository.findById(toPlanId)
+                        .orElseThrow(() -> new RuntimeException("Target plan not found"));
+                
+                sub.setPlan(toPlan);
+                sub.setPlanPriceId(toPlanPriceId);
+                // Expiry remains unchanged as requested
+                subscriptionRepository.save(sub);
+
+                // Log success
+                SubscriptionEvent successEv = new SubscriptionEvent();
+                successEv.setTenantId(sub.getTenantId());
+                successEv.setSubscriptionId(sub.getId());
+                successEv.setEventType("upgrade_success");
+                subscriptionEventRepository.save(successEv);
+
+            } catch (Exception e) {
+                logger.error("Failed to apply upgrade: {}", e.getMessage());
+                throw new RuntimeException("Failed to finalize upgrade switch", e);
+            }
+        }
+    }
+
+    private Long extractLong(String json, String key) {
+        String pattern = "\"" + key + "\":\\s?(\\d+)";
+        java.util.regex.Pattern r = java.util.regex.Pattern.compile(pattern);
+        java.util.regex.Matcher m = r.matcher(json);
+        if (m.find()) {
+            return Long.parseLong(m.group(1));
+        }
+        return null;
     }
 
     public void sendInvoiceEmail(Long invoiceId) {
@@ -479,47 +546,6 @@ public class SubscriptionService {
     // TEMPORARY: Payment Simulation Method (Remove when gateway is ready)
     // ===================================================================
     
-    /**
-     * Simulates successful payment and triggers activation.
-     * This is a temporary method for testing the complete flow.
-     * 
-     * @param invoiceId The invoice ID to mark as paid
-     * @return Success message with activation details
-     */
-    @Transactional
-    public Map<String, Object> simulatePaymentSuccess(Long invoiceId) {
-        Invoice invoice = invoiceRepository.findById(invoiceId)
-                .orElseThrow(() -> new RuntimeException("Invoice not found"));
-        
-        if ("paid".equals(invoice.getStatus())) {
-            return Map.of(
-                "status", "already_paid",
-                "message", "Invoice already marked as paid",
-                "invoice_id", invoiceId
-            );
-        }
-        
-        // Simulate payment success
-        invoice.setStatus("paid");
-        invoiceRepository.save(invoice);
-        
-        // Trigger activation
-        activateTenantAfterPaid(invoice.getTenantId(), invoice.getSubscriptionId());
-        
-        // Fetch updated subscription
-        Subscription subscription = subscriptionRepository.findById(invoice.getSubscriptionId())
-                .orElseThrow(() -> new RuntimeException("Subscription not found"));
-        
-        return Map.of(
-            "status", "success",
-            "message", "Payment simulated and tenant activated successfully",
-            "invoice_id", invoiceId,
-            "invoice_status", invoice.getStatus(),
-            "subscription_id", subscription.getId(),
-            "subscription_status", subscription.getStatus(),
-            "tenant_id", invoice.getTenantId()
-        );
-    }
 
     private void attachmentActivationFields(TenantActivation activation, Subscription subscription, Invoice invoice, String keyHash) {
         activation.setActivatedAt(LocalDateTime.now());
@@ -530,5 +556,218 @@ public class SubscriptionService {
             activation.setActivationPrice(invoice.getTotalPayable());
             activation.setCurrency(invoice.getCurrency());
         }
+    }
+    
+    @Transactional(readOnly = true)
+    public Map<String, Object> getActivePlanDetails(Long tenantId) {
+
+        Subscription subscription = subscriptionRepository
+                .findByTenantIdAndStatus(tenantId, "ACTIVE")
+                .orElseThrow(() -> new RuntimeException("No active subscription found"));
+
+        Plan plan = subscription.getPlan();
+
+        Map<String, Object> response = new HashMap<>();
+
+        response.put("subscriptionId", subscription.getId());
+        response.put("startDate", subscription.getStartAt());
+        response.put("endDate", subscription.getCurrentPeriodEnd());
+        response.put("status", subscription.getStatus());
+
+        Map<String, Object> planDetails = new HashMap<>();
+        planDetails.put("planId", plan.getId());
+        planDetails.put("planName", plan.getName());
+        planDetails.put("planCode", plan.getCode());
+        planDetails.put("isActive", plan.getIsActive());
+
+        response.put("plan", planDetails);
+
+        return response;
+    }
+
+    /**
+     * Entry point for processing subscriptions based on tenant state.
+     */
+    @Transactional
+    public Invoice processSubscription(Long tenantId, Long planId, List<Map<String, Object>> addons, 
+                                     String couponCode, String referralCode, BigDecimal walletAmount) {
+        
+        SubscriptionOperation operation = determineSubscriptionOperation(tenantId, planId, addons);
+        
+        logger.info("[SUBSCRIPTION] Processing operation: {} for tenant: {}", operation, tenantId);
+
+        switch (operation) {
+            case FIRST_TIME_PAYMENT:
+                return handleFirstTimePayment(tenantId, planId, addons, couponCode, referralCode, walletAmount);
+            case UPGRADE_PLAN:
+                return handleUpgradePlan(tenantId, planId, addons, couponCode, referralCode, walletAmount);
+            case RENEWAL_PLAN:
+                return handleRenewalPlan(tenantId, planId, addons, couponCode, referralCode, walletAmount);
+            case ADDON_PURCHASE:
+                return handleAddonPurchase(tenantId, planId, addons, couponCode, referralCode, walletAmount);
+            case PAY_WITHOUT_TRAIL:
+                return handlePayWithoutTrail(tenantId, planId, addons, couponCode, referralCode, walletAmount);
+            default:
+                throw new RuntimeException("No matching subscription operation found for tenant state");
+        }
+    }
+
+    /**
+     * Determines the type of subscription operation needed.
+     */
+    private SubscriptionOperation determineSubscriptionOperation(Long tenantId, Long requestedPlanId, List<Map<String, Object>> addons) {
+        Tenant tenant = tenantRepository.findById(tenantId)
+                .orElseThrow(() -> new RuntimeException("Tenant not found"));
+
+        boolean keyExists = activationKeyRepository.existsByRedeemedTenantId(tenantId);
+        Optional<TenantActivation> latestActivationOpt = tenantActivationRepository.findFirstByTenantIdOrderByCreatedAtDesc(tenantId);
+        Optional<Subscription> latestSubOpt = subscriptionRepository.findFirstByTenantIdOrderByCreatedAtDesc(tenantId);
+        
+        String tenantStatus = tenant.getStatus();
+        
+        // 1. First Time Payment: pending payment/trial and no activation key
+        if (("payment_pending".equalsIgnoreCase(tenantStatus) || "trial".equalsIgnoreCase(tenantStatus)) && !keyExists) {
+            return SubscriptionOperation.FIRST_TIME_PAYMENT;
+        }
+        
+        // 2. Pay Without Trail: inactive and no activation key (didn't take trial)
+        if ("inactive".equalsIgnoreCase(tenantStatus) && !keyExists) {
+            return SubscriptionOperation.PAY_WITHOUT_TRAIL;
+        }
+
+        if (latestActivationOpt.isPresent() && latestSubOpt.isPresent()) {
+            TenantActivation activation = latestActivationOpt.get();
+            Subscription currentSub = latestSubOpt.get();
+            LocalDateTime now = LocalDateTime.now();
+            boolean isExpired = activation.getExpiresAt() != null && activation.getExpiresAt().isBefore(now);
+            
+            // 3. Renewal: Activation key exists AND [is actually expired OR in payment_pending state for extension]
+            if (keyExists && (isExpired || "payment_pending".equalsIgnoreCase(tenantStatus))) {
+                 return SubscriptionOperation.RENEWAL_PLAN;
+            }
+
+            // 4. Active scenarios (PRE-EXPIRY)
+            if (keyExists && "active".equalsIgnoreCase(tenantStatus) && !isExpired) {
+                // If plan is different -> Upgrade/Plan Change
+                if (!currentSub.getPlan().getId().equals(requestedPlanId)) {
+                    return SubscriptionOperation.UPGRADE_PLAN;
+                }
+                // If plan is same but addons provided -> Addon purchase
+                if (addons != null && !addons.isEmpty()) {
+                    return SubscriptionOperation.ADDON_PURCHASE;
+                }
+                
+                // If plan is same and no addons -> User is trying to "renew" early.
+                // Business rule: "renewal will done only after expiry otherwise it would be upgrade"
+                return SubscriptionOperation.UPGRADE_PLAN; 
+            }
+        }
+
+        // Fallback for inactive results with key -> Treat as Renewal
+        if (keyExists && "inactive".equalsIgnoreCase(tenantStatus)) {
+            return SubscriptionOperation.RENEWAL_PLAN;
+        }
+
+        return SubscriptionOperation.NO_MATCH;
+    }
+
+    private Invoice handleAddonPurchase(Long tenantId, Long planId, List<Map<String, Object>> addons, 
+                                      String couponCode, String referralCode, BigDecimal walletAmount) {
+        return startSubscription(tenantId, planId, addons, BigDecimal.ZERO, null);
+    }
+
+    private Invoice handleFirstTimePayment(Long tenantId, Long planId, List<Map<String, Object>> addons, 
+                                         String couponCode, String referralCode, BigDecimal walletAmount) {
+        BigDecimal couponDiscount = BigDecimal.ZERO;
+        
+        if (couponCode != null && !couponCode.isEmpty()) {
+            Optional<com.payvance.erp_saas.core.entity.Coupon> couponOpt = couponRepository.findByCode(couponCode);
+            if (couponOpt.isPresent()) {
+                com.payvance.erp_saas.core.entity.Coupon coupon = couponOpt.get();
+                if ("ACTIVE".equalsIgnoreCase(coupon.getStatus())) {
+                    Plan plan = planRepository.findById(planId).orElse(null);
+                    BigDecimal baseAmount = (plan != null) ? plan.getPlanPrice().getAmount() : BigDecimal.ZERO;
+
+                    if ("PERCENTAGE".equalsIgnoreCase(coupon.getDiscountType())) {
+                        couponDiscount = baseAmount.multiply(BigDecimal.valueOf(coupon.getDiscountPercentage()))
+                                .divide(BigDecimal.valueOf(100));
+                    } else if ("FLAT".equalsIgnoreCase(coupon.getDiscountType())) {
+                        couponDiscount = BigDecimal.valueOf(coupon.getDiscountValue());
+                    }
+                }
+            }
+        }
+
+        BigDecimal totalReduction = couponDiscount.add(walletAmount != null ? walletAmount : BigDecimal.ZERO);
+        return startSubscription(tenantId, planId, addons, totalReduction, referralCode);
+    }
+
+    private Invoice handleUpgradePlan(Long tenantId, Long planId, List<Map<String, Object>> addons, 
+                                    String couponCode, String referralCode, BigDecimal walletAmount) {
+        Plan plan = planRepository.findById(planId)
+                .orElseThrow(() -> new RuntimeException("Target plan not found"));
+        return startUpgrade(tenantId, planId, plan.getPlanPrice().getId());
+    }
+
+    private Invoice handleRenewalPlan(Long tenantId, Long planId, List<Map<String, Object>> addons, 
+                                    String couponCode, String referralCode, BigDecimal walletAmount) {
+        return renewSubscription(tenantId);
+    }
+
+    private Invoice handlePayWithoutTrail(Long tenantId, Long planId, List<Map<String, Object>> addons, 
+                                        String couponCode, String referralCode, BigDecimal walletAmount) {
+        BigDecimal discount = walletAmount != null ? walletAmount : BigDecimal.ZERO;
+        return startSubscription(tenantId, planId, addons, discount, referralCode);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void handleReferral(Long referredTenantId, String referralCode) {
+        if (referralCode == null || referralCode.isEmpty()) return;
+
+        logger.info("Processing referral reward for code: {} used by tenant: {}", referralCode, referredTenantId);
+
+        Optional<com.payvance.erp_saas.core.entity.ReferralCode> codeOpt = referralCodeRepository.findByCodeAndStatus(referralCode, "active");
+        if (codeOpt.isPresent()) {
+            com.payvance.erp_saas.core.entity.ReferralCode refCode = codeOpt.get();
+            ReferralProgram program = referralProgramRepository.findById(refCode.getProgramId())
+                    .orElseThrow(() -> new RuntimeException("Referral Program not found"));
+
+            // Get the subscription amount for percentage calculation if needed
+            Subscription sub = subscriptionRepository.findFirstByTenantIdOrderByCreatedAtDesc(referredTenantId).orElse(null);
+            double baseAmount = 0.0;
+            if (sub != null) {
+                baseAmount = sub.getPlan().getPlanPrice().getAmount().doubleValue();
+            }
+
+            BigDecimal rewardAmount = BigDecimal.ZERO;
+            if ("FLAT".equalsIgnoreCase(program.getRewardType())) {
+                rewardAmount = BigDecimal.valueOf(program.getRewardValue());
+            } else if ("PERCENTAGE".equalsIgnoreCase(program.getRewardType())) {
+                rewardAmount = BigDecimal.valueOf(baseAmount * (program.getRewardPercentage() / 100.0));
+            }
+
+            // Create Referral Record
+            com.payvance.erp_saas.core.entity.Referral referral = new com.payvance.erp_saas.core.entity.Referral();
+            referral.setReferrerTenantId(refCode.getOwnerId());
+            referral.setReferredTenantId(referredTenantId);
+            referral.setReferrerId(refCode.getOwnerId()); // Simplified for now
+            referral.setRewardedAmount(rewardAmount);
+            referral.setStatus("PAID_PENDING"); // Or "COMPLETED" if wallet is updated immediately
+            referralRepository.save(referral);
+
+            // Update usage count
+            refCode.setUsedCount(refCode.getUsedCount() + 1);
+            referralCodeRepository.save(refCode);
+
+            logger.info("Referral reward of {} created for referrer tenant: {}", rewardAmount, refCode.getOwnerId());
+        }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void deductWalletBalance(Long tenantId, BigDecimal amount, String referenceType, Long referenceId) {
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) return;
+        
+        logger.info("Deducting {} from tenant {} wallet for {} ID: {}", amount, tenantId, referenceType, referenceId);
+        walletService.deductBalance(tenantId, amount, referenceType, referenceId);
     }
 }

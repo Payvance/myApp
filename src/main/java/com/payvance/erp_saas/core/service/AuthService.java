@@ -333,6 +333,9 @@ public class AuthService {
 
         User user = userRepo.findById(jwt.getUserId(token))
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
+        if(user.getEmailVerifiedAt() != null) {
+        	throw new IllegalStateException("Email is already varified");
+        }
 
         user.setEmailVerifiedAt(LocalDateTime.now());
         userRepo.save(user);

@@ -1,5 +1,6 @@
 package com.payvance.erp_saas.core.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -50,4 +51,28 @@ public class WalletService {
         return walletTransactionRepository.findByWalletIdOrderByCreatedAtDesc(walletId);
     }
 
+    @org.springframework.transaction.annotation.Transactional
+    public void deductBalance(Long ownerId, BigDecimal amount, String referenceType, Long referenceId) {
+        Wallet wallet = getWalletByOwnerId(ownerId);
+        
+        // Subtract from balance (stored as Double)
+        double newBalance = wallet.getBalance() - amount.doubleValue();
+        wallet.setBalance(newBalance);
+        walletRepository.save(wallet);
+
+        // Record Transaction
+        WalletTransaction transaction = WalletTransaction.builder()
+                .walletId(wallet.getId())
+                .txnType("DEBIT")
+                .amount(amount)
+                .currency(wallet.getCurrency())
+                .referenceType(referenceType)
+                .referenceId(referenceId)
+                .remarks("Subscription Payment Deduction")
+                .createdAt(java.time.LocalDateTime.now())
+                .updatedAt(java.time.LocalDateTime.now())
+                .build();
+        
+        walletTransactionRepository.save(transaction);
+    }
 }

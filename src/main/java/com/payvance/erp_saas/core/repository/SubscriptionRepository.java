@@ -101,6 +101,9 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     		""")
     		Optional<Long> findActivePlanIdByTenantId(Long tenantId);
 
+     Optional<Subscription> findByTenantIdAndStatus(Long tenantId, String status);
+    	
+
      @Query("""
         SELECT p.name, COUNT(s) as count
         FROM Subscription s
