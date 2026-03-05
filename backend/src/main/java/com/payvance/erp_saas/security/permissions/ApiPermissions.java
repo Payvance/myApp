@@ -33,7 +33,7 @@ public final class ApiPermissions {
                         "/api/vendor/licenses/active/plans",
                         "/api/admin/plans",
                         /* ===== PAYMENT / BILLING (No Auth Required) ===== */
-                        "/api/billing/cashfree/webhook", // Called by Cashfree externally
+                        "/api/billing/webhook/cashfree", // Called by Cashfree externally
                         "/api/billing/simulate-payment", // Dev testing without JWT
                         "/api/billing/process",          // Subscription initiation
                         "/api/billing/renew",
