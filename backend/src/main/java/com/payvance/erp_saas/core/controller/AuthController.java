@@ -58,11 +58,18 @@ public class AuthController {
 
     @GetMapping("/verify-email")
     public ResponseEntity<?> verifyEmail(@RequestParam String token) {
+    	try {
         authService.verifyEmail(token);
         return ResponseEntity
                 .status(HttpStatus.FOUND) // 302
-                .location(URI.create(redirectUrl))
+                .location(URI.create(redirectUrl + "?verified=1"))
                 .build();
+    	}
+    	catch(IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .location(URI.create(redirectUrl + "?already=1"))
+                    .build();
+        }
     }
 
     @PostMapping("/verify-password")

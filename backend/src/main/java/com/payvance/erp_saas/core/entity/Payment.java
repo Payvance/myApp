@@ -34,6 +34,9 @@ public class Payment {
     @Column(name = "gateway_order_id", length = 120)
     private String gatewayOrderId;
 
+    @Column(name = "payment_session_id", length = 512)
+    private String paymentSessionId;
+
     @Column(name = "gateway_payment_id", length = 120)
     private String gatewayPaymentId;
 

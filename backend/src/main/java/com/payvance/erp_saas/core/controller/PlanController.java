@@ -1,13 +1,23 @@
 package com.payvance.erp_saas.core.controller;
 
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.payvance.erp_saas.core.dto.PlanDto;
 import com.payvance.erp_saas.core.service.PlanService;
+import com.payvance.erp_saas.core.service.SubscriptionService;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * REST Controller for managing Plans.
@@ -20,6 +30,7 @@ import java.util.List;
 public class PlanController {
 
     private final PlanService planService;
+    private final SubscriptionService subscriptionService;
 
     /**
      * Endpoint to create a new Plan.
@@ -63,5 +74,12 @@ public class PlanController {
     @GetMapping
     public ResponseEntity<List<PlanDto>> getAllPlans() {
         return ResponseEntity.ok(planService.getAllPlans());
+    }
+    
+    @GetMapping("/active/plan")
+    public ResponseEntity<?> getActivePlan(
+            @RequestHeader("X-Tenant-Id") Long tenantId) {
+
+        return ResponseEntity.ok(subscriptionService.getActivePlanDetails(tenantId));
     }
 }

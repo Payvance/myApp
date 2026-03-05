@@ -31,8 +31,15 @@ public final class ApiPermissions {
                         "/api/email/otp/**",
                         "/api/users/reset-password",
                         "/api/vendor/licenses/active/plans",
-                        "/api/admin/plans"
+                        "/api/admin/plans",
+                        /* ===== PAYMENT / BILLING (No Auth Required) ===== */
+                        "/api/billing/cashfree/webhook", // Called by Cashfree externally
+                        "/api/billing/simulate-payment", // Dev testing without JWT
+                        "/api/billing/process",          // Subscription initiation
+                        "/api/billing/renew",
+                        "/api/billing/upgrade"
         };
+
 
         /* ===================== SUPER ADMIN ===================== */
         public static final String[] SUPER_ADMIN_APIS = {
