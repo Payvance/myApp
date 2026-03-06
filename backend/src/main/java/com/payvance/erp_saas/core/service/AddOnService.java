@@ -36,33 +36,24 @@ public class AddOnService {
      */
     @Transactional
     public AddOnDto createAddOn(AddOnDto addOnDto) {
-    	
-//        if (addOnRepository.findByCode(addOnDto.getCode()).isPresent()) {
-//            throw new IllegalArgumentException("Add-on with code " + addOnDto.getCode() + " already exists.");
-//        }
-        
+
+        // if (addOnRepository.findByCode(addOnDto.getCode()).isPresent()) {
+        // throw new IllegalArgumentException("Add-on with code " + addOnDto.getCode() +
+        // " already exists.");
+        // }
+
         Optional<AddOn> existingAddOn = addOnRepository.findByCode(addOnDto.getCode());
-
-        // 🔴 If already exists
-        if (existingAddOn.isPresent()) {
-
-            AddOnDto response = new AddOnDto();
-            response.setSuccess(false);
-            response.setMessage("Add-on with code " + addOnDto.getCode() + " already exists.");
-
-            return response;
-        }
 
         AddOn addOn = new AddOn();
         updateEntityFromDto(addOn, addOnDto);
 
         AddOn savedAddOn = addOnRepository.save(addOn);
-        
+
         AddOnDto response = mapToDto(savedAddOn);
         response.setSuccess(true);
         response.setMessage("Add-on created successfully");
 
-        return response; 
+        return response;
     }
 
     /**
@@ -112,7 +103,6 @@ public class AddOnService {
                 .collect(Collectors.toList());
     }
 
-    
     private void updateEntityFromDto(AddOn addOn, AddOnDto dto) {
         addOn.setCode(dto.getCode());
         addOn.setName(dto.getName());
@@ -120,10 +110,10 @@ public class AddOnService {
         addOn.setUnit(dto.getUnit());
         addOn.setUnitPrice(dto.getUnitPrice());
         addOn.setStatus(dto.getStatus());
-		Plan plan = planRepository.findById(dto.getPlanId())
-				.orElseThrow(() -> new IllegalArgumentException("Plan not found with id: " + dto.getPlanId()));
-		addOn.setPlan(plan);
-       
+        Plan plan = planRepository.findById(dto.getPlanId())
+                .orElseThrow(() -> new IllegalArgumentException("Plan not found with id: " + dto.getPlanId()));
+        addOn.setPlan(plan);
+
     }
 
     private AddOnDto mapToDto(AddOn addOn) {
@@ -138,8 +128,7 @@ public class AddOnService {
         dto.setPlanId(addOn.getPlan().getId());
         return dto;
     }
-    
-    
+
     public List<AddOnDto> getAddOnsByPlanId(Long planId) {
 
         return addOnRepository

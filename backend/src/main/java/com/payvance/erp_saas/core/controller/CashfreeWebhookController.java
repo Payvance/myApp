@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/billing/webhook/cashfree")
+@RequestMapping("/api/billing/cashfree/webhook")
 @RequiredArgsConstructor
 public class CashfreeWebhookController {
 

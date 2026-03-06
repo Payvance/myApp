@@ -574,13 +574,60 @@ public class SubscriptionService {
         response.put("endDate", subscription.getCurrentPeriodEnd());
         response.put("status", subscription.getStatus());
 
+        // PLAN DETAILS
         Map<String, Object> planDetails = new HashMap<>();
         planDetails.put("planId", plan.getId());
         planDetails.put("planName", plan.getName());
         planDetails.put("planCode", plan.getCode());
         planDetails.put("isActive", plan.getIsActive());
 
+        // FETCH PLAN PRICE
+        PlanPrice planPrice = planPriceRepository.findByPlanId(plan.getId()).orElse(null);
+
+        if (planPrice != null) {
+            Map<String, Object> priceDetails = new HashMap<>();
+            priceDetails.put("priceId", planPrice.getId());
+            priceDetails.put("billingPeriod", planPrice.getBillingPeriod());
+            priceDetails.put("duration", planPrice.getDuration());
+            priceDetails.put("currency", planPrice.getCurrency());
+            priceDetails.put("amount", planPrice.getAmount());
+
+            planDetails.put("price", priceDetails);
+        }
+
         response.put("plan", planDetails);
+
+        // FETCH SUBSCRIPTION ADDONS
+        List<SubscriptionAddon> subscriptionAddons =
+                subscriptionAddonRepository.findBySubscriptionIdAndStatus(subscription.getId(), "ACTIVE");
+
+        List<Map<String, Object>> addonList = new ArrayList<>();
+
+        for (SubscriptionAddon sa : subscriptionAddons) {
+
+            AddOn addon = addonRepository.findById(sa.getAddonId()).orElse(null);
+
+            if (addon != null) {
+
+                Map<String, Object> addonData = new HashMap<>();
+
+                addonData.put("addonId", addon.getId());
+                addonData.put("code", addon.getCode());
+                addonData.put("name", addon.getName());
+                addonData.put("currency", addon.getCurrency());
+                addonData.put("unit", addon.getUnit());
+                addonData.put("unitPrice", addon.getUnitPrice());
+                addonData.put("status", addon.getStatus());
+
+                addonData.put("quantity", sa.getQuantity());
+                addonData.put("effectiveFrom", sa.getEffectiveFrom());
+                addonData.put("effectiveTo", sa.getEffectiveTo());
+
+                addonList.add(addonData);
+            }
+        }
+
+        response.put("addons", addonList);
 
         return response;
     }
