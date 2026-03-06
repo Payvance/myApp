@@ -30,7 +30,7 @@ public class CashfreeWebhookController {
             return ResponseEntity.ok("OK");
         } catch (Exception e) {
             logger.error("Error processing Cashfree Webhook: {}", e.getMessage());
-            return ResponseEntity.status(500).body("Error: " + e.getMessage());
+            return ResponseEntity.ok("OK");
         }
     }
 }
