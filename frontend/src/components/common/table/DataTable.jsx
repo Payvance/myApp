@@ -168,6 +168,8 @@ const DataTable = ({
         } else if (col.type === 'boolean') {
           // Render booleans/status as visible text so true/false booleans will render
           return <div style={{ textAlign: 'left' }}>{value === true ? 'Yes' : value === false ? 'No' : ''}</div>;
+        } else if (col.type === 'serial') {
+          return <div style={{ textAlign: 'left' }}>{(pagination.pageIndex * pagination.pageSize) + (row.index + 1)}</div>;
         } else if (col.type === 'text' || col.type === 'status') {
           return <div style={{ textAlign: 'left' }}>{capitalizeEachWord(value)}</div>;
         }

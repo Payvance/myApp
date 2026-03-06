@@ -1,0 +1,313 @@
+/* ============================================================
+   ActivePlanCard.css — apc-* scoped
+   Two visual modes driven by a modifier class:
+     .apc-card            → white with purple border (active plan)
+     .apc-card--regular   → white light-theme (buy now)
+   ============================================================ */
+
+/* ══════════════════════════════════════════════════════════
+   SHARED SHELL
+══════════════════════════════════════════════════════════ */
+.apc-card {
+  border-radius: 16px;
+  width: 204px;
+  min-width: 204px;
+  max-width: 204px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  transition: all 0.3s ease;
+}
+.apc-card:hover {
+  transform: translateY(-8px);
+}
+
+/* ══════════════════════════════════════════════════════════
+   ACTIVE PLAN with purple highlight — THEME AWARE
+══════════════════════════════════════════════════════════ */
+.apc-card {
+  background: var(--card-bg, #ffffff);
+  border: 2px solid var(--purple-500, #7E56E4);
+  border-radius: 12px;
+  box-shadow: 
+      var(--shadow-sm, 0 1px 2px rgba(31, 45, 61, 0.05)),
+      var(--shadow-md, 0 4px 6px rgba(31, 45, 61, 0.07)),
+      inset 0 0 0 1px var(--bg-primary, #ffffff);
+  transition: all 0.25s ease;
+}
+
+.apc-card:hover {
+  border-color: var(--purple-600, #9F52D0);
+  box-shadow: 
+      var(--shadow-md, 0 4px 6px rgba(31, 45, 61, 0.07)),
+      var(--shadow-lg, 0 10px 30px rgba(31, 45, 61, 0.12)),
+      inset 0 0 0 1px var(--bg-primary, #ffffff);
+}
+
+/* top shimmer band — purple accent */
+.apc-band {
+  height: 3px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    var(--purple-500, #7E56E4) 50%,
+    transparent 100%);
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+
+/* decorative blobs — subtle purple */
+.apc-card::before {
+  content: "";
+  position: absolute;
+  width: 140px; height: 140px; border-radius: 50%;
+  background: radial-gradient(circle, var(--purple-500, #7E56E4) 0%, transparent 70%);
+  top: -70px; right: -50px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.08;
+  filter: blur(2px);
+}
+.apc-card::after {
+  content: "";
+  position: absolute;
+  width: 90px; height: 90px; border-radius: 50%;
+  background: radial-gradient(circle, var(--purple-600, #9F52D0) 0%, transparent 70%);
+  bottom: 20px; left: -30px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.06;
+  filter: blur(2px);
+}
+
+/* Crown badge — highlighted */
+.apc-crown {
+  position: absolute;
+  top: 12px; right: 12px;
+  width: 28px; height: 28px;
+  background: rgba(var(--purple-500, currentColor), 0.08);
+  border: 1.5px solid var(--purple-500, #7E56E4);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; color: var(--purple-500, #7E56E4);
+  z-index: 2;
+  box-shadow: 0 0 12px rgba(var(--purple-500, 126 86 228), 0.2);
+}
+
+/* Body — light with proper spacing */
+.apc-body {
+  display: flex; flex-direction: column; gap: 10px;
+  padding: 12px 13px 13px; flex: 1;
+  position: relative; z-index: 1;
+}
+
+.apc-name {
+  font-size: 13px; font-weight: 800; color: #1a1a1a;
+  letter-spacing: -0.01em; line-height: 1.3;
+  margin: 0; 
+}
+.apc-sub {
+  font-size: 11px; color: #7E56E4;
+  margin: 0; line-height: 1.2;
+  font-weight: 600;
+}
+
+/* Pricing pill — refined */
+.apc-pricing {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  background: var(--bg-secondary);
+  border: 1px solid rgba(126, 86, 228, 0.1);
+  border-radius: 11px; 
+  padding: 8px 10px;
+}
+.apc-price-wrap { display: flex; flex-direction: column; gap: 2px; }
+.apc-price {
+  font-size: 22px; font-weight: 900; color: var(--purple-500);
+  letter-spacing: -0.02em; line-height: 1;
+}
+.apc-period {
+  font-size: 10px; color: #9ca3af;
+  font-weight: 600;
+}
+
+/* Expiry chip — highlighted */
+.apc-expiry {
+  display: flex; flex-direction: column; align-items: center; gap: 1px;
+  background: linear-gradient(135deg, rgba(126, 86, 228, 0.1) 0%, rgba(147, 51, 234, 0.05) 100%);
+  border: 1.5px solid rgba(126, 86, 228, 0.25);
+  border-radius: 8px; 
+  padding: 4px 7px; 
+  min-width: 44px; 
+  flex-shrink: 0;
+}
+.apc-expiry__label {
+  font-size: 7px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: #9ca3af;
+}
+.apc-expiry__value {
+  font-size: 10px; font-weight: 800; color: var(--purple-500,); white-space: nowrap;
+}
+
+/* Divider — subtle */
+.apc-divider { 
+  height: 1px; 
+  background: linear-gradient(90deg, transparent, rgba(126, 86, 228, 0.1), transparent);
+}
+
+/* Features — light with good contrast */
+.apc-features { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+.apc-features-label {
+  font-size: 8px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: #9ca3af;
+  margin-bottom: 2px;
+}
+.apc-features-list {
+  list-style: none; padding: 0; margin: 0;
+  display: flex; flex-direction: column; gap: 0px;
+}
+.apc-feature {
+  display: flex; align-items: flex-start; gap: 6px;
+  font-size: 11px; color: #4b5563; line-height: 1.4;
+}
+.apc-feature i { 
+  font-size: 11px; color: #10b981; flex-shrink: 0; 
+  width: 14px; text-align: center; margin-top: 2px;
+}
+
+/* ══════════════════════════════════════════════════════════
+   LIGHT MODE — regular (buy now) plan
+   All overrides scoped to .apc-card--regular
+══════════════════════════════════════════════════════════ */
+.apc-card--regular {
+  background: var(--card-bg, #ffffff);
+  border: 1px solid var(--border-primary, #e6eaf0);
+  box-shadow: 0 1px 3px rgba(31, 45, 61, 0.08),
+              0 4px 12px rgba(126, 86, 228, 0.06);
+  height: 260px;
+}
+.apc-card--regular:hover {
+  box-shadow: 0 4px 12px rgba(31, 45, 61, 0.12),
+              0 12px 32px rgba(126, 86, 228, 0.11);
+  border-color: #d4c5f9;
+}
+
+/* top band — brand gradient */
+.apc-card--regular .apc-band {
+  background: linear-gradient(90deg, #7E56E4 0%, #9F52D0 50%, #BF4FBB 100%);
+  height: 4px;
+}
+
+/* no blobs on regular card */
+.apc-card--regular::before,
+.apc-card--regular::after { display: none; }
+
+/* text */
+.apc-card--regular .apc-name {
+  color: var(--text-primary, #1a1a1a);
+  padding-right: 0;
+}
+.apc-card--regular .apc-sub { 
+  color: var(--text-tertiary, #8a93a2);
+  font-weight: 500;
+}
+
+/* pricing pill — light */
+.apc-card--regular .apc-pricing {
+  background: var(--bg-secondary, #f8f9fa);
+  border: 1px solid var(--border-primary, #e6eaf0);
+}
+.apc-card--regular .apc-price  { color: var(--purple-500, #7E56E4); }
+.apc-card--regular .apc-period { color: var(--text-tertiary, #9ca3af); }
+
+/* divider — light */
+.apc-card--regular .apc-divider {
+  background: var(--border-primary, #e6eaf0);
+}
+
+/* features — light */
+.apc-card--regular .apc-features-label {
+  color: var(--text-tertiary, #9ca3af);
+}
+.apc-card--regular .apc-feature {
+  color: var(--text-secondary, #6B7280);
+}
+.apc-card--regular .apc-feature i {
+  color: var(--success, #10b981);
+}
+
+/* ══════════════════════════════════════════════════════════
+   FOOTER & BUTTONS
+══════════════════════════════════════════════════════════ */
+.apc-footer {
+  display: grid; gap: 7px;
+  padding: 0 13px 13px;
+  position: relative; z-index: 1;
+}
+.apc-footer--two { grid-template-columns: 1fr 1fr; }
+.apc-footer--one { grid-template-columns: 1fr; }
+
+/* Shared button base — improved */
+.apc-btn {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  height: 36px; border: none; border-radius: 10px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.02em;
+  cursor: pointer; font-family: inherit;
+  position: relative; overflow: hidden;
+  transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.apc-btn:active:not(:disabled) { transform: translateY(1px); }
+.apc-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* Renew — solid purple on light card */
+.apc-btn--renew {
+  background: linear-gradient(135deg, #7E56E4 0%, #9333ea 100%);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(126, 86, 228, 0.3);
+  border: 1px solid rgba(126, 86, 228, 0.4);
+}
+.apc-btn--renew:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(126, 86, 228, 0.4);
+  background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+}
+.apc-btn--renew::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(105deg, transparent 30%, rgba(255, 255, 255, 0.2) 50%, transparent 70%);
+  transform: translateX(-100%); 
+  transition: transform 0.5s ease;
+}
+.apc-btn--renew:hover:not(:disabled)::before { transform: translateX(100%); }
+
+/* Add-ons — outlined light purple on light card */
+.apc-btn--addons {
+  background: rgba(126, 86, 228, 0.08);
+  color: #7E56E4;
+  border: 1.5px solid #7E56E4;
+  font-weight: 700;
+}
+.apc-btn--addons:hover:not(:disabled) {
+  background: rgba(126, 86, 228, 0.15);
+  border-color: #8b5cf6;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(126, 86, 228, 0.2);
+  color: #8b5cf6;
+}
+
+/* Buy Now — brand gradient (regular card) */
+.apc-btn--buy {
+  background: linear-gradient(90deg, #7E56E4 0%, #9F52D0 50%, #BF4FBB 100%);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(126, 86, 228, 0.35);
+  border: none;
+}
+.apc-btn--buy::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(105deg, transparent 30%, rgba(255, 255, 255, 0.25) 50%, transparent 70%);
+  transform: translateX(-100%); 
+  transition: transform 0.6s ease;
+}
+.apc-btn--buy:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(126, 86, 228, 0.45);
+}
+.apc-btn--buy:hover:not(:disabled)::before { transform: translateX(100%); }

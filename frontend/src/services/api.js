@@ -154,7 +154,14 @@ export const API_ENDPOINTS = {
     GET_PLAN_DETAILS: "/api/tenant-users/usage-roles",
     GET_TRIAL_CONFIG: "/api/tenants/trial-config",
     GET_GST: "/api/gst/rate/latest",
-    GET_PERTICULAR_TANENT_INFO: "api/tenants/by-user/tenantdetails"
+    GET_PERTICULAR_TANENT_INFO: "api/tenants/by-user/tenantdetails",
+    GET_ACTIVE_PLAN: "/api/admin/plans/active/plan",
+    WALLET_DETAILS: "/api/wallet/details",
+    PROCESS_BILLING: "/api/billing/process"
+  },
+
+  COMPANY_DETAILS: {
+    GET_BY_TENANT: (tenantId) => `/api/company-details/tenant?tenantId=${tenantId}`
   },
 
   RESET_PASSWORD: {
@@ -174,6 +181,10 @@ export const API_ENDPOINTS = {
   COMPANY_CONFIG: {
     LIST: "/api/company-config/details/list",
   },
+  COMPANY_DETAILS: {
+  UPSERT: "/api/company-details/upsert",
+   GET_BY_TENANT: (tenantId) => `/api/company-details/tenant?tenantId=${tenantId}`,
+},
 };
 
 

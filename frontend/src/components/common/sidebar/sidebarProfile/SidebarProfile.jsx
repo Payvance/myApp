@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Button from "../../button/Button";
 import PopUp from "../../popups/PopUp";
-import { authServices, resetPasswordServices, userServices } from "../../../../services/apiService";
+import { authServices, resetPasswordServices, companyDetailsServices, userServices } from "../../../../services/apiService";
 import { toast } from "react-toastify";
 import "./SidebarProfile.css";
 import { useTheme } from "../../../../context/ThemeContext";
@@ -15,10 +15,11 @@ import PaswordInputBox from "../../inputfield/PaswordInputBox";
 /* Utils */
 const getInitials = (name = "") => {
   if (!name) return "?";
-  const parts = name.trim().split(" ");
-  return parts.length > 1
-    ? (parts[0][0] + parts[1][0]).toUpperCase()
-    : name.substring(0, 2).toUpperCase();
+  const parts = name.trim().split(/\s+/);
+  if (parts.length > 1) {
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+  return parts[0][0].toUpperCase();
 };
 
 const UserProfileMenu = ({
@@ -27,6 +28,7 @@ const UserProfileMenu = ({
   showLicense = false,
   showPersonalization = true,
   showForgotPassword = true,
+  showcompanyDetails = true,
 }) => {
   /* -------------------- STATE -------------------- */
   const [openMenu, setOpenMenu] = useState(false);
@@ -47,12 +49,77 @@ const UserProfileMenu = ({
   const [isPasswordValid, setIsPasswordValid] = useState(false);
   const [copiedField, setCopiedField] = useState(null);
   const [isThemeDropdownOpen, setIsThemeDropdownOpen] = useState(false);
-   const [openTheme, setOpenTheme] = useState(false);
+  const [openTheme, setOpenTheme] = useState(false);
   const THEMES = [
-  { name: "Light",    value: "light",  icon: "bi-sun-fill"    },
-  { name: "Dark",     value: "dark",   icon: "bi-moon-fill"   },
-  { name: "PayVance", value: "custom", icon: "bi-palette-fill" },
-];
+    { name: "Light", value: "light", icon: "bi-sun-fill" },
+    { name: "Dark", value: "dark", icon: "bi-moon-fill" },
+    { name: "PayVance", value: "custom", icon: "bi-palette-fill" },
+  ];
+  const roleId = Number(localStorage.getItem("roleId"));
+  const [showCompanyPopup, setShowCompanyPopup] = useState(false);
+  const [isUpdate, setIsUpdate] = useState(false);
+  const [companyDetails, setCompanyDetails] = useState({
+  gstNumber: "",
+  companyName: "",
+  address: "",
+  });
+  const handleCompanyChange = (e) => {
+  const { name, value } = e.target;
+  setCompanyDetails((prev) => ({
+    ...prev,
+    [name]: value,
+  }));
+};
+// Fetch company details when the popup opens
+const fetchCompanyDetails = async () => {
+  try {
+    const tenantId = localStorage.getItem("tenant_id");
+    const res = await companyDetailsServices.getCompanyDetails(tenantId);
+    if (res?.data) {
+      setCompanyDetails({
+        gstNumber: res.data.gstNumber || "",
+        companyName: res.data.companyName || "",
+        address: res.data.address || "",
+      });
+      setIsUpdate(true);
+    }
+  } catch (error) {
+    setCompanyDetails({
+      gstNumber: "",
+      companyName: "",
+      address: "",
+    });
+  }
+};
+// Handle company details submission 
+const handleCompanySubmit = async () => {
+  try {
+    setLoading(true);
+      const payload = {
+      tenantId: localStorage.getItem("tenant_id"),
+      gstNumber: companyDetails.gstNumber,
+      companyName: companyDetails.companyName,
+      address: companyDetails.address,
+    };
+
+    await companyDetailsServices.upsertCompanyDetails(payload);
+     if (isUpdate) {
+      toast.success("Company details updated successfully");
+    } else {
+      toast.success("Company details submitted successfully");
+      setIsUpdate(true); 
+    }
+    setTimeout(() => {
+      setShowCompanyPopup(false);
+    }, 1500);
+
+  } catch (error) {
+    toast.error("Failed to Submit company details");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   // -------------------- THEME CONTEXT --------------------
   const { theme, setTheme, isDark, isCustom } = useTheme();
@@ -193,7 +260,7 @@ const UserProfileMenu = ({
         {/* ── Dropdown ── */}
         {openMenu && (
           <div className="profile-dropdown">
-             {/* ── Theme (Help-style) ── */}
+            {/* ── Theme (Help-style) ── */}
             <div className="help-wrapper">
               <div
                 className="dropdown-item"
@@ -251,6 +318,19 @@ const UserProfileMenu = ({
                 <span>Personalization</span>
               </Link>
             )}
+            {showcompanyDetails && roleId === 2 && (
+             <div
+             className="dropdown-item"
+             onClick={async () => {
+             setShowCompanyPopup(true);
+             setOpenMenu(false);
+             await fetchCompanyDetails();
+             }}
+             >
+             <i className="bi bi-gear" />
+             <span>Company Details</span>
+             </div>
+             )}
             <div className="dropdown-divider" />
 
             {/* ── Help / Support ── */}
@@ -314,29 +394,29 @@ const UserProfileMenu = ({
       </div>
 
       {/* ================= UNIFIED RESET PASSWORD POPUP ================= */}
-<PopUp
-  isOpen={showResetPopup}
-  onClose={() => setShowResetPopup(false)}
-  title="Change Your Password"
-  subtitle="Enter your current password and choose a new one."
-  size="large"
->
-  <div className="reset-password-form-container" style={{marginTop : "10px"}}>
-    {/* CURRENT PASSWORD */}
-    <div className="position-relative signup-pass-container" style={{width: "49%"}}>
-      <InputField
-        label={formConfig.signin.currentPassword.label}
-        value={oldPassword}
-        onChange={(e) => setOldPassword(e.target.value)}
-        type={showOldPass ? "text" : "password"}
-        classN="large"
-        max={16}
-        onPaste={(e) => e.preventDefault()} 
-        onCopy={(e) => e.preventDefault()}
-      />
-      <i className={`bi ${showOldPass ? "bi-eye" : "bi-eye-slash"} eye-icon-signup`} 
-         onClick={() => setShowOldPass(!showOldPass)}></i>
-    </div>
+      <PopUp
+        isOpen={showResetPopup}
+        onClose={() => setShowResetPopup(false)}
+        title="Change Your Password"
+        subtitle="Enter your current password and choose a new one."
+        size="large"
+      >
+        <div className="reset-password-form-container" style={{ marginTop: "10px" }}>
+          {/* CURRENT PASSWORD */}
+          <div className="position-relative signup-pass-container" style={{ width: "49%" }}>
+            <InputField
+              label={formConfig.signin.currentPassword.label}
+              value={oldPassword}
+              onChange={(e) => setOldPassword(e.target.value)}
+              type={showOldPass ? "text" : "password"}
+              classN="large"
+              max={16}
+              onPaste={(e) => e.preventDefault()}
+              onCopy={(e) => e.preventDefault()}
+            />
+            <i className={`bi ${showOldPass ? "bi-eye" : "bi-eye-slash"} eye-icon-signup`}
+              onClick={() => setShowOldPass(!showOldPass)}></i>
+          </div>
 
           <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
             <div className="position-relative signup-pass-container">
@@ -356,22 +436,22 @@ const UserProfileMenu = ({
               />
             </div>
 
-    {/* CONFIRM NEW PASSWORD */}
-    <div className="position-relative signup-pass-container">
-      <InputField
-        label="Confirm New Password"
-        value={confirmPassword}
-        onChange={(e) => setConfirmPassword(e.target.value)}
-        type={showConfirmPass ? "text" : "password"}
-        classN="large"
-        max={16}
-        onPaste={(e) => e.preventDefault()} 
-        onCopy={(e) => e.preventDefault()}
-      />
-      <i className={`bi ${showConfirmPass ? "bi-eye" : "bi-eye-slash"} eye-icon-signup`} 
-         onClick={() => setShowConfirmPass(!showConfirmPass)}></i>
-    </div>
-    </div>
+            {/* CONFIRM NEW PASSWORD */}
+            <div className="position-relative signup-pass-container">
+              <InputField
+                label="Confirm New Password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                type={showConfirmPass ? "text" : "password"}
+                classN="large"
+                max={16}
+                onPaste={(e) => e.preventDefault()}
+                onCopy={(e) => e.preventDefault()}
+              />
+              <i className={`bi ${showConfirmPass ? "bi-eye" : "bi-eye-slash"} eye-icon-signup`}
+                onClick={() => setShowConfirmPass(!showConfirmPass)}></i>
+            </div>
+          </div>
 
           <div className="password-note-section">
             <strong>Note:</strong>
@@ -395,7 +475,7 @@ const UserProfileMenu = ({
       <PopUp
         isOpen={showLogoutPopup}
         onClose={() => setShowLogoutPopup(false)}
-        title= {formConfig.Logout.logout.label}
+        title={formConfig.Logout.logout.label}
         subtitle="Are you sure you want to end your session?"
         icon="bi-box-arrow-right"
         size="small"
@@ -415,6 +495,55 @@ const UserProfileMenu = ({
           </div>
         </div>
       </PopUp>
+      {/* ── Company Details Popup ── */}
+      <PopUp
+       isOpen={showCompanyPopup}
+       onClose={() => setShowCompanyPopup(false)}
+       title="Company Details"
+       size="medium"
+    >
+      <div className="company-details-container">
+        <div className="company-details-row">
+  
+             <InputField
+              label={formConfig.vendorprofile.gstno.label}
+              name="gstNumber"
+              value={companyDetails.gstNumber}
+              onChange={handleCompanyChange}
+              validationType="GST"
+              max={15}
+              classN="large"
+            />
+            <InputField
+              label={formConfig.CompanyDetails.companyName.label}
+              name="companyName"
+              value={companyDetails.companyName}
+              onChange={handleCompanyChange}
+              required
+              max={150}
+              classN="large"
+            />
+        </div>
+        <div className="company-details-row">
+          
+          <div className="company-details-field">
+            <label>
+              {formConfig.CompanyDetails.address.label}
+              <span className="required">*</span>
+            </label>
+            <textarea
+              name="address"
+              required
+              placeholder="Enter address"
+              value={companyDetails.address}
+              onChange={handleCompanyChange}
+              max={255}
+            />
+          </div>
+        </div>
+      </div>
+    <Button text="Submit" onClick={handleCompanySubmit} disabled={Object.values(companyDetails).some((value) => !value.trim())} />
+    </PopUp>
     </>
   );
 };

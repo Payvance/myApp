@@ -4,7 +4,7 @@ import './SubscriptionCard.css';
 
 const SubscriptionCard = ({ plan, onEdit, onBuy, buttonDisabled }) => {
   const { id, name, subtitle, status, price, period, stats, features } = plan;
-  const isActive = status.toLowerCase() === 'active';
+  const isActive = status.toLowerCase() === 'active' || status.toLowerCase() === 'available';
 
   return (
     <div className="subscription-card">

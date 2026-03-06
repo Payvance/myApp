@@ -15,6 +15,7 @@ export const COLUMN_TYPES = {
   PHONE: 'phone',
   STATUS: 'status',
   ACTIONS: 'actions',
+  SERIAL: 'serial',
 };
 
 // ======================================
@@ -34,7 +35,7 @@ export const LICENSE_BATCH_COLUMNS = [
 // VENDOR BATCH APPROVALS COLUMNS
 // ======================================
 export const VENDOR_BATCH_APPROVALS_COLUMNS = [
-  { accessorKey: 'id', header: 'Batch ID', type: 'integer', sortable: true, filterable: true, width: 100 },
+  { accessorKey: 'id', header: 'Sr no.', type: 'serial', sortable: true, filterable: true, width: 100 },
   { accessorKey: 'vendorName', header: 'Vendor', type: 'text', sortable: true, filterable: true, width: 200 },
   { accessorKey: 'planName', header: 'Plan', type: 'text', sortable: true, filterable: true, width: 150 },
   { accessorKey: 'totalActivations', header: 'Quantity', type: 'integer', sortable: true, filterable: true, width: 120 },
@@ -61,20 +62,20 @@ export const LICENSE_KEYS_COLUMNS = [
 // VENDOR DISCOUNT COLUMNS
 // ======================================
 export const VENDOR_DISCOUNT_COLUMNS = [
-  { accessorKey: 'id', header: 'ID', type: 'integer', sortable: true, filterable: true, width: 80 },
+  { accessorKey: 'id', header: 'Sr no.', type: 'serial', sortable: true, filterable: true, width: 80 },
   { accessorKey: 'name', header: 'Discount Name', type: 'text', sortable: true, filterable: true, width: 200 },
   { accessorKey: 'type', header: 'Type', type: 'text', sortable: true, filterable: true, width: 120 },
-  { 
-    accessorKey: 'value', 
-    header: 'Value', 
-    type: 'text', 
-    sortable: true, 
-    filterable: true, 
+  {
+    accessorKey: 'value',
+    header: 'Value',
+    type: 'text',
+    sortable: true,
+    filterable: true,
     width: 120,
     Cell: ({ row }) => {
       const type = row.original.type;
       const value = row.original.value;
-      
+
       if (type === 'PERCENTAGE') {
         return `${value}%`;
       } else {
@@ -89,7 +90,7 @@ export const VENDOR_DISCOUNT_COLUMNS = [
 // REFERRAL PROGRAM COLUMNS
 // ======================================
 export const REFERRAL_PROGRAM_COLUMNS = [
-  { accessorKey: 'id', header: 'ID', type: 'integer', sortable: true, filterable: true, width: 80 },
+  { accessorKey: 'id', header: 'Sr no.', type: 'serial', sortable: true, filterable: true, width: 80 },
   { accessorKey: 'code', header: 'Referral Code', type: 'text', sortable: true, filterable: true, width: 150 },
   { accessorKey: 'name', header: 'Referral Name', type: 'text', sortable: true, filterable: true, width: 200 },
   { accessorKey: 'rewardType', header: 'Reward Type', type: 'text', sortable: true, filterable: true, width: 120 },
@@ -115,7 +116,7 @@ export const AUDIT_LOGS_COLUMNS = [
 // OFFER MANAGEMENT COLUMNS
 // ======================================
 export const OFFER_MANAGEMENT_COLUMNS = [
-  { accessorKey: 'id', header: 'ID', type: 'integer', sortable: true, filterable: true, width: 80 },
+  { accessorKey: 'id', header: 'Sr no.', type: 'serial', sortable: true, filterable: true, width: 80 },
   { accessorKey: 'code', header: 'Offer Code', type: 'text', sortable: true, filterable: true, width: 150 },
   { accessorKey: 'discountType', header: 'Discount Type', type: 'text', sortable: true, filterable: true, width: 120 },
   { accessorKey: 'discountValue', header: 'Discount Value', type: 'amount', sortable: true, filterable: true, width: 120 },
@@ -142,7 +143,7 @@ export const REDEMPTION_COLUMNS = [
 // CA REDEMPTION APPROVALS COLUMNS
 // ======================================
 export const CA_REDEMPTION_APPROVALS_COLUMNS = [
-  { accessorKey: 'id', header: 'Redemption ID', type: 'integer', sortable: true, filterable: true, width: 120 },
+  { accessorKey: 'id', header: 'Sr no.', type: 'serial', sortable: true, filterable: true, width: 120 },
   { accessorKey: 'caName', header: 'CA Name', type: 'text', sortable: true, filterable: true, width: 200 },
   { accessorKey: 'referrals', header: 'Referrals', type: 'integer', sortable: true, filterable: true, width: 100 },
   { accessorKey: 'amount', header: 'Amount', type: 'amount', sortable: true, filterable: true, width: 120 },
@@ -177,7 +178,7 @@ export const CA_TENANT_REQUESTS_COLUMNS = [
 // USERS COLUMNS
 // ======================================
 export const USERS_COLUMNS = [
-  { accessorKey: 'id', header: 'Sr no.', type: 'integer', sortable: true, filterable: true, width: 80 },
+  { accessorKey: 'id', header: 'Sr no.', type: 'serial', sortable: true, filterable: true, width: 80 },
   { accessorKey: 'name', header: 'Full Name', type: 'text', sortable: true, filterable: true, width: 220 },
   { accessorKey: 'email', header: 'Email Id', type: 'email', sortable: true, filterable: true, width: 220 },
   { accessorKey: 'phone', header: 'Phone', type: 'phone', sortable: true, filterable: true, width: 140 },
@@ -214,7 +215,7 @@ export const TANENT_PLAN = [
   { accessorKey: 'email', header: 'Email', type: 'text', sortable: true, filterable: true, width: 150 },
   { accessorKey: 'phone', header: 'Phone', type: 'number', sortable: true, filterable: true, width: 150 },
   { accessorKey: 'status', header: 'Status', type: 'text', sortable: true, filterable: true, width: 120 },
-  
+
 ];
 //=======================================
 // USERS COLUMNS

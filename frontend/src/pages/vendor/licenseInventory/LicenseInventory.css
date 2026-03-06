@@ -232,9 +232,32 @@
   position: static;
   bottom: 0;
   z-index: 10;
-  background: #fff;
-  padding: 16px 24px;
-  border-top: 1px solid #eee;
+  background: var(--bg-primary);
+  padding: 4px 24px;
+}
+
+.btn-approve {
+  background-color: #10b981 !important;
+  /* Green-500 */
+  color: white !important;
+  border: none !important;
+}
+
+.btn-approve:hover {
+  background-color: #059669 !important;
+  /* Green-600 */
+}
+
+.btn-reject {
+  background-color: #ef4444 !important;
+  /* Red-500 */
+  color: white !important;
+  border: none !important;
+}
+
+.btn-reject:hover {
+  background-color: #dc2626 !important;
+  /* Red-600 */
 }
 
 /* .payment-grid {
@@ -280,6 +303,72 @@
   box-sizing: border-box;
 }
 
+
+/* QR Code Display Styles */
+.qr-trigger-container {
+  display: flex;
+  align-items: flex-end;
+  padding-bottom: 5px;
+}
+
+.show-qr-btn {
+  background: #f0f4ff;
+  color: #7b61ff;
+  border: 1px solid #7b61ff;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  justify-content: center;
+}
+
+.show-qr-btn:hover {
+  background: #7b61ff;
+  color: white;
+}
+
+.qr-modal-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  gap: 20px;
+}
+
+.qr-image-wrapper {
+  background: white;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid #edf2f7;
+}
+
+.qr-display-img {
+  max-width: 280px;
+  height: auto;
+  display: block;
+}
+
+.qr-instruction {
+  color: #4a5568;
+  font-size: 14px;
+  font-weight: 500;
+  max-width: 250px;
+  margin: 0;
+}
+
+.qr-modal-actions {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
 
 /* Responsive Design */
 @media (max-width: 768px) {

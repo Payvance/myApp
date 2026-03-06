@@ -35,6 +35,7 @@ import PaswordInputBox from "../../../../components/common/inputfield/PaswordInp
 import PopUp from "../../../../components/common/popups/PopUp.jsx";
 import { COMPANY_INFO } from "../../../../config/Config.js";
 import { validateField } from "../../../../config/validateField.js";
+import { useLocation } from "react-router-dom";
 const SignIn = () => {
   const {
     otp,
@@ -68,6 +69,7 @@ const SignIn = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [tenantAdminRole, setTenantAdminRole] = useState(null);
   const dispatch = useDispatch();
+  const location = useLocation();
   const navigate = useNavigate();
   // State for controlling the popup
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -80,6 +82,34 @@ const SignIn = () => {
   const [signinEmail, setSigninEmail] = useState("");
   const [signinPassword, setSigninPassword] = useState("");
   const [validationErrors, setValidationErrors] = useState({});
+  const [showVerifiedPopup, setShowVerifiedPopup] = useState(false);
+
+// Check for email verification status in URL query parameters on component mount
+useEffect(() => {
+  const params = new URLSearchParams(location.search);
+
+  const verified = Number(params.get("verified"));
+  const already = Number(params.get("already"));
+
+  if (verified === 1) {
+    setPopupMessage(
+      "Your email has been successfully verified. You can now sign in to your account."
+    );
+    setShowVerifiedPopup(true);
+  }
+
+  if (already === 1) {
+    setPopupMessage(
+      "Your email is already verified. You can sign in to your account."
+    );
+    setShowVerifiedPopup(true);
+  }
+
+  if (verified === 1 || already === 1) {
+    window.history.replaceState({}, document.title, "/signin");
+  }
+
+}, [location]);
   /* This useeffect is used for the getting roles from the dropdown
      Set the role tenenet admin
   */
@@ -246,7 +276,8 @@ const SignIn = () => {
     };
     try {
       const response = await authServices.signup(payload);
-      toast.success(response.data || "Registration successful! Please verify your email address to activate your account.");
+      setPopupMessage(response.data || "Registration successful! Please verify your email address to activate your account.");
+      setIsPopupOpen(true);
       setShowRegister(false);
     } catch (error) {
       toast.error(
@@ -269,10 +300,11 @@ const SignIn = () => {
 
   return (
     <div className="signin-wrapper">
-      {/* main container for sign in form */}
       <div className={`signin-card ${showRegister ? 'register-active' : ''}`}>
-        {/* left side - form fields */}
         <div className="signin-left">
+          <button className="home-nav-icon" onClick={() => navigate("/")} title="Go to Home">
+            <i className="bi bi-house-door"></i>
+          </button>
           <div className="welcome-header">
             <h2>{formConfig.signin.welcome.label}</h2>
             <div className="gradient-line"></div>
@@ -332,9 +364,6 @@ const SignIn = () => {
                 </button>
               </div>
             )}
-            <button className="forgot" type="button" onClick={() => navigate("/")}>
-              Back to Homepage
-            </button>
           </div>
           {/* footer */}
         </div>
@@ -368,11 +397,14 @@ const SignIn = () => {
         <div className="signup-panel">
           {/* signup inner container */}
           <div className="signup-inner">
+            <button className="home-nav-icon" onClick={() => navigate("/")} title="Go to Home">
+              <i className="bi bi-house-door"></i>
+            </button>
             {/* welcome header */}
             <div className="welcome-header">
               <h2>{formConfig.signup.get.label}</h2>
               <div className="gradient-line"></div>
-              <p>Create Account and Start Your Journey</p>
+              <p>Create account and start your journey</p>
             </div>
             {/* welcome header div end */}
             {/* reuable input field component */}
@@ -458,39 +490,33 @@ const SignIn = () => {
               <Button text="Create Account" onClick={handleSignup} disabled={!otpVerified} />
 
             </div>
-            <div className="signup-back">
-              <button type="button" className="forgot" onClick={handleBackToSignIn}>Back to Sign In</button>
-              <div className="partner-link">
-                <Link to="/partnerwithus" className="forgot">
-                  Partner with us
-                </Link>
-              </div>
-            </div>
           </div>
           {/* signup inner container end */}
         </div>
         {/* signup panel end */}
-        {showOtpModal && (
-          <OtpModal
-            heading="Verify OTP"
-            description="Enter the 6-digit OTP sent to"
-            target={`+91 ${mobileNumber}`}
-            otp={otp}
-            otpLoading={otpLoading}
-            canResend={canResend}
-            onOtpChange={handleOtpChange}
-            onOtpKeyDown={handleOtpKeyDown}
-            onVerify={() => verifyOtp(mobileNumber)}
-            onResend={() => resendOtp(mobileNumber)}
-            onCancel={cancelOtp}
-            verifyError={verifyError}
-            totalSeconds={60}
-          />
-        )}
+        {
+          showOtpModal && (
+            <OtpModal
+              heading="Verify OTP"
+              description="Enter the 6-digit OTP sent to"
+              target={`+91 ${mobileNumber}`}
+              otp={otp}
+              otpLoading={otpLoading}
+              canResend={canResend}
+              onOtpChange={handleOtpChange}
+              onOtpKeyDown={handleOtpKeyDown}
+              onVerify={() => verifyOtp(mobileNumber)}
+              onResend={() => resendOtp(mobileNumber)}
+              onCancel={cancelOtp}
+              verifyError={verifyError}
+              totalSeconds={60}
+            />
+          )
+        }
 
-      </div> {/* signin card end */}
+      </div > {/* signin card end */}
 
-      <Footer>{COMPANY_INFO.name} . All rights reserved</Footer>
+      < Footer > {COMPANY_INFO.name}. Copyright © 2026. All rights reserved.</Footer >
       <PopUp
         isOpen={isPopupOpen}
         onClose={() => setIsPopupOpen(false)}
@@ -500,8 +526,22 @@ const SignIn = () => {
       >
         <p>{popupMessage}</p>
       </PopUp>
+    {/* Verified email popup */}
+    <PopUp
+    isOpen={showVerifiedPopup}
+    onClose={() => setShowVerifiedPopup(false)}
+    size="small"
+    >
+    <p>{popupMessage}</p>
+    <button
+    className="btn btn-primary"
+    onClick={() => setShowVerifiedPopup(false)}
+    >
+    OK
+   </button>
+   </PopUp>
 
-    </div>
+    </div >
   );
 };
 
