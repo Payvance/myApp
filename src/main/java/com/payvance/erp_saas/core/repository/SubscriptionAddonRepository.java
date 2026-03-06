@@ -28,4 +28,8 @@ public interface SubscriptionAddonRepository extends JpaRepository<SubscriptionA
 	    List<AddOn> findActiveAddonsBySubscriptionId(@Param("subscriptionId") Long subscriptionId);
 
 	List<SubscriptionAddon> findBySubscriptionId(Long subscriptionId);
+
+	List<SubscriptionAddon> findBySubscriptionIdAndStatus(Long id, String string);
+	
+	
 }

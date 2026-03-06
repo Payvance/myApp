@@ -15,4 +15,6 @@ import com.payvance.erp_saas.core.entity.PlanPrice;
 @Repository
 public interface PlanPriceRepository extends JpaRepository<PlanPrice, Long> {
 	Optional<PlanPrice> findByPlan_IdAndIsActive(Long planId, Byte isActive);
+
+    Optional<PlanPrice> findByPlanId(Long planId);
 }

@@ -22,7 +22,7 @@ public class AddOn {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "code", length = 60, nullable = false, unique = true)
+    @Column(name = "code", length = 60, nullable = false)
     private String code;
 
     @Column(name = "name", length = 150, nullable = false)
@@ -45,8 +45,7 @@ public class AddOn {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-    
-    
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "plan_id", nullable = false)
     private Plan plan;
