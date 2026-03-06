@@ -18,7 +18,7 @@ import { useRef, useState } from "react";
 import "./PaswordInputBox.css";
 import { formConfig } from "../../../config/formConfig.js";
 
-const PaswordInputBox = ({ label, value, onChange, onValidationChange, type = "password", classN = "" ,showCaseInfo}) => {
+const PaswordInputBox = ({ label, value, onChange, onValidationChange, type = "password", classN = "", showCaseInfo }) => {
   const inputRef = useRef(null);
   const [showBox, setShowBox] = useState(false);
   const [boxStyle, setBoxStyle] = useState({});
@@ -29,7 +29,7 @@ const PaswordInputBox = ({ label, value, onChange, onValidationChange, type = "p
     number: false,
     special: false,
   });
-   
+
   const validatePassword = (val) => {
     onChange(val);
     const newState = {
@@ -47,7 +47,7 @@ const PaswordInputBox = ({ label, value, onChange, onValidationChange, type = "p
       onValidationChange(isValid);
     }
   };
-  
+
   const handleFocus = () => {
     if (!inputRef.current) return;
 
@@ -75,19 +75,19 @@ const PaswordInputBox = ({ label, value, onChange, onValidationChange, type = "p
         <div className="validation-box" style={boxStyle}>
           <ul>
             <li className={validation.lowercase ? "valid" : ""}>
-              {validation.lowercase ? "✔" : "⚪"} Lower-case
+              {validation.lowercase ? "✔" : "⚪"} Lower Case
             </li>
             <li className={validation.uppercase ? "valid" : ""}>
-              {validation.uppercase ? "✔" : "⚪"} Upper-case
+              {validation.uppercase ? "✔" : "⚪"} Upper Case
             </li>
             <li className={validation.number ? "valid" : ""}>
               {validation.number ? "✔" : "⚪"} Number
             </li>
             <li className={validation.special ? "valid" : ""}>
-              {validation.special ? "✔" : "⚪"} Special character
+              {validation.special ? "✔" : "⚪"} Symbol
             </li>
             <li className={validation.length ? "valid" : ""}>
-              {validation.length ? "✔" : "⚪"} More than 8 characters
+              {validation.length ? "✔" : "⚪"} Min Length 8 Characters
             </li>
           </ul>
         </div>
@@ -108,22 +108,22 @@ const PaswordInputBox = ({ label, value, onChange, onValidationChange, type = "p
           onBlur={() => setTimeout(() => setShowBox(false), 200)}
           autoComplete="new-password"
           onKeyDown={(e) => {
-    if (e.key === " ") {
-      e.preventDefault();
-    }
-  }}
+            if (e.key === " ") {
+              e.preventDefault();
+            }
+          }}
         />
         <label>
           {label || formConfig.signin.password.label}
           {showCaseInfo && (
             <span className="info-wrapper">
-            <i
-              className="bi bi-info-circle ms-2"
-              style={{ marginLeft: "5px"}}
-            ></i>
-            <span className="info-tooltip">
-             Password is case sensitive
-            </span>
+              <i
+                className="bi bi-info-circle ms-2"
+                style={{ marginLeft: "5px" }}
+              ></i>
+              <span className="info-tooltip">
+                Password is case sensitive
+              </span>
             </span>
           )}
         </label>

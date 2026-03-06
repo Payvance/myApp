@@ -100,6 +100,24 @@ export const profileServices = {
       },
     }),
 };
+// ======================================
+// COMPANY DETAILS SERVICES
+// ======================================
+export const companyDetailsServices = {
+  upsertCompanyDetails: (data) =>
+    api.post(API_ENDPOINTS.COMPANY_DETAILS.UPSERT, data),
+  
+  getCompanyDetails: (tenantId) =>
+    api.get(API_ENDPOINTS.COMPANY_DETAILS.GET_BY_TENANT(tenantId)),
+  
+  getByTenant: (tenantId) => {
+    return api.get(API_ENDPOINTS.COMPANY_DETAILS.GET_BY_TENANT(tenantId), {
+      headers: {
+        'X-Tenant-Id': tenantId,
+      }
+    });
+  }
+};
 
 // ======================================
 // PLAN SERVICES
@@ -620,6 +638,30 @@ export const tenantServices = {
         'X-User-Id': userId,
       }
     })
+  },
+
+  getActivePlan: (tenantId) => {
+    return api.get(API_ENDPOINTS.Tanent.GET_ACTIVE_PLAN, {
+      headers: {
+        'X-Tenant-Id': tenantId,
+      }
+    });
+  },
+
+  getWalletDetails: (tenantId) => {
+    return api.get(API_ENDPOINTS.Tanent.WALLET_DETAILS, {
+      headers: {
+        'X-Tenant-Id': tenantId,
+      }
+    });
+  },
+
+  processBilling: (payload, tenantId) => {
+    return api.post(API_ENDPOINTS.Tanent.PROCESS_BILLING, payload, {
+      headers: {
+        'X-Tenant-Id': tenantId,
+      }
+    });
   }
 };
 

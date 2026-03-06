@@ -308,6 +308,14 @@ export const formConfig = {
       backToSignin : {
         label : "Back to Sign In"
       }
+  },
+  CompanyDetails : {
+    companyName : {
+      label : "Company Name"
+    },
+    address : {
+      label : "Company Address"
+    },
   }
 
 };

@@ -3,6 +3,7 @@ import VendorLayout from '../../../layouts/VendorLayout';
 import { DataTable } from '../../../components/common/table';
 import { LICENSE_BATCH_COLUMNS, VENDOR_BATCH_APPROVALS_COLUMNS } from '../../../config/columnConfig';
 import { vendorLicenseServices, planServices } from '../../../services/apiService';
+import qrCodeImage from "../../../assets/QR/Screenshot 2026-03-04 125441.png";
 import PageHeader from '../../../components/common/pageheader/PageHeader';
 import PopUp from '../../../components/common/popups/PopUp';
 import InputField from '../../../components/common/inputfield/InputField';
@@ -66,6 +67,7 @@ const LicenseInventory = () => {
   // ==========================================
   const [isCreatePopupOpen, setIsCreatePopupOpen] = React.useState(false);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [showQRCode, setShowQRCode] = React.useState(false);
 
   // User Context
   const roleId = useSelector((state) => state.auth.roleId);
@@ -119,16 +121,16 @@ const LicenseInventory = () => {
   });
   const [loading, setLoading] = React.useState(false);
 
-const REQUIRED_FIELDS = [
-  'planId',
-  'batchSize',
-  'basePrice',
-  'totalCost',
-  'costPrice',
-  'paymentMode',
-  'paymentDate',
-  'utrTrnNo',
-];
+  const REQUIRED_FIELDS = [
+    'planId',
+    'batchSize',
+    'basePrice',
+    'totalCost',
+    'costPrice',
+    'paymentMode',
+    'paymentDate',
+    'utrTrnNo',
+  ];
 
 
   // State for issue popup
@@ -308,50 +310,50 @@ const REQUIRED_FIELDS = [
   };
 
   // Handle submit issue license batch
- const handleSubmitIssueBatch = async () => {
-  if (!issueBatchData || isIssuingRef.current) return;
+  const handleSubmitIssueBatch = async () => {
+    if (!issueBatchData || isIssuingRef.current) return;
 
-  // If eligibility was never checked
-  if (!eligibilityData) {
-    toast.error("Please check eligibility first by filling the email field.");
-    return;
-  }
+    // If eligibility was never checked
+    if (!eligibilityData) {
+      toast.error("Please check eligibility first by filling the email field.");
+      return;
+    }
 
-  //  If message is not eligible
-  if (eligibilityData.message !== "Eligible to get license") {
-    toast.error("Tenant is not eligible to get license.");
-    return;
-  }
+    //  If message is not eligible
+    if (eligibilityData.message !== "Eligible to get license") {
+      toast.error("Tenant is not eligible to get license.");
+      return;
+    }
 
-  isIssuingRef.current = true;
-  setIsIssuing(true);
+    isIssuingRef.current = true;
+    setIsIssuing(true);
 
-  try {
-    const payload = {
-      batchId: issueBatchData.id,
-      issuedToEmail: eligibilityData.tenantEmail,
-      issuedToPhone: eligibilityData.tenantPhone,
-      redeemedTenantId: eligibilityData.tenantId,
-      vendorId: eligibilityData.vendorId,
-    };
+    try {
+      const payload = {
+        batchId: issueBatchData.id,
+        issuedToEmail: eligibilityData.tenantEmail,
+        issuedToPhone: eligibilityData.tenantPhone,
+        redeemedTenantId: eligibilityData.tenantId,
+        vendorId: eligibilityData.vendorId,
+      };
 
-    const response = await vendorLicenseServices.issueLicenseBatch(payload);
+      const response = await vendorLicenseServices.issueLicenseBatch(payload);
 
-    toast.success('License generated successfully!');
+      toast.success('License generated successfully!');
 
-    setGeneratedLicenseData(response.data);
-    setIsSuccessPopupOpen(true);
+      setGeneratedLicenseData(response.data);
+      setIsSuccessPopupOpen(true);
 
-    handleCloseIssuePopup();
-    fetchData({ page: tableData.number, size: tableData.size });
+      handleCloseIssuePopup();
+      fetchData({ page: tableData.number, size: tableData.size });
 
-  } catch (error) {
-    toast.error(error?.response?.data?.message || "Tenant already has an active license. Cannot issue another key");
-  } finally {
-    setIsIssuing(false);
-    isIssuingRef.current = false;
-  }
-};
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Tenant already has an active license. Cannot issue another key");
+    } finally {
+      setIsIssuing(false);
+      isIssuingRef.current = false;
+    }
+  };
 
 
   // Handle close success popup
@@ -363,11 +365,11 @@ const REQUIRED_FIELDS = [
   // Handle download payment proof
   const handleDownloadPaymentProof = () => {
     if (!formData.imageUpload) return;
-    
-    const imageData = formData.imageUpload.startsWith('data:') 
-      ? formData.imageUpload 
+
+    const imageData = formData.imageUpload.startsWith('data:')
+      ? formData.imageUpload
       : `data:image/png;base64,${formData.imageUpload}`;
-    
+
     const link = document.createElement('a');
     link.href = imageData;
     link.download = `payment_proof_${selectedBatchId || 'batch'}_${Date.now()}.${imageData.startsWith('data:application/pdf') ? 'pdf' : imageData.startsWith('data:image/') ? imageData.split('/')[1].split(';')[0] : 'png'}`;
@@ -579,9 +581,18 @@ const REQUIRED_FIELDS = [
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // File size restriction: 2MB
+    const maxSize = 2 * 1024 * 1024; // 2MB in bytes
+    if (file.size > maxSize) {
+      toast.error("File size exceeds 2MB limit. Please upload a smaller file.");
+      e.target.value = ""; // Reset file input
+      setUploadedFileName("");
+      setPaymentBase64("");
+      return;
+    }
+
     setUploadedFileName(file.name);
 
-    // ... file validation logic ...
     const reader = new FileReader();
     reader.onload = () => setPaymentBase64(reader.result.split(",")[1]);
     reader.readAsDataURL(file);
@@ -651,21 +662,21 @@ const REQUIRED_FIELDS = [
     navigate(`/vendor/license-batches/${rowData.id}/view`);
   };
 
-  const handleSubmitDecision = async () => {
-    if (!selectedBatchId || !formData.status) return;
-    // Normalize status to uppercase for API
-    const decision = formData.status.toUpperCase() === 'APPROVED' ? 'APPROVED' : 'REJECTED';
+  const handleSubmitDecision = async (decision) => {
+    if (!selectedBatchId) return;
+    // decision is 'APPROVED' or 'REJECTED'
 
     try {
       setLoading(true);
       const response = await vendorLicenseServices.updateBatchStatus(selectedBatchId, decision);
       await fetchData({ page: 0, size: 10 });
-    
+
       if (decision === 'APPROVED') {
         toast.success("Batch Approved successfully", {
-          autoClose: 1000 });
+          autoClose: 1000
+        });
       } else {
-        toast.error('Batch Rejected',{autoClose: 1000});
+        toast.error('Batch Rejected', { autoClose: 1000 });
       }
       handleClosePopup();
     }
@@ -786,24 +797,30 @@ const REQUIRED_FIELDS = [
 
 
   const isFormValid = React.useMemo(() => {
-  // View mode never needs submit
-  if (isViewMode) return true;
+    // View mode never needs submit
+    if (isViewMode) return true;
 
-  // Approving mode (SuperAdmin) only needs status
-  if (isApproving) {
-    return Boolean(formData.status);
-  }
+    // Approving mode (SuperAdmin) only needs status
+    if (isApproving) {
+      return Boolean(formData.status);
+    }
 
-  // Create / Edit validation
-  return REQUIRED_FIELDS.every(field => {
-    const value = formData[field];
-    return value !== undefined && value !== null && String(value).trim() !== '';
-  });
-}, [
-  formData,
-  isViewMode,
-  isApproving
-]);
+    // Create / Edit validation
+    const basicFieldsValid = REQUIRED_FIELDS.every(field => {
+      const value = formData[field];
+      return value !== undefined && value !== null && String(value).trim() !== '';
+    });
+
+    // Payment Proof is mandatory for Create/Edit
+    const paymentProofValid = Boolean(paymentBase64 || formData.imageUpload);
+
+    return basicFieldsValid && paymentProofValid;
+  }, [
+    formData,
+    isViewMode,
+    isApproving,
+    paymentBase64
+  ]);
 
 
   return (
@@ -824,7 +841,7 @@ const REQUIRED_FIELDS = [
             data={tableData}
             columns={isSuperAdmin ? VENDOR_BATCH_APPROVALS_COLUMNS : [
               ...LICENSE_BATCH_COLUMNS,
-              { accessorKey: 'actionList', header: 'Actions', width: 120}
+              { accessorKey: 'actionList', header: 'Actions', width: 120 }
             ]}
             fetchData={fetchData}
             loading={loading}
@@ -941,38 +958,57 @@ const REQUIRED_FIELDS = [
               />
             </div>
 
-            <div style={{paddingTop: "20px"}}>
+            <div style={{ paddingTop: "20px" }}>
               <h3 className="section-title">Payment Details</h3>
               <div className="form-grid">
-                <OptionInputBox
-                  label="Status"
-                  name="status"
-                  value={formData.status}
-                  onChange={handleInputChange}
-                  options={[
-                    { code: 'Pending payment', value: 'Pending payment' },
-                    { code: 'Approved', value: 'Approved' },
-                    { code: 'Rejected', value: 'Rejected' },
-                  ]}
-                  disabled={!(isSuperAdmin && isApproving)}
-                  classN="large"
-                />
+                {!isApproving && (
+                  <OptionInputBox
+                    label="Status"
+                    name="status"
+                    value={formData.status}
+                    onChange={handleInputChange}
+                    options={[
+                      { code: 'Pending payment', value: 'Pending payment' },
+                      { code: 'Approved', value: 'Approved' },
+                      { code: 'Rejected', value: 'Rejected' },
+                    ]}
+                    disabled={!(isSuperAdmin && isApproving)}
+                    classN="large"
+                  />
+                )}
 
                 <OptionInputBox
                   label="Payment Mode"
                   name="paymentMode"
                   value={formData.paymentMode}
-                  onChange={handleInputChange}
+                  onChange={(e) => {
+                    handleInputChange(e);
+                    if (e.target.value === 'QR') {
+                      setShowQRCode(true);
+                    }
+                  }}
                   options={[
                     { code: 'NEFT', value: 'NEFT' },
                     { code: 'RTGS', value: 'RTGS' },
                     { code: 'IMPS', value: 'IMPS' },
-                    { code: 'UPI', value: 'UPI' },
+                    { code: 'QR', value: 'QR' },
                   ]}
                   required
                   disabled={isViewMode}
                   classN="large"
                 />
+
+                {formData.paymentMode === 'QR' && (
+                  <div className="qr-trigger-container">
+                    <button
+                      type="button"
+                      className="show-qr-btn"
+                      onClick={() => setShowQRCode(true)}
+                    >
+                      <i className="bi bi-qr-code"></i> Show QR Code
+                    </button>
+                  </div>
+                )}
 
                 <InputField
                   label="UTR Number"
@@ -1011,7 +1047,7 @@ const REQUIRED_FIELDS = [
               </div>
 
               <div className="payment-proof">
-                <label className="input-label">Payment Proof</label>
+                <label className="input-label">Payment Proof <span style={{ color: 'red' }}>*</span></label>
                 <input
                   type="file"
                   className="file-input"
@@ -1022,9 +1058,7 @@ const REQUIRED_FIELDS = [
                 {uploadedFileName && (
                   <div className="uploaded-file-info" style={{ marginTop: '10px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
-                      <p className="uploaded-file-name" style={{ fontSize: '0.9rem', color: '#666', margin: 0 }}>
-                        <strong>File:</strong> {uploadedFileName}
-                      </p>
+
                       {isSuperAdmin && formData.imageUpload && (
                         <button
                           onClick={handleDownloadPaymentProof}
@@ -1080,13 +1114,22 @@ const REQUIRED_FIELDS = [
                 </button>
               )}
               {isApproving && (
-                <button
-                  className="btn-full btn-primary"
-                  onClick={handleSubmitDecision}
-                  disabled={loading}
-                >
-                  Submit Decision
-                </button>
+                <div style={{ display: 'flex', gap: '12px', width: '100%' }}>
+                  <button
+                    className="btn-full btn-approve"
+                    onClick={() => handleSubmitDecision('APPROVED')}
+                    disabled={loading}
+                  >
+                    {loading ? 'Processing...' : 'Approve'}
+                  </button>
+                  <button
+                    className="btn-full btn-reject"
+                    onClick={() => handleSubmitDecision('REJECTED')}
+                    disabled={loading}
+                  >
+                    {loading ? 'Processing...' : 'Reject'}
+                  </button>
+                </div>
               )}
               {(isViewMode && !isApproving) && (
                 <button
@@ -1099,6 +1142,23 @@ const REQUIRED_FIELDS = [
             </div>
           </div>
         </PopUp>
+
+        {/* QR Code Modal */}
+        {showQRCode && (
+          <PopUp
+            isOpen={showQRCode}
+            onClose={() => setShowQRCode(false)}
+            title="Payment QR Code"
+            size="small"
+          >
+            <div className="qr-modal-content">
+              <div className="qr-image-wrapper">
+                <img src={qrCodeImage} alt="Payment QR Code" className="qr-display-img" />
+              </div>
+              <p className="qr-instruction text-center">Scan this QR code to complete your payment.</p>
+            </div>
+          </PopUp>
+        )}
 
         {/* Issue License Batch Popup */}
         <PopUp

@@ -37,16 +37,16 @@ const SubscriptionPlan = () => {
   }, []);
 
   const initialFormData = {
-  planCode: '',
-  planName: '',
-  allowedUsers: '',
-  allowedCompany: '',
-  periodType: 'monthly',
-  duration: 1,
-  planPrice: '',
-  status: 'active',
-  databaseShared: true
-};
+    planCode: '',
+    planName: '',
+    allowedUsers: '',
+    allowedCompany: '',
+    periodType: 'monthly',
+    duration: 1,
+    planPrice: '',
+    status: 'active',
+    databaseShared: true
+  };
 
   // form data for create plan
   const [formData, setFormData] = useState(initialFormData);
@@ -57,7 +57,7 @@ const SubscriptionPlan = () => {
 
   // handle edit plan
   const handleEditPlan = async (plan) => {
-    try{
+    try {
       setEditingPlanId(plan.id);
       // Fetch plan details from API
       const response = await planServices.getPlanById(plan.id);
@@ -70,7 +70,7 @@ const SubscriptionPlan = () => {
         allowedUsers: data.plan_limitation?.allowed_user_count ?? 0,
         allowedCompany: data.plan_limitation?.allowed_company_count ?? 0,
         periodType: data.plan_price?.billing_period ?? "monthly",
-        duration: data.plan_price?.duration ?? 1, 
+        duration: data.plan_price?.duration ?? 1,
         planPrice: data.plan_price?.amount ?? 0,
         status: data.is_active === "1" ? "active" : "inactive",
         databaseShared: data.is_separate_db === "0" ? true : false,
@@ -103,16 +103,23 @@ const SubscriptionPlan = () => {
   // handle input change
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+
+    if (name === "duration" && Number(value) > 12) {
+      toast.error("Duration must be between 1 to 12 (months/years).", {
+        toastId: "duration-error",
+      });
+    }
+
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
   // ======================================
   // CREATE PLAN API CALL
   // ======================================
   const handleSubmitCreatePlan = async () => {
-    
+
     setIsSubmitting(true);
     // payload for create plan
     const payload = {
@@ -136,19 +143,19 @@ const SubscriptionPlan = () => {
     // create plan api call response
     try {
       const response = await planServices.createPlan(payload);
-        // 🔹 IMPORTANT: Check success flag from backend
-        if (!response.data.success) {
-          setErrorMessage(response.data.message);
-          setShowErrorPopup(true);
-          return;   // stop execution
-        }
+      // 🔹 IMPORTANT: Check success flag from backend
+      if (!response.data.success) {
+        setErrorMessage(response.data.message);
+        setShowErrorPopup(true);
+        return;   // stop execution
+      }
       toast.success('Subscription created successfully', {
         onClose: () => {
           // close popup
           setIsCreatePopupOpen(false);
           setFormData(initialFormData);
 
-      // reset form (optional but recommended)
+          // reset form (optional but recommended)
           setFormData({
             planCode: '',
             planName: '',
@@ -164,18 +171,18 @@ const SubscriptionPlan = () => {
       });
       // fetch plans again to show the newly created plan
       await fetchPlans();
-    }catch (error) {
+    } catch (error) {
 
-    // Extract backend message safely
-    const backendMessage =
-      error?.response?.data?.message ||
-      error?.response?.data ||
-      "Something went wrong.";
+      // Extract backend message safely
+      const backendMessage =
+        error?.response?.data?.message ||
+        error?.response?.data ||
+        "Something went wrong.";
 
       setErrorMessage("Something went wrong.");
       setShowErrorPopup(true);
 
-  } finally {
+    } finally {
       setIsSubmitting(false);
     }
   };
@@ -191,7 +198,7 @@ const SubscriptionPlan = () => {
       // backend usually sends array directly or inside data
       const apiPlans = response.data;
       // Map backend response → UI card format
-  const mappedPlans = apiPlans.map((plan) => {
+      const mappedPlans = apiPlans.map((plan) => {
         const duration = plan.plan_price?.duration ?? 1;
         const billingPeriod = plan.plan_price?.billing_period;
 
@@ -229,61 +236,61 @@ const SubscriptionPlan = () => {
 
 
   const handleSubmitUpdatePlan = async () => {
-  
-  setIsSubmitting(true);
-  const payload = {
-    code: formData.planCode,
-    name: formData.planName,
-    is_active: formData.status === 'active' ? '1' : '0',
-    is_separate_db: formData.databaseShared ? '0' : '1',
-    plan_limitation: {
-      allowed_user_count: Number(formData.allowedUsers),
-      allowed_company_count: Number(formData.allowedCompany),
-    },
-    plan_price: {
-      billing_period: formData.periodType,
-      currency: 'INR',
-      amount: Number(formData.planPrice),
-      duration: Number(formData.duration),
-    },
+
+    setIsSubmitting(true);
+    const payload = {
+      code: formData.planCode,
+      name: formData.planName,
+      is_active: formData.status === 'active' ? '1' : '0',
+      is_separate_db: formData.databaseShared ? '0' : '1',
+      plan_limitation: {
+        allowed_user_count: Number(formData.allowedUsers),
+        allowed_company_count: Number(formData.allowedCompany),
+      },
+      plan_price: {
+        billing_period: formData.periodType,
+        currency: 'INR',
+        amount: Number(formData.planPrice),
+        duration: Number(formData.duration),
+      },
+    };
+
+    try {
+      await planServices.updatePlan(editingPlanId, payload);
+      toast.success('Plan updated succesfully.', {
+        onClose: () => {
+          // close popup & reset
+          setIsCreatePopupOpen(false);
+          setIsEditMode(false);
+          setEditingPlanId(null);
+          setFormData(initialFormData);
+        },
+        autoClose: 1000 // 2 seconds before onClose triggers
+      });
+
+
+      // refresh plans
+      await fetchPlans();
+    } catch (error) {
+      toast.error("Failed to update plan");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  try {
-    await planServices.updatePlan(editingPlanId, payload);
-    toast.success('Plan updated succesfully.', {
-    onClose: () => {
-      // close popup & reset
-    setIsCreatePopupOpen(false);
-    setIsEditMode(false);
-    setEditingPlanId(null);
-    setFormData(initialFormData);
-    },
-    autoClose: 1000 // 2 seconds before onClose triggers
-  });
-    
 
-    // refresh plans
-    await fetchPlans();
-  } catch (error) {
-    toast.error("Failed to update plan");
-  } finally {
-    setIsSubmitting(false);
-  }
-};
-
-
-const isFormValid = () => {
-  return (
-    formData.planCode.trim() !== '' &&
-    formData.planName.trim() !== '' &&
-    Number(formData.allowedUsers) > 0 &&
-    Number(formData.allowedCompany) > 0 &&
-    formData.periodType !== '' &&
-    (Number(formData.duration) >= 1 && Number(formData.duration) <= 12) &&
-    Number(formData.planPrice) > 0 &&
-    formData.status !== ''
-  );
-};
+  const isFormValid = () => {
+    return (
+      formData.planCode.trim() !== '' &&
+      formData.planName.trim() !== '' &&
+      Number(formData.allowedUsers) > 0 &&
+      Number(formData.allowedCompany) > 0 &&
+      formData.periodType !== '' &&
+      (Number(formData.duration) >= 1 && Number(formData.duration) <= 12) &&
+      Number(formData.planPrice) > 0 &&
+      formData.status !== ''
+    );
+  };
 
 
 
@@ -339,7 +346,7 @@ const isFormValid = () => {
               validationType="ALPHA_NUMERIC_ONLY"
               required
               classN="large"
-              disabled={isEditMode? true : false}
+              disabled={isEditMode ? true : false}
             />
             {/* plan name */}
             <InputField
@@ -351,7 +358,7 @@ const isFormValid = () => {
               validationType="TEXT_ONLY"
               required
               classN="large"
-               disabled={isEditMode? true : false}
+              disabled={isEditMode ? true : false}
             />
           </div>
 
@@ -366,7 +373,7 @@ const isFormValid = () => {
               validationType="NUMBER_ONLY"
               required
               classN="large"
-               disabled={isEditMode? true : false}
+              disabled={isEditMode ? true : false}
             />
             {/* allowed company */}
             <InputField
@@ -378,7 +385,7 @@ const isFormValid = () => {
               max={3}
               required
               classN="large"
-               disabled={isEditMode? true : false}
+              disabled={isEditMode ? true : false}
             />
           </div>
 
@@ -422,7 +429,7 @@ const isFormValid = () => {
               validationType="AMOUNT"
               required
               classN="large"
-               disabled={isEditMode? true : false}
+              disabled={isEditMode ? true : false}
             />
           </div>
 
@@ -442,14 +449,14 @@ const isFormValid = () => {
             />
             {/* database shared or not */}
 
-              <StateToggle
-                isOn={formData.databaseShared}
-                onToggle={(newValue) => setFormData(prev => ({ ...prev, databaseShared: newValue }))}
-                labelOn="Shared Database"
-                labelOff="Separate Database"
-                size="medium"
-                disabled={isEditMode ? true : false}
-              />
+            <StateToggle
+              isOn={formData.databaseShared}
+              onToggle={(newValue) => setFormData(prev => ({ ...prev, databaseShared: newValue }))}
+              labelOn="Shared Database"
+              labelOff="Separate Database"
+              size="medium"
+              disabled={isEditMode ? true : false}
+            />
           </div>
 
           <div className="form-actions">
@@ -468,38 +475,38 @@ const isFormValid = () => {
       {/*  popup div end */}
 
       <PopUp
-      isOpen={showErrorPopup}
-      onClose={() => setShowErrorPopup(false)}
-      showCloseButton={true}
-      size="small"
-    >
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '20px',
-          alignItems: 'center',
-          textAlign: 'center'
-        }}
+        isOpen={showErrorPopup}
+        onClose={() => setShowErrorPopup(false)}
+        showCloseButton={true}
+        size="small"
       >
-        <div style={{ maxWidth: '350px' }}>
-          <p style={{ fontSize: '16px' }}>
-            {errorMessage}
-          </p>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '20px',
+            alignItems: 'center',
+            textAlign: 'center'
+          }}
+        >
+          <div style={{ maxWidth: '350px' }}>
+            <p style={{ fontSize: '16px' }}>
+              {errorMessage}
+            </p>
+          </div>
+
+          <div style={{ width: '100px' }}>
+            <Button
+              text="OK"
+              onClick={() => setShowErrorPopup(false)}
+              variant="primary"
+            />
+          </div>
         </div>
-
-        <div style={{ width: '100px' }}>
-          <Button
-            text="OK"
-            onClick={() => setShowErrorPopup(false)}
-            variant="primary"
-          />
-        </div>
-      </div>
-    </PopUp>
+      </PopUp>
 
 
-      
+
     </SuperAdminLayout>
   );
 };

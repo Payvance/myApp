@@ -451,3 +451,48 @@
 }
 .lo-logout-btn:hover::after { transform: translateX(100%); }
 .lo-logout-btn:active { transform: translateY(0); }
+
+/* ── Company Details Form ── */
+
+.company-details-row {
+  display: flex;
+  gap: 16px;
+}
+
+.company-details-field {
+  flex: 1;
+  margin-bottom: 10px;
+}
+
+.company-details-field .required {
+  color: #ef4444;
+  margin-left: 2px;
+}
+
+.company-details-field textarea {
+  padding: 10px 12px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border-primary);
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  min-height: 40px;
+  max-height: 120px;
+  font-family: inherit;
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+}
+
+.company-details-field textarea:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.company-details-field label {
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+}
+

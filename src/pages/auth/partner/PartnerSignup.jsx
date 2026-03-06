@@ -107,6 +107,10 @@ const PartnerWithUs = () => {
       <div className="signin-card partner-card-layout">
         <div className="signup-panel partner-panel">
           <div className="signup-inner partner-inner">
+            {/* HOME ICON */}
+            <button className="home-nav-icon" onClick={() => navigate("/")} title="Go to Home">
+              <i className="bi bi-house-door"></i>
+            </button>
 
             {/* HEADER */}
             <div className="welcome-header">
@@ -201,13 +205,7 @@ const PartnerWithUs = () => {
 
             {/* BACK TO LOGIN */}
             <div className="partner-back-links">
-              <button className="forgot" onClick={() => navigate("/signin")}>
-                Back to Sign In
-              </button>
 
-              <button className="forgot" onClick={() => navigate("/")}>
-                Back to Homepage
-              </button>
             </div>
           </div>
 
