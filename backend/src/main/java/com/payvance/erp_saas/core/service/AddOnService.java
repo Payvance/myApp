@@ -42,7 +42,6 @@ public class AddOnService {
         // " already exists.");
         // }
 
-        Optional<AddOn> existingAddOn = addOnRepository.findByCode(addOnDto.getCode());
 
         AddOn addOn = new AddOn();
         updateEntityFromDto(addOn, addOnDto);

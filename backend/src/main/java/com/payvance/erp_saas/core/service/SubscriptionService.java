@@ -212,7 +212,7 @@ public class SubscriptionService {
         event.setPayloadJson("{\"invoice_id\":" + invoice.getId() + "}");
         subscriptionEventRepository.save(event);
 
-        sendInvoiceEmail(invoice.getId());
+       
 
         return invoice;
 
@@ -370,7 +370,7 @@ public class SubscriptionService {
         event.setPayloadJson("{\"invoice_id\":" + invoice.getId() + "}");
         subscriptionEventRepository.save(event);
 
-        sendInvoiceEmail(invoice.getId());
+      
 
         return invoice;
 
@@ -455,7 +455,7 @@ public class SubscriptionService {
                 toPlanId, toPlanPriceId, invoice.getId()));
         subscriptionEventRepository.save(event);
 
-        sendInvoiceEmail(invoice.getId());
+    
 
         return invoice;
     }
