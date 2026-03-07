@@ -28,26 +28,28 @@ const AddonPlan = () => {
 
   const initialFormData = {
     id: null,
-  plan_id: "",
-  code: "",
-  name: "",
-  unit_price: "",
-  currency: "INR",
-  status: "active",
-};
+    plan_id: "",
+    code: "",
+    name: "",
+    unit_price: "",
+    currency: "INR",
+    status: "active",
+  };
 
 
   // Add-on form data (matches backend)
   const [formData, setFormData] = useState(initialFormData);
 
   // Fetch plans on component mount
-    useEffect(() => {
-      fetchPlans();
-    }, []);
-
-    useEffect(() => {
-      fetchAddons();
-    }, []);
+  useEffect(() => {
+    const initializeData = async () => {
+      const fetchedPlans = await fetchPlans();
+      if (fetchedPlans) {
+        await fetchAddons(fetchedPlans);
+      }
+    };
+    initializeData();
+  }, []);
 
   // ===============================
   // Handlers
@@ -71,60 +73,66 @@ const AddonPlan = () => {
     setFormData(initialFormData);
   };
 
- // Handle edit add-on
-const handleEditAddon = async (addon) => {
-  try {
-    // Fetch add-on details from API
-    const response = await addonServices.getAddonById(addon.id);
-    const data = response.data;
+  // Handle edit add-on
+  const handleEditAddon = async (addon) => {
+    try {
+      // Fetch add-on details from API
+      const response = await addonServices.getAddonById(addon.id);
+      const data = response.data;
 
-    // Map API response to formData format
-    setFormData({
-      plan_id: data.plan_id,      // map plan_id to planId
-      code: data.code || "",
-      name: data.name || "",
-      unit_price: data.unit_price || "",
-      currency: data.currency || "INR",
-      status: data.status || "active",
-      id: data.id,               // store ID to know it's edit mode
-    });
+      // Map API response to formData format
+      setFormData({
+        plan_id: data.plan_id,      // map plan_id to planId
+        code: data.code || "",
+        name: data.name || "",
+        unit_price: data.unit_price || "",
+        currency: data.currency || "INR",
+        status: data.status || "active",
+        id: data.id,               // store ID to know it's edit mode
+      });
 
-    // Open the same create/edit popup
-    setIsCreatePopupOpen(true);
+      // Open the same create/edit popup
+      setIsCreatePopupOpen(true);
 
-  } catch (error) {
-    console.error("Failed to fetch add-on details:", error);
-    toast.error("Failed to fetch add-on details");
-  }
-};
+    } catch (error) {
+      console.error("Failed to fetch add-on details:", error);
+      toast.error("Failed to fetch add-on details");
+    }
+  };
 
 
 
   // ===============================
   // Fetch Add-ons
   // ===============================
-  const fetchAddons = async () => {
+  const fetchAddons = async (currentPlans = plans) => {
     setLoadingAddons(true);
     try {
       // Fetch add-ons from API
       const response = await addonServices.getAllAddons();
 
       // Map API response to UI format
-      const mappedAddons = response.data.map((addon) => ({
-        id: addon.id,
-        name: addon.name,
-        subtitle: addon.code,
-        status: addon.status?.toUpperCase(),
-        price: addon.unit_price,
-        stats: {
-          code: addon.code,
-          subscribers: "-",
-          revenue: "-",
-        },
-        features: [
-          `Currency: ${addon.currency}`,
-        ],
-      }));
+      const mappedAddons = response.data.map((addon) => {
+        const plan = currentPlans.find(p => p.id === addon.plan_id);
+        const planName = plan ? plan.name : 'Unknown Plan';
+
+        return {
+          id: addon.id,
+          name: addon.name,
+          subtitle: `${addon.code}`,
+          status: addon.status?.toUpperCase(),
+          price: addon.unit_price,
+          stats: {
+            code: addon.code,
+            subscribers: "-",
+            revenue: "-",
+          },
+          features: [
+            `Plan: ${planName}`,
+            `Currency: ${addon.currency}`,
+          ],
+        };
+      });
 
       setAddons(mappedAddons);
 
@@ -142,7 +150,7 @@ const handleEditAddon = async (addon) => {
 
     // Payload for create add-on
     const payload = {
-      plan_id: formData.plan_id,     
+      plan_id: formData.plan_id,
       code: formData.code,
       name: formData.name,
       currency: formData.currency,
@@ -161,24 +169,25 @@ const handleEditAddon = async (addon) => {
         setShowErrorPopup(true);
         return;
       }
-      
-    if (data.success === true) {
-      toast.success('Add On created successfully', {
-      onClose: () => {
-        // create add-on popup
-        setIsCreatePopupOpen(false);
-        setFormData(initialFormData);
-        setFormData({     
-          plan_id: "",
-          code: "",
-          name: "",
-          unit_price: "",
-          currency: "INR",
-          status: "active",
-        });
-      },
-        autoClose: 1000 // 2 seconds before onClose triggers
-      })};
+
+      if (data.success === true) {
+        toast.success('Add On created successfully', {
+          onClose: () => {
+            // create add-on popup
+            setIsCreatePopupOpen(false);
+            setFormData(initialFormData);
+            setFormData({
+              plan_id: "",
+              code: "",
+              name: "",
+              unit_price: "",
+              currency: "INR",
+              status: "active",
+            });
+          },
+          autoClose: 1000 // 2 seconds before onClose triggers
+        })
+      };
       await fetchAddons();
     } finally {
       setIsSubmitting(false);
@@ -187,25 +196,29 @@ const handleEditAddon = async (addon) => {
 
 
   // ======================================
-    // FETCH PLANS API CALL
-    // ======================================
-    const fetchPlans = async () => {
-      
-      try {
-        const response = await planServices.getAllPlans();
-        // backend usually sends array directly or inside data
-        const apiPlans = response.data;
-  
-        const mappedPlans = apiPlans.map((plan) => ({
-          id: plan.id,
-          code: plan.code,
-          name: plan.name,
-        }));
-        setPlans(mappedPlans);
-      } finally {
-        
-      }
-    };
+  // FETCH PLANS API CALL
+  // ======================================
+  const fetchPlans = async () => {
+
+    try {
+      const response = await planServices.getAllPlans();
+      // backend usually sends array directly or inside data
+      const apiPlans = response.data;
+
+      const mappedPlans = apiPlans.map((plan) => ({
+        id: plan.id,
+        code: plan.code,
+        name: plan.name,
+      }));
+      setPlans(mappedPlans);
+      return mappedPlans;
+    } catch (error) {
+      console.error("Failed to fetch plans:", error);
+      return null;
+    } finally {
+
+    }
+  };
 
 
   // ===============================
@@ -216,7 +229,7 @@ const handleEditAddon = async (addon) => {
     setIsSubmitting(true);
     // Payload for update add-on
     const payload = {
-      
+
       plan_id: formData.plan_id,
       code: formData.code,
       name: formData.name,
@@ -229,15 +242,15 @@ const handleEditAddon = async (addon) => {
       const response = await addonServices.updateAddon(formData.id, payload);
 
       toast.success('Add On updated successfully', {
-            onClose: () => {
-              // close popup
-              setIsCreatePopupOpen(false);
-              setFormData(initialFormData);
-            },
-              autoClose: 1000 // 2 seconds before onClose triggers
-            });
+        onClose: () => {
+          // close popup
+          setIsCreatePopupOpen(false);
+          setFormData(initialFormData);
+        },
+        autoClose: 1000 // 2 seconds before onClose triggers
+      });
       await fetchAddons();
-      
+
     } finally {
       setIsSubmitting(false);
     }
@@ -245,14 +258,14 @@ const handleEditAddon = async (addon) => {
 
 
   const isFormValid = () => {
-  return (
-    formData.plan_id !== "" &&
-    formData.code.trim() !== "" &&
-    formData.name.trim() !== "" &&
-    Number(formData.unit_price) > 0 &&
-    formData.status !== ""
-  );
-};
+    return (
+      formData.plan_id !== "" &&
+      formData.code.trim() !== "" &&
+      formData.name.trim() !== "" &&
+      Number(formData.unit_price) > 0 &&
+      formData.status !== ""
+    );
+  };
 
 
   return (
@@ -299,19 +312,19 @@ const handleEditAddon = async (addon) => {
           <div className="form-row">
             {/* add-on code input field */}
             <OptionInputBox
-             label={formConfig.addon.selectplan.label}
-             name="plan_id"
-             value={formData.plan_id}
-             onChange={handleInputChange}
-             options={plans.map((plan) => ({
-               code: plan.id,     // value sent to backend
-               value: plan.name, // text shown in dropdown
-             }))}
-             required
-             disabled={!!formData.id}
-             classN="large"
+              label={formConfig.addon.selectplan.label}
+              name="plan_id"
+              value={formData.plan_id}
+              onChange={handleInputChange}
+              options={plans.map((plan) => ({
+                code: plan.id,     // value sent to backend
+                value: plan.name, // text shown in dropdown
+              }))}
+              required
+              disabled={!!formData.id}
+              classN="large"
             />
-            
+
             <InputField
               label={formConfig.addon.addOnCode.label}
               name="code"
@@ -325,7 +338,7 @@ const handleEditAddon = async (addon) => {
               disabled={formData.id ? true : false}
               max={15}
             />
-            
+
           </div>
 
           <div className="form-row">
@@ -354,11 +367,11 @@ const handleEditAddon = async (addon) => {
               placeholder="0.50"
               disabled={formData.id ? true : false}
             />
-            
+
           </div>
 
           <div className="form-row">
-            
+
             {/* add-on status input field */}
             <OptionInputBox
               label={formConfig.subscriptionPlan.status.label}
@@ -390,36 +403,36 @@ const handleEditAddon = async (addon) => {
       {/* popup div end */}
       {/* popup to show error start*/}
       <PopUp
-      isOpen={showErrorPopup}
-      onClose={() => setShowErrorPopup(false)}
-      showCloseButton={true}
-      size="small"
-    >
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "20px",
-          alignItems: "center",
-          textAlign: "center",
-        }}
+        isOpen={showErrorPopup}
+        onClose={() => setShowErrorPopup(false)}
+        showCloseButton={true}
+        size="small"
       >
-        <div style={{ maxWidth: "350px" }}>
-          <p style={{ fontSize: "16px" }}>
-            {errorMessage}
-          </p>
-        </div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "20px",
+            alignItems: "center",
+            textAlign: "center",
+          }}
+        >
+          <div style={{ maxWidth: "350px" }}>
+            <p style={{ fontSize: "16px" }}>
+              {errorMessage}
+            </p>
+          </div>
 
-        <div style={{ width: "100px" }}>
-        <Button
-          text="OK"
-          onClick={() => setShowErrorPopup(false)}
-          variant="primary"
-        />
+          <div style={{ width: "100px" }}>
+            <Button
+              text="OK"
+              onClick={() => setShowErrorPopup(false)}
+              variant="primary"
+            />
+          </div>
         </div>
-      </div>
-    </PopUp>
-    {/* popup to show error end */}
+      </PopUp>
+      {/* popup to show error end */}
     </SuperAdminLayout>
   );
 };

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './ContactUs.css';
 import { companyConfigServices } from '../../../services/apiService';
 import { validateField } from '../../../config/validateField';
+import { contactUsServices } from '../../../services/apiService';
 
 const ContactUs = () => {
     const [form, setForm] = useState({
@@ -88,15 +89,16 @@ const ContactUs = () => {
         fetchCompanyDetails();
     }, []);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Final check before submission
         const newErrors = {};
         const fieldsToValidate = [
             { name: 'name', type: 'TEXT_ONLY', required: true },
             { name: 'email', type: 'EMAIL', required: true },
-            { name: 'phone', type: 'NUMBER_ONLY', required: false },
+            { name: 'phone', type: 'NUMBER_ONLY', required: true },
+            { name: 'subject', type: 'EVERYTHING', required: true },
+            { name: 'message', type: 'EVERYTHING', required: true },
         ];
 
         fieldsToValidate.forEach(field => {
@@ -109,16 +111,34 @@ const ContactUs = () => {
             return;
         }
 
-        setSent(true);
-        setForm({
-            name: '',
-            email: '',
-            phone: '',
-            subject: '',
-            message: ''
-        });
-        setErrors({});
-        setTimeout(() => setSent(false), 4000);
+        try {
+
+            const payload = {
+                fullName: form.name,
+                email: form.email,
+                phoneNumber: form.phone,
+                subject: form.subject,
+                message: form.message
+            };
+
+            await contactUsServices.createMessage(payload);
+
+            setSent(true);
+
+            setForm({
+                name: '',
+                email: '',
+                phone: '',
+                subject: '',
+                message: ''
+            });
+
+            setErrors({});
+            setTimeout(() => setSent(false), 4000);
+
+        } catch (error) {
+            console.error("Error sending message:", error);
+        }
     };
 
     return (
@@ -220,7 +240,7 @@ const ContactUs = () => {
 
                             <div className="cu-form-row">
                                 <div className="cu-field">
-                                    <label htmlFor="cu-phone">Phone Number</label>
+                                    <label htmlFor="cu-phone">Phone Number *</label>
                                     <input
                                         id="cu-phone"
                                         name="phone"
@@ -231,19 +251,25 @@ const ContactUs = () => {
                                         validationType="NUMBER_ONLY"
                                         onChange={handleChange}
                                         onKeyDown={handleKeyDown}
+                                        required
                                     />
                                     {errors.phone && <span className="cu-error-msg">{errors.phone}</span>}
                                 </div>
                                 <div className="cu-field">
-                                    <label htmlFor="cu-subject">Subject</label>
+                                    <label htmlFor="cu-subject">Subject *</label>
                                     <input
                                         id="cu-subject"
                                         name="subject"
                                         type="text"
+                                        className={errors.subject ? 'cu-input-error' : ''}
                                         placeholder="How can we help?"
                                         value={form.subject}
                                         onChange={handleChange}
+                                        onKeyDown={handleKeyDown}
+                                        validationType="EVERYTHING"
+                                        required
                                     />
+                                    {errors.subject && <span className="cu-error-msg">{errors.subject}</span>}
                                 </div>
                             </div>
 

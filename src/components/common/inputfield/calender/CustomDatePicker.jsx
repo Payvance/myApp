@@ -46,7 +46,7 @@ const CustomDatePicker = ({
 
   const handleMonthSelect = (month) => {
     setCurrentDate(new Date(currentDate.getFullYear(), month, 1));
-    setView("years");
+    setView("days");
   };
 
   const handleYearSelect = (year) => {
@@ -103,12 +103,18 @@ const CustomDatePicker = ({
         // Check if this date is the selected date
         const isSelected = selectedDate === dateStr;
 
+        // Check if this date is today
+        const today = new Date();
+        const isToday =
+          date.getDate() === today.getDate() &&
+          date.getMonth() === today.getMonth() &&
+          date.getFullYear() === today.getFullYear();
+
         week.push(
           <td
             key={`day-${dayCounter}`}
-            className={`day ${isDisabled ? "disabled" : ""} ${
-              isSelected ? "selected" : ""
-            }`}
+            className={`day ${isDisabled ? "disabled" : ""} ${isSelected ? "selected" : ""
+              } ${isToday ? "today" : ""}`}
             onClick={!isDisabled ? () => handleDateSelect(dateStr) : null}
           >
             {dayCounter}
@@ -177,15 +183,28 @@ const CustomDatePicker = ({
           <button
             className="month-year-button"
             style={{ borderRadius: "20px" }}
-            onClick={() =>
-              handleDateSelect(
-                maxDate
-                  ? maxDate
-                  : minDate
-                  ? minDate
-                  : new Date().toISOString().split("T")[0]
-              )
-            }
+            onClick={() => {
+              const today = new Date();
+              const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+
+              // Validate if today is within bounds
+              const isTodayDisabled =
+                (minDate && new Date(todayStr) < new Date(minDate)) ||
+                (maxDate && new Date(todayStr) > new Date(maxDate));
+
+              if (!isTodayDisabled) {
+                handleDateSelect(todayStr);
+              } else {
+                // If today is disabled, fallback to min/max as before
+                handleDateSelect(
+                  maxDate && new Date(todayStr) > new Date(maxDate)
+                    ? maxDate
+                    : minDate && new Date(todayStr) < new Date(minDate)
+                      ? minDate
+                      : todayStr
+                );
+              }
+            }}
           >
             Today
           </button>
@@ -243,9 +262,8 @@ const CustomDatePicker = ({
             <button
               type="button"
               key={month}
-              className={`month-button ${
-                currentDate.getMonth() === index ? "selected" : ""
-              }`}
+              className={`month-button ${currentDate.getMonth() === index ? "selected" : ""
+                }`}
               onClick={() => handleMonthSelect(index)}
             >
               {month}
@@ -292,9 +310,8 @@ const CustomDatePicker = ({
             <button
               type="button"
               key={year}
-              className={`year-button ${
-                year === currentDate.getFullYear() ? "selected" : ""
-              }`}
+              className={`year-button ${year === currentDate.getFullYear() ? "selected" : ""
+                }`}
               onClick={() => handleYearSelect(year)}
             >
               {year}

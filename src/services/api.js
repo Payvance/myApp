@@ -181,10 +181,14 @@ export const API_ENDPOINTS = {
   COMPANY_CONFIG: {
     LIST: "/api/company-config/details/list",
   },
+  // Homepage Contact Us endpoints
+  CONTACT_US: {
+    CREATE: "/api/contact-us",
+  },
   COMPANY_DETAILS: {
-  UPSERT: "/api/company-details/upsert",
-   GET_BY_TENANT: (tenantId) => `/api/company-details/tenant?tenantId=${tenantId}`,
-},
+    UPSERT: "/api/company-details/upsert",
+    GET_BY_TENANT: (tenantId) => `/api/company-details/tenant?tenantId=${tenantId}`,
+  },
 };
 
 

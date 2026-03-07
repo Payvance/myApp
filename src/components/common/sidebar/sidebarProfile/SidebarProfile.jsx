@@ -534,7 +534,6 @@ const handleCompanySubmit = async () => {
             <textarea
               name="address"
               required
-              placeholder="Enter address"
               value={companyDetails.address}
               onChange={handleCompanyChange}
               max={255}
