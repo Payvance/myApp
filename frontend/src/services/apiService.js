@@ -96,7 +96,7 @@ export const profileServices = {
   createOrUpdateProfile: (data, roleId) =>
     api.post(API_ENDPOINTS.PROFILE.CREATE, data, {
       headers: {
-        ROLE_ID: roleId, 
+        ROLE_ID: roleId,
       },
     }),
 };
@@ -713,6 +713,13 @@ export const tenantUsersServices = {
   },
 };
 
+// ======================================
+// CONTACT US SERVICES
+// ======================================
+export const contactUsServices = {
+  createMessage: (data) =>
+    publicApi.post(API_ENDPOINTS.CONTACT_US.CREATE, data),
+};
 
 // ======================================
 // DEFAULT EXPORT 
