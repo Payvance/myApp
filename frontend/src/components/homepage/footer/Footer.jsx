@@ -13,8 +13,9 @@ const quickLinks = [
 ];
 
 const supportLinks = [
-    { label: 'Terms & Conditions', path: '/src/assets/termcondition/TermCondition.pdf' },
-    { label: 'Privacy Policy', path: '/src/assets/privacypolicy/Privacy Policy.pdf' },
+    { label: 'Terms & Conditions', path: '/termsconditions' },
+    { label: 'Privacy Policy', path: '/privacypolicy' },
+    { label: 'About App', path: '/about' },
 ];
 
 const socialLinks = [
@@ -118,10 +119,14 @@ const Footer = () => {
                         {quickLinks.map((l, i) => (
                             <li key={i}>
                                 <a
-                                    href={l.href}
+                                    href={l.path || l.href}
                                     onClick={(e) => {
                                         e.preventDefault();
-                                        scrollTo(l.href);
+                                        if (l.path) {
+                                            navigate(l.path);
+                                        } else {
+                                            scrollTo(l.href);
+                                        }
                                     }}
                                 >
                                     <i className="bi bi-chevron-right"></i> {l.label}
@@ -152,7 +157,7 @@ const Footer = () => {
                                     href={l.path}
                                     onClick={(e) => {
                                         e.preventDefault();
-                                        openPDF(l.path);
+                                        navigate(l.path);
                                     }}
                                 >
                                     <i className="bi bi-file-earmark-text"></i> {l.label}
@@ -207,7 +212,7 @@ const Footer = () => {
             {/* Copyright */}
             <CommonFooter>
                 <span
-                    onClick={() => openPDF('/src/assets/privacypolicy/Privacy Policy.pdf')}
+                    onClick={() => navigate('/privacypolicy')}
                     style={{ cursor: 'pointer' }}
                 >
                     © Copyrights 2026. {companyDetails.companyName}. All rights reserved.

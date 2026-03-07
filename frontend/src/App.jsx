@@ -66,10 +66,9 @@ import BuyPlan from './pages/tenant/tenantplans/BuyPlan.jsx';
 import User from './pages/tenant/usermanagement/user/User.jsx';
 import RejectUsers from './pages/usermanagement/RejectUsers.jsx';
 import HomePage from './pages/homepage/HomePage.jsx';
-
-
-
-
+import PrivacyPolicyPage from './components/homepage/privacypolicy/PrivacyPolicy.jsx';
+import TermsConditionsPage from './components/homepage/termsconditions/TermsConditions.jsx';
+import AboutAppPage from './components/homepage/aboutapp/AboutApp.jsx';
 
 /**
  * Global authentication checker component
@@ -81,7 +80,7 @@ const GlobalAuthChecker = () => {
   useEffect(() => {
     const checkGlobalAuth = () => {
       const token = getAccessToken();
-      const publicRoutes = ['/', '/signin', '/partnerwithus', '/forgotpassword', '/resetpassword'];
+      const publicRoutes = ['/', '/home', '/signin', '/partnerwithus', '/forgotpassword', '/resetpassword', '/privacypolicy', '/termsconditions', '/about'];
 
       // If not authenticated and trying to access protected route
       if (!token && !publicRoutes.includes(location.pathname)) {
@@ -136,6 +135,9 @@ function App() {
         {/* Base URL (/) renders HomePage */}
         <Route path="/" element={<HomePage />} />
         <Route path="/home" element={<HomePage />} />
+        <Route path="/privacypolicy" element={<PrivacyPolicyPage />} />
+        <Route path="/termsconditions" element={<TermsConditionsPage />} />
+        <Route path="/about" element={<AboutAppPage />} />
 
         {/* PROTECTED ROUTES - Require Authentication */}
 
