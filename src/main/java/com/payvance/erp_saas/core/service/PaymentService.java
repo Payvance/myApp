@@ -32,6 +32,7 @@ public class PaymentService {
     private final TenantRepository tenantRepository;
     private final ApplicationEventPublisher eventPublisher;
     private final RestTemplate restTemplate;
+    private final SubscriptionService subscriptionService;
 
     @Value("${cashfree.api.url}")
     private String cashfreeApiUrl;
@@ -160,6 +161,9 @@ public class PaymentService {
         payment.setGatewayPaymentId(gatewayPaymentId);
         payment.setPaidAt(LocalDateTime.now());
         paymentRepository.save(payment);
+        
+     // Send invoice AFTER payment success
+        subscriptionService.sendInvoiceEmail(invoiceId);
 
         // Publish event → SubscriptionPaymentListener handles activation
         eventPublisher.publishEvent(new PaymentSuccessEvent(
@@ -172,4 +176,6 @@ public class PaymentService {
                 invoice.getDiscountBy()
         ));
     }
+    
+    
 }
