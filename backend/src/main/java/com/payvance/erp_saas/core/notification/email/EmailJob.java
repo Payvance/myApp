@@ -31,6 +31,9 @@ import org.springframework.stereotype.Service;
 
 import com.payvance.erp_saas.exceptions.UserNotAllowedException;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +44,8 @@ public class EmailJob {
 
     private final JavaMailSender mailSender;
     private static final Logger log = LoggerFactory.getLogger(EmailJob.class);
+    @Value("${app.mail.logo-path}")
+    private String logoPath;
 
     @Async("emailTaskExecutor")
     public void sendEmailWithAttachment(String to, String subject, String htmlBody, byte[] attachment, String attachmentName, List<String> ccEmails) {
@@ -118,6 +123,8 @@ public class EmailJob {
         if (ccEmails != null && !ccEmails.isEmpty()) {
             helper.setCc(ccEmails.toArray(new String[0]));
         }
+        ClassPathResource logo = new ClassPathResource(logoPath);
+        helper.addInline("logoImage", logo);
 
         return message;
     }

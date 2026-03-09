@@ -2,8 +2,10 @@ package com.payvance.erp_saas.core.service.impl;
 
 import com.payvance.erp_saas.core.dto.*;
 import com.payvance.erp_saas.core.entity.Subscription;
+import com.payvance.erp_saas.core.entity.Tenant;
 import com.payvance.erp_saas.core.repository.PlanRepository;
 import com.payvance.erp_saas.core.repository.SubscriptionRepository;
+import com.payvance.erp_saas.core.repository.TenantRepository;
 import com.payvance.erp_saas.core.service.TenantPlanService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,11 +19,12 @@ public class TenantPlanServiceImpl implements TenantPlanService {
 
     private final SubscriptionRepository subscriptionRepository;
     private final PlanRepository planRepository;
+    private final TenantRepository tenantRepository;
 
     @Override
 public TenantPlanResponse getTenantPlans(Long tenantId) {
 
-    // 1️⃣ Active subscription
+    // 1 Active subscription
     Optional<Subscription> subscriptionOpt =
             subscriptionRepository.findActiveSubscription(tenantId);
 
@@ -37,7 +40,7 @@ public TenantPlanResponse getTenantPlans(Long tenantId) {
             )
     ).orElse(null);
 
-    // 2️⃣ Available plans (include limitations and prices)
+    // 2 Available plans (include limitations and prices)
     List<PlanResponse> plans =
             planRepository.findByIsActiveTrue()
                     .stream()
@@ -76,7 +79,22 @@ public TenantPlanResponse getTenantPlans(Long tenantId) {
                     })
                     .toList();
 
-    return new TenantPlanResponse(currentPlan, plans);
+    // 3 Fetch tenant data for the given tenantId (including trial info)
+    List<TenantResponse> tenants = tenantRepository.findById(tenantId)
+            .stream()
+            .map(t -> new TenantResponse(
+                    t.getId(),
+                    t.getEmail(),
+                    t.getName(),
+                    t.getPhone(),
+                    t.getStatus(),
+                    t.getCreatedAt(),
+                    t.getTrialStartAt(),
+                    t.getTrialEndAt()
+            ))
+            .toList();
+
+    return new TenantPlanResponse(tenants, currentPlan, plans);
 }
                     
 }

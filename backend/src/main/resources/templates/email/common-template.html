@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<!-- Main email body styling -->
+<body
+	style="margin: 0; padding: 0; background-color: #f5f5f5; font-family: Arial, sans-serif;">
+    <!-- Outer wrapper table  -->
+	<table width="100%" cellpadding="0" cellspacing="0" border="0">
+		<tr>
+			<td align="center">
+			    <!-- ===================== LOGO SECTION ===================== -->
+				<table width="100%" cellpadding="0" cellspacing="0" border="0"
+					style="margin-bottom: 25px; margin-top: 25px;">
+					<tr>
+						<td align="center"><img
+							src="cid:logoImage" alt="FinlyticZ Logo"
+							width="220" border="0"
+							style="display: block; border: 0; outline: none; text-decoration: none; width: 220px; max-width: 100%;">
+						</td>
+					</tr>
+				</table>
+                <!-- ===================== MAIN EMAIL CARD ===================== -->
+				<table width="100%" cellpadding="0" cellspacing="0" border="0"
+					style="max-width: 600px; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); border: 1px solid #e1e4e8;">
+					<tr>
+						<td align="center" style="padding: 50px 40px; color: #334155;">
+						    <!-- Email title shown only for templateType 1 and 2 -->
+							<h2
+								th:if="${templateType == 1 or templateType == 2}"
+								style="margin: 0 0 24px 0; color: #111827; font-size: 24px; font-weight: 600; text-align: center;">
+								Verify your FinlyticZ</h2>
+                            <!-- Email verification link template -->
+							<div th:if="${templateType == 1}">
+                               <p
+									style="color: #374151; font-size: 15px; line-height: 1.6; padding-bottom: 24px; margin: 0;">
+									Thanks for signing up! Please confirm your email address by
+									clicking the button below.</p>
+
+								<table width="100%" border="0" cellspacing="0" cellpadding="0">
+									<tr>
+										<td align="center" style="padding-bottom: 24px;"><a
+											th:href="${verifyLink}"
+											style="display: inline-block; background-color: #2563eb; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-size: 15px; font-weight: 600;">Verify
+												Email</a></td>
+									</tr>
+								</table>
+
+							</div>
+                            <!-- OTP verification template -->
+							<div th:if="${templateType == 2}">
+
+								<p style="color: #374151; font-size: 15px; line-height: 1.6; padding-bottom: 24px; margin: 0;">
+									Use the OTP below to verify your email:</p>
+
+								<div
+									style="font-size: 32px; font-weight: 800; color: #111827; letter-spacing: 6px; padding-bottom: 24px; text-align: center;"
+									th:text="${otp}">711018</div>
+
+								<p
+									style="color: #6b7280; font-size: 14px; line-height: 1.6; padding-bottom: 19px; margin: 0;">
+									This OTP will expire in 10 minutes.</p>
+							</div> 
+							<!-- COMMON TEXT  -->
+							<div
+								style="padding-top: 20px; color: #9ca3af; font-size: 13px; text-align: center;">
+								If you did not request this, please ignore this email.</div>
+
+						</td>
+					</tr>
+				</table>
+                <!-- ===================== EMAIL FOOTER ===================== -->
+				<table width="600" cellpadding="0" cellspacing="0" border="0">
+					<tr>
+						<td align="center"
+							style="padding: 30px 0; font-size: 12px; color: #94a3b8;">
+							<p style="margin: 0; font-weight: 600;">© 2026 Finlyticz By
+								Payvance Innovation Pvt Ltd</p>
+						</td>
+					</tr>
+				</table>
+
+			</td>
+		</tr>
+	</table>
+</body>
+</html>

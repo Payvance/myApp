@@ -16,8 +16,8 @@ import lombok.Data;
  */
 @Data
 public class PlanDto {
-	private Boolean success;
-	private String message;
+    private Boolean success;
+    private String message;
     private Long id;
 
     @NotEmpty(message = "Code is required")
@@ -33,9 +33,11 @@ public class PlanDto {
 
     @JsonProperty("is_separate_db")
     private String isSeparateDb = "0";
-    
-    private List<Long> tenantIds;
 
+    @JsonProperty("is_for_vendor")
+    private String isForVendor = "0";
+
+    private List<Long> tenantIds;
 
     @Valid
     @NotNull(message = "Plan limitation details are required")
