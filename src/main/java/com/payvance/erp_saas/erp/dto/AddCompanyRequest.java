@@ -14,4 +14,16 @@ public class AddCompanyRequest {
     private String financialYearTo;
     private String pan;
     private String phone;
+
+    // New Fields
+    private String lastVoucherDate;
+    private Boolean isSeparateActualBilledQty;
+    private Boolean isDiscountApplicable;
+    private Boolean isCostCenterOn;
+    private Boolean isInventoryOn;
+    private Boolean isAccountingOn;
+    private Boolean isPayrollOn;
+    private String cinNumber;
+    private Boolean isBillWiseOn;
+    private Boolean isBatchesOn;
 }

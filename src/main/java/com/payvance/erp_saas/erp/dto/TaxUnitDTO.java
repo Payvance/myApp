@@ -8,6 +8,10 @@ public class TaxUnitDTO {
     private String name;
     private String taxType;
     private String registrationNumber;
+    private String gstin;
+    private String stateName;
+    private String address;
+    private String pinCode;
     private String companyGuid;
     private String companyName;
 }

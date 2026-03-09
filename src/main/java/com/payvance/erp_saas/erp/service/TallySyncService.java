@@ -537,6 +537,10 @@ public class TallySyncService {
             t.setName(d.getName());
             t.setTaxType(d.getTaxType());
             t.setRegistrationNumber(d.getRegistrationNumber());
+            t.setGstin(d.getGstin());
+            t.setStateName(d.getStateName());
+            t.setAddress(d.getAddress());
+            t.setPinCode(d.getPinCode());
 
             taxUnitRepository.findByGuidAndTenantId(t.getGuid(), tenantId)
                     .ifPresent(existing -> t.setId(existing.getId()));
@@ -770,12 +774,26 @@ public class TallySyncService {
         if (req.getPhone() != null)
             company.setPhone(req.getPhone());
 
+        // New fields
+        company.setLastVoucherDate(TallyXmlParser.parseDate(req.getLastVoucherDate()));
+        company.setIsSeparateActualBilledQty(req.getIsSeparateActualBilledQty());
+        company.setIsDiscountApplicable(req.getIsDiscountApplicable());
+        company.setIsCostCenterOn(req.getIsCostCenterOn());
+        company.setIsInventoryOn(req.getIsInventoryOn());
+        company.setIsAccountingOn(req.getIsAccountingOn());
+        company.setIsPayrollOn(req.getIsPayrollOn());
+        company.setCinNumber(req.getCinNumber());
+        company.setIsBillWiseOn(req.getIsBillWiseOn());
+        company.setIsBatchesOn(req.getIsBatchesOn());
+
         tallyCompanyRepository.findByGuid(req.getGuid()).ifPresent(existing -> company.setId(existing.getId()));
-        tallyCompanyRepository.save(company);
+        TallyCompany saved = tallyCompanyRepository.save(company);
 
         updateLastSyncTime(tenantId, req.getGuid());
 
-        System.out.println("[API] Company added: " + req.getName() + " for tenant: " + tenantId);
+        System.out.println("[API] Company added/updated: " + req.getName() + " (ID: " + saved.getId() + ") for tenant: "
+                + tenantId);
+        System.out.println("[DEBUG] Saved Pan: " + saved.getPan() + ", LastVchDate: " + saved.getLastVoucherDate());
     }
 
     @Transactional(value = "erpTransactionManager", readOnly = true)

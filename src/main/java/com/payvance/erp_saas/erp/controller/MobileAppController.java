@@ -72,6 +72,17 @@ public class MobileAppController {
                     .financialYear(company.getFinancialYear())
                     .financialYearFrom(company.getFinancialYearFrom())
                     .financialYearTo(company.getFinancialYearTo())
+                    .pan(company.getPan())
+                    .lastVoucherDate(company.getLastVoucherDate())
+                    .isSeparateActualBilledQty(company.getIsSeparateActualBilledQty())
+                    .isDiscountApplicable(company.getIsDiscountApplicable())
+                    .isCostCenterOn(company.getIsCostCenterOn())
+                    .isInventoryOn(company.getIsInventoryOn())
+                    .isAccountingOn(company.getIsAccountingOn())
+                    .isPayrollOn(company.getIsPayrollOn())
+                    .cinNumber(company.getCinNumber())
+                    .isBillWiseOn(company.getIsBillWiseOn())
+                    .isBatchesOn(company.getIsBatchesOn())
                     .licenseExpiryDate(config != null ? config.getLicenseExpiryDate() : null)
                     .licenseSerialNumber(config != null ? config.getLicenseSerialNumber() : null)
                     .licenseEmail(config != null ? config.getLicenseEmail() : null)
@@ -185,7 +196,7 @@ public class MobileAppController {
 
         return ResponseEntity.ok(ledgerService.getLedgerStatement(tenantId, companyId, ledgerName, from, to));
     }
-    
+
     /*
      * Fetch dropdown names based on type and optional companyId
      */
@@ -194,11 +205,9 @@ public class MobileAppController {
             @RequestBody DropdownRequest request) {
 
         return ResponseEntity.ok(
-                dropdownService.fetchNames(request)
-        );
+                dropdownService.fetchNames(request));
     }
-    
-    
+
     /*
      * Check for duplicate name based on type and optional companyId
      */
@@ -212,9 +221,7 @@ public class MobileAppController {
             return ResponseEntity.ok(
                     Map.of(
                             "success", true,
-                            "message", "No duplicate found"
-                    )
-            );
+                            "message", "No duplicate found"));
 
         } catch (RuntimeException ex) {
 
@@ -223,9 +230,7 @@ public class MobileAppController {
                     .body(
                             Map.of(
                                     "success", false,
-                                    "message", ex.getMessage()
-                            )
-                    );
+                                    "message", ex.getMessage()));
         }
     }
 }

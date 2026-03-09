@@ -29,4 +29,16 @@ public class TallyTaxUnit {
 
     @Column(name = "registration_number")
     private String registrationNumber;
+
+    @Column(name = "gstin")
+    private String gstin;
+
+    @Column(name = "state_name")
+    private String stateName;
+
+    @Column(name = "address", length = 1000)
+    private String address;
+
+    @Column(name = "pin_code")
+    private String pinCode;
 }
