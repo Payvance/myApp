@@ -4,6 +4,7 @@ import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.payvance.erp_saas.core.entity.EmailOtp;
@@ -22,7 +23,8 @@ public class EmailOtpService {
     private final EmailService emailService;
     private final UserRepository userRepository;
 
-    private static final int OTP_EXPIRY_MINUTES = 5;
+    @Value("${app.mail.otp-expiry-minutes}")
+    private int otpExpiryMinutes;
 
     @Transactional
     public void sendOtp(String email) {
@@ -53,7 +55,7 @@ public class EmailOtpService {
         emailOtp.setEmail(email);
         emailOtp.setOtp(otp);
         emailOtp.setCreatedAt(LocalDateTime.now());
-        emailOtp.setExpiresAt(LocalDateTime.now().plusMinutes(5));
+        emailOtp.setExpiresAt(LocalDateTime.now().plusMinutes(otpExpiryMinutes));
 
         emailOtpRepository.save(emailOtp);
         emailOtpRepository.flush();
