@@ -46,7 +46,10 @@ public class Plan {
 
     @Column(name = "is_seprate_db", length = 20)
     private String isSeparateDb = "0";
-    
+
+    @Column(name = "is_for_vendor", length = 20)
+    private String isForVendor = "0";
+
     @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AddOn> addons = new ArrayList<>();
 

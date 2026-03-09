@@ -92,7 +92,7 @@ public class SuperAdminDashboardService {
             Map.of("id", "highest_selling_plans", "title", "Highest Selling Plans",
                 "data", getHighestSellingPlansData()
             ),
-            Map.of("id", "sale_vs_renewal", "title", "New Sale vs Renew",
+            Map.of("id", "sale_vs_renewal", "title", "New Sales vs Renew",
                 "data", getSaleVsRenewalData(startDate, endDate)
             )
         ));
@@ -162,7 +162,7 @@ public class SuperAdminDashboardService {
         }
         
         List<Map<String, Object>> data = new ArrayList<>();
-        data.add(Map.of("name", "New Sale", "value", newSales != null ? newSales : 0));
+        data.add(Map.of("name", "New Sales", "value", newSales != null ? newSales : 0));
         data.add(Map.of("name", "Renew", "value", renewals != null ? renewals : 0));
         
         return data;

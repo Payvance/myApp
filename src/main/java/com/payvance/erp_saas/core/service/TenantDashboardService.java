@@ -129,12 +129,9 @@ public class TenantDashboardService {
         }
         
         
-        
-        // Get 5 most recent users for tenant
-        List<Map<String, Object>> recentUsers = tenantUserRoleRepository.findRecentUsersByTenantId(tenantId)
-                .stream()
-                .limit(5)
-                .toList();
+        //Get Tennat users 
+        List<Map<String, Object>> recentUsers =
+                tenantUserRoleRepository.findRecentUsersByTenantId(tenantId);
         
      // Get active plan details
         Optional<Map<String, Object>> planDetailsOpt = subscriptionRepository.findActivePlanDetailsByTenantId(tenantId);
@@ -267,7 +264,7 @@ public class TenantDashboardService {
         data.put("dataViews", Arrays.asList(
         	    Map.of(
         	        "id", "recent_users",
-        	        "title", "Recent Top 5 Users",
+        	        "title", "Recent Tenant Users",
         	        "data", recentUsers.stream()
         	            .map(user -> Map.of(
         	                "id", user.get("userId"),

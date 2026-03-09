@@ -33,6 +33,7 @@ public class PlanService {
 
     private final PlanRepository planRepository;
     private final SubscriptionRepository subscriptionRepository;
+
     /**
      * Creates a new Plan.
      *
@@ -41,18 +42,18 @@ public class PlanService {
      */
     @Transactional
     public PlanDto createPlan(PlanDto planDto) {
-//        if (planRepository.findByCode(planDto.getCode()).isPresent()) {
-//            throw new IllegalArgumentException("Plan with code " + planDto.getCode() + " already exists.");
-//        }
-    	
-    	
+        // if (planRepository.findByCode(planDto.getCode()).isPresent()) {
+        // throw new IllegalArgumentException("Plan with code " + planDto.getCode() + "
+        // already exists.");
+        // }
+
         Optional<Plan> existingPlan = planRepository.findByCode(planDto.getCode());
-        
+
         if (existingPlan.isPresent()) {
-        	PlanDto response = new PlanDto();
-        	response.setSuccess(false);
-        	response.setMessage("Plan with code " + planDto.getCode() + " already exists.");
-        	return response;   // return existing plan
+            PlanDto response = new PlanDto();
+            response.setSuccess(false);
+            response.setMessage("Plan with code " + planDto.getCode() + " already exists.");
+            return response; // return existing plan
         }
 
         Plan plan = new Plan();
@@ -60,6 +61,7 @@ public class PlanService {
         plan.setName(planDto.getName());
         plan.setIsActive(planDto.getIsActive());
         plan.setIsSeparateDb(planDto.getIsSeparateDb());
+        plan.setIsForVendor(planDto.getIsForVendor());
 
         PlanLimitation planLimitation = new PlanLimitation();
         updatePlanLimitationFromDto(planLimitation, planDto.getPlanLimitation());
@@ -94,6 +96,7 @@ public class PlanService {
         plan.setName(planDto.getName());
         plan.setIsActive(planDto.getIsActive());
         plan.setIsSeparateDb(planDto.getIsSeparateDb());
+        plan.setIsForVendor(planDto.getIsForVendor());
 
         updatePlanLimitationFromDto(plan.getPlanLimitation(), planDto.getPlanLimitation());
 
@@ -149,44 +152,41 @@ public class PlanService {
         dto.setName(plan.getName());
         dto.setIsActive(plan.getIsActive());
         dto.setIsSeparateDb(plan.getIsSeparateDb());
-        
-        List<Long> tenantIds =
-        	    subscriptionRepository.findTenantIdsByPlanId(plan.getId());
+        dto.setIsForVendor(plan.getIsForVendor());
 
-        	dto.setTenantIds(tenantIds);
+        List<Long> tenantIds = subscriptionRepository.findTenantIdsByPlanId(plan.getId());
 
-        	    PlanLimitationDto limDto = new PlanLimitationDto();
-        	    limDto.setId(plan.getPlanLimitation().getId());
-        	    limDto.setAllowedUserCount(plan.getPlanLimitation().getAllowedUserCount());
-        	    limDto.setAllowedCompanyCount(plan.getPlanLimitation().getAllowedCompanyCount());
-        	    limDto.setAllowedUserCountTill(plan.getPlanLimitation().getAllowedUserCountTill());
-        	    limDto.setAllowedCompanyCountTill(plan.getPlanLimitation().getAllowedCompanyCountTill());
-        	    dto.setPlanLimitation(limDto);
-        	
+        dto.setTenantIds(tenantIds);
 
-        	// Safe PlanPrice mapping
-        	if (plan.getPlanPrice() != null) {
-        	    PlanPriceDto priceDto = new PlanPriceDto();
-        	    priceDto.setId(plan.getPlanPrice().getId());
-        	    priceDto.setBillingPeriod(plan.getPlanPrice().getBillingPeriod());
-        	    priceDto.setCurrency(plan.getPlanPrice().getCurrency());
-        	    priceDto.setAmount(plan.getPlanPrice().getAmount());
-        	    priceDto.setIsActive(plan.getPlanPrice().getIsActive());
-        	    priceDto.setDuration(plan.getPlanPrice().getDuration());
-        	    dto.setPlanPrice(priceDto);
-        	}
-        	
-        	
-        	return dto;
+        PlanLimitationDto limDto = new PlanLimitationDto();
+        limDto.setId(plan.getPlanLimitation().getId());
+        limDto.setAllowedUserCount(plan.getPlanLimitation().getAllowedUserCount());
+        limDto.setAllowedCompanyCount(plan.getPlanLimitation().getAllowedCompanyCount());
+        limDto.setAllowedUserCountTill(plan.getPlanLimitation().getAllowedUserCountTill());
+        limDto.setAllowedCompanyCountTill(plan.getPlanLimitation().getAllowedCompanyCountTill());
+        dto.setPlanLimitation(limDto);
+
+        // Safe PlanPrice mapping
+        if (plan.getPlanPrice() != null) {
+            PlanPriceDto priceDto = new PlanPriceDto();
+            priceDto.setId(plan.getPlanPrice().getId());
+            priceDto.setBillingPeriod(plan.getPlanPrice().getBillingPeriod());
+            priceDto.setCurrency(plan.getPlanPrice().getCurrency());
+            priceDto.setAmount(plan.getPlanPrice().getAmount());
+            priceDto.setIsActive(plan.getPlanPrice().getIsActive());
+            priceDto.setDuration(plan.getPlanPrice().getDuration());
+            dto.setPlanPrice(priceDto);
+        }
+
+        return dto;
 
     }
-    
-    
-	/*
-	 * * Retrieves active plans for dropdown.
-	 *
-	 * @return list of maps with plan code and value
-	 */
+
+    /*
+     * * Retrieves active plans for dropdown.
+     *
+     * @return list of maps with plan code and value
+     */
     public List<Map<String, Object>> getActivePlansForDropdown() {
 
         List<Plan> plans = planRepository.findByIsActive("1");
@@ -197,6 +197,7 @@ public class PlanService {
             Map<String, Object> map = new LinkedHashMap<>();
             map.put("code", plan.getId());
             map.put("value", plan.getCode() + "-" + plan.getName());
+            map.put("is_for_vendor", plan.getIsForVendor());
             response.add(map);
         }
 

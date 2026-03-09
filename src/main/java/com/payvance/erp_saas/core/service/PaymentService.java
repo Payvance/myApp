@@ -73,6 +73,8 @@ public class PaymentService {
 
         Map<String, Object> orderMeta = new HashMap<>();
         orderMeta.put("notify_url", cashfreeWebhookUrl);
+        // Add return_url so Cashfree knows where to redirect the user after payment
+        orderMeta.put("return_url", "https://finlyticz.com/BuyPlan?order_id={order_id}");
 
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("order_id", cfOrderId);

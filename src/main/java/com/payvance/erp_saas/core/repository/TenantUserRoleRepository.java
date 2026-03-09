@@ -98,7 +98,7 @@ public interface TenantUserRoleRepository
         )
         FROM TenantUserRole tur
         JOIN User u ON tur.userId = u.id
-        WHERE tur.tenantId = :tenantId
+        WHERE tur.tenantId = :tenantId AND tur.roleId = 3
         ORDER BY tur.createdAt DESC
         """)
     List<Map<String, Object>> findRecentUsersByTenantId(@Param("tenantId") Long tenantId);
