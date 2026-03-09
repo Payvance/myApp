@@ -18,6 +18,7 @@
   overflow: hidden;
   position: relative;
   transition: all 0.3s ease;
+  height: 260px;
 }
 .apc-card:hover {
   transform: translateY(-8px);

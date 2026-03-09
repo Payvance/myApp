@@ -13,6 +13,25 @@ const RecentUsersTable = ({ title = "Recent Users", data = [], loading, type = "
     );
   }
 
+  if (!data || data.length === 0) {
+    return (
+      <div className="users-card">
+        <div className="card-header">
+          <h3 className="card-title">{title}</h3>
+          <div className="card-header__trail">
+            <span className="card-header__count">0 {entityName}</span>
+          </div>
+        </div>
+        <div className="users-no-data">
+          <div className="users-no-data__icon">
+            <i className="bi bi-inbox"></i>
+          </div>
+          <div className="users-no-data__text">No Data Found</div>
+        </div>
+      </div>
+    );
+  }
+
   const isBatches = type === "batches";
   const isTenants = type === "tenants";
   const isVendorBatchTenants = type === "vendor_batch_tenants";
@@ -65,7 +84,7 @@ const RecentUsersTable = ({ title = "Recent Users", data = [], loading, type = "
               ) : isDetailedTenants ? (
                 <>
                   <th>Admin</th>
-                  <th>Tenant</th>
+                  <th>Email</th>
                   <th>Status</th>
                   {onViewClick && <th>Action</th>}
                 </>
@@ -170,13 +189,11 @@ const RecentUsersTable = ({ title = "Recent Users", data = [], loading, type = "
                         </div>
                         <div>
                           <div className="user-name">{item.adminName}</div>
-                          <div className="user-email">{item.adminEmail}</div>
                         </div>
                       </div>
                     </td>
                     <td>
-                      <div className="user-name" style={{ fontSize: '0.9rem' }}>{item.tenantName}</div>
-                      <div className="user-email" style={{ fontSize: '0.75rem' }}>ID: {item.tenantId}</div>
+                      <div className="user-email">{item.adminEmail}</div>
                     </td>
                     <td>
                       <span className={`status-badge ${item.status?.toLowerCase()}`}>

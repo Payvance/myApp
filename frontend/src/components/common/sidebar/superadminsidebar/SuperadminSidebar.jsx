@@ -36,17 +36,17 @@ const menuItems = [
     hasSubMenu: true,
     subItems: plansSubItems,
   },
+   {
+    label: 'Tenant',
+    icon: 'bi bi-buildings',
+    hasSubMenu: true,
+    subItems: tenantSubItems,
+  },
   {
     label: 'Partners',
     icon: 'bi bi-people',
     hasSubMenu: true,
     subItems: userSubItems,
-  },
-  {
-    label: 'Tenant',
-    icon: 'bi bi-buildings',
-    hasSubMenu: true,
-    subItems: tenantSubItems,
   },
   { path: '/referralconfiguration', icon: 'bi bi-share-fill', label: 'Referral' },
   {

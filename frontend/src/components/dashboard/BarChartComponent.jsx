@@ -3,6 +3,7 @@ import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import "./BarChartComponent.css";
 import "./CardHeader.css";
+import { getRoleId } from '../../services/authService';
 
 const BarChartComponent = ({
   title,
@@ -19,6 +20,13 @@ const BarChartComponent = ({
   const isDarkMode = document.documentElement.classList.contains('dark') || 
                     window.matchMedia('(prefers-color-scheme: dark)').matches;
 
+  // Get user role to determine if currency symbol should be shown
+  const roleId = getRoleId();
+  const isSuperAdmin = Number(roleId) === 1; // SuperAdmin role
+  const isTenant = Number(roleId) === 2; // Tenant role
+  const showCurrency = isSuperAdmin; // Only show ₹ for SuperAdmin (revenue)
+
+
   // Base year (start of financial tracking)
   const baseYear = 2025;
 
@@ -29,6 +37,7 @@ const BarChartComponent = ({
     if (match) currentStartYear = parseInt(match[1]);
   }
 
+  //const [selectedPair, setSelectedPair] = useState(`${currentStartYear}-${currentStartYear + 1}`);
   const [selectedPair, setSelectedPair] = useState(`${currentStartYear}-${currentStartYear + 1}`);
 
   // Sync state if title explicitly changes from outside loading
@@ -142,9 +151,9 @@ const BarChartComponent = ({
 
     tooltip: {
       shared: true,
-      headerFormat: '<b>{point.x}</b><br/>',
-      pointFormat: '{series.name}: ₹{point.y}<br/>',
-      footerFormat: stacked ? 'Total: ₹{point.total}' : undefined,
+      headerFormat: '<b>{point.key}</b><br/>',
+      pointFormat: `{series.name}: ${showCurrency ? '₹' : ''}{point.y}<br/>`,
+      footerFormat: stacked ? `Total: ${showCurrency ? '₹' : ''}{point.total}` : undefined,
       backgroundColor: isDarkMode ? "rgba(31, 41, 55, 0.95)" : "rgba(255, 255, 255, 0.95)",
       borderColor: isDarkMode ? "#374151" : "#e5e7eb",
       borderRadius: 8,
@@ -164,7 +173,9 @@ const BarChartComponent = ({
   return (
     <div className={`bar-chart-card bar-chart-card--${size}`}>
       <div className="card-header">
-        <h3 className="card-title">{title}</h3>
+        <h3 className="card-title">
+          {isTenant ? title : (title?.includes('FY') ? title : `${title} (FY ${selectedPair})`)}
+        </h3>
 
         {onYearChange && (
           <div className="card-header__trail">
@@ -184,7 +195,7 @@ const BarChartComponent = ({
       </div>
 
       <div className="bar-chart__container">
-        <HighchartsReact highcharts={Highcharts} options={options} />
+       <HighchartsReact key={selectedPair} highcharts={Highcharts} options={options} />
       </div>
     </div>
   );

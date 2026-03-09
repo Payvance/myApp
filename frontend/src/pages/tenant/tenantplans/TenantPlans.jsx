@@ -105,11 +105,11 @@ const TenantPlans = () => {
   };
 
   const handleRenewPlan = (plan) => {
-    navigate('/BuyPlan', { state: { plan, action: 'renew' } });
+    navigate('/Renew/BuyPlan', { state: { plan, action: 'renew' } });
   };
 
   const handleAddOns = (plan) => {
-    navigate('/addons', { state: { plan } });
+    navigate('/Addon/BuyPlan', { state: { plan } });
   };
 
   const handleStartTrial = () => {
@@ -139,6 +139,10 @@ const TenantPlans = () => {
       return null;
     }
   };
+
+    // Price of the currently active plan (0 if no active plan)
+  const activePlanPrice = activePlan?.plan?.price?.amount ?? 0;
+
 
   return (
     <TenantLayout>
@@ -183,6 +187,8 @@ const TenantPlans = () => {
                 ? new Date(activePlan.endDate).toLocaleDateString('en-IN')
                 : null;
 
+                const isCheaper = !isActive && activePlanPrice > 0 && plan.price < activePlanPrice;
+
               return (
                 <ActivePlanCard
                   key={plan.id}
@@ -199,7 +205,9 @@ const TenantPlans = () => {
                   onBuy={handleSelectPlan}
                   onRenew={handleRenewPlan}
                   onAddons={handleAddOns}
-                  buttonDisabled={false}
+                  
+                  isDisabled={isCheaper}
+                  buttonDisabled={isCheaper}
                 />
               );
             })
