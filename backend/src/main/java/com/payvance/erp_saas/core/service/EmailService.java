@@ -54,6 +54,8 @@ public class EmailService {
 
     @Value("${app.frontend.verify-url}")
     private String verifyUrl;
+    @Value("${app.mail.otp-expiry-minutes}")
+    private int otpExpiryMinutes;
 
     public void sendVerificationEmail(String to, String token) {
 
@@ -426,6 +428,7 @@ public class EmailService {
         Map<String, Object> variables = new HashMap<>();
         variables.put("otp", otp);
         variables.put("templateType", 2);
+        variables.put("otpExpiryMinutes", otpExpiryMinutes);
        
         String html = templateService.process(
                 "email/common-template",
