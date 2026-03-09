@@ -343,6 +343,18 @@ function App() {
           </ProtectedRoute>
         } />
 
+        <Route path="/Renew/BuyPlan" element={
+          <ProtectedRoute>
+            <BuyPlan />
+          </ProtectedRoute>
+        } />
+
+        <Route path="/Addon/BuyPlan" element={
+          <ProtectedRoute>
+            <BuyPlan />
+          </ProtectedRoute>
+        } />
+
         {/* Tenant User Creation routes */}
         <Route path="/usermanagement/:id/view" element={
           <ProtectedRoute>

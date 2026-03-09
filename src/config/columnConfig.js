@@ -121,7 +121,6 @@ export const OFFER_MANAGEMENT_COLUMNS = [
   { accessorKey: 'discountType', header: 'Discount Type', type: 'text', sortable: true, filterable: true, width: 120 },
   { accessorKey: 'discountValue', header: 'Discount Value', type: 'amount', sortable: true, filterable: true, width: 120 },
   { accessorKey: 'discountPercentage', header: 'Discount %', type: 'float', sortable: true, filterable: true, width: 100 },
-  { accessorKey: 'currency', header: 'Currency', type: 'text', sortable: true, filterable: true, width: 80 },
   { accessorKey: 'validFrom', header: 'Valid From', type: 'date', sortable: true, filterable: true, width: 120 },
   { accessorKey: 'validTo', header: 'Valid To', type: 'date', sortable: true, filterable: true, width: 120 },
   { accessorKey: 'maxUses', header: 'Max Uses', type: 'integer', sortable: true, filterable: true, width: 100 },

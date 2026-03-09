@@ -164,7 +164,14 @@ const LicenseInventory = () => {
         ? await planServices.getAllPlans()
         : await vendorLicenseServices.getActivePlans();
 
-      const plans = (response.data || []).map(plan => ({
+      let fetchedPlans = response.data || [];
+
+      // Filter for vendors only if not superadmin
+      if (!isSuperAdmin) {
+        fetchedPlans = fetchedPlans.filter(plan => plan.is_for_vendor === "1");
+      }
+
+      const plans = fetchedPlans.map(plan => ({
         code: String(plan.id || plan.code || plan.planId), // Support multiple ID formats
         value: plan.name || plan.value || plan.planName || `Plan ${plan.id}`
       }));

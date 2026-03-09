@@ -662,6 +662,14 @@ export const tenantServices = {
         'X-Tenant-Id': tenantId,
       }
     });
+  },
+
+  getCompanyDetails: (tenantId) => {
+    return api.get(API_ENDPOINTS.COMPANY_DETAILS.GET_BY_TENANT(tenantId), {
+      headers: {
+        'X-Tenant-Id': tenantId,
+      }
+    });
   }
 };
 

@@ -394,6 +394,7 @@ const isFormValid = () => {
                 required
                 classN="large"
                 placeholder="Special offer for tech solutions"
+                disabled={isEditMode}
               />
             </div>
             <div className="form-row">
@@ -434,6 +435,7 @@ const isFormValid = () => {
                   required
                   classN="large"
                   placeholder="500"
+                  disabled={isEditMode}
                 />
               )}
             </div>
@@ -448,6 +450,7 @@ const isFormValid = () => {
                 required
                 classN="large"
                 placeholder="2024-01-01"
+                disabled={isEditMode}
               />
               <InputField
                 label={formConfig.offerManagement.validTo.label}
@@ -459,8 +462,8 @@ const isFormValid = () => {
                 required
                 classN="large"
                 placeholder="2024-12-31"
-                disabled={!formData.validFrom}        // 🔹 Disabled until validFrom is filled
-              min={formData.validFrom || undefined} // 🔹 Cannot select before validFrom
+                disabled={isEditMode || !formData.validFrom}        // 🔹 Disabled until validFrom is filled
+                min={formData.validFrom || undefined} // 🔹 Cannot select before validFrom
               />
             </div>
             <div className="form-row">
@@ -475,6 +478,7 @@ const isFormValid = () => {
                 required
                 classN="large"
                 placeholder="100"
+                disabled={isEditMode}
               />
               <OptionInputBox
                 label={formConfig.subscriptionPlan.status.label}
