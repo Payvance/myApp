@@ -45,4 +45,34 @@ public class TallyCompany {
 
     @Column(name = "phone", length = 50)
     private String phone;
+
+    @Column(name = "last_voucher_date")
+    private LocalDate lastVoucherDate;
+
+    @Column(name = "is_separate_actual_billed_quantity")
+    private Boolean isSeparateActualBilledQty;
+
+    @Column(name = "is_discount_applicable")
+    private Boolean isDiscountApplicable;
+
+    @Column(name = "is_cost_center_on")
+    private Boolean isCostCenterOn;
+
+    @Column(name = "is_inventory_on")
+    private Boolean isInventoryOn;
+
+    @Column(name = "is_accounting_on")
+    private Boolean isAccountingOn;
+
+    @Column(name = "is_payroll_on")
+    private Boolean isPayrollOn;
+
+    @Column(name = "cin_number", length = 50)
+    private String cinNumber;
+
+    @Column(name = "is_bill_wise_on")
+    private Boolean isBillWiseOn;
+
+    @Column(name = "is_batches_on")
+    private Boolean isBatchesOn;
 }
