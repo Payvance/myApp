@@ -2,13 +2,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import PageHeader from '../../../components/common/pageheader/PageHeader';
 import TenantLayout from '../../../layouts/TenantLayout';
 import Button from '../../../components/common/button/Button';
-import { addonServices, tenantServices, vendorLicenseServices } from '../../../services/apiService';
+import { addonServices, companyDetailsServices, tenantServices, vendorLicenseServices } from '../../../services/apiService';
 import { toast } from 'react-toastify';
 import { useLocation, useNavigate } from 'react-router-dom';
 import './BuyPlan.css';
 import '../../../theme/LightTheme.css';
 import PopUp from '../../../components/common/popups/PopUp';
 import AddOnCard from '../../../components/common/addOnCard/AddOnCard';
+import InputField from '../../../components/common/inputfield/InputField';
+import formConfig from '../../../config/formConfig';
 
 const BuyPlan = () => {
   const location = useLocation();
@@ -49,10 +51,20 @@ const BuyPlan = () => {
   const [paymentDetails, setPaymentDetails]     = useState(null);
 
   const [activePlan, setActivePlan]             = useState(null);
-  const [companyDetails, setCompanyDetails] = useState(null);
   const [creditAmount, setCreditAmount]         = useState(0);
   const [creditLabel, setCreditLabel]           = useState('');
   const [hasExistingPlan, setHasExistingPlan]   = useState(false);
+
+  // ── Company details ───────────────────────────────────────
+  const [companyDetails, setCompanyDetails] = useState({
+    gstNumber: '', companyName: '', address: '',
+  });
+  const [companyFormData, setCompanyFormData] = useState({
+    gstNumber: '', companyName: '', address: '',
+  });
+  const [showCompanyPopup, setShowCompanyPopup] = useState(false);
+  const [isUpdate, setIsUpdate]                 = useState(false);
+  const [loading, setLoading]                   = useState(false);
 
   const hidePromo = isRenew || isAddon || (isNormal && hasExistingPlan);
 
@@ -190,12 +202,70 @@ const BuyPlan = () => {
     }
   };
 
+
   const fetchCompanyDetails = async () => {
     try {
       const res = await tenantServices.getCompanyDetails(tenantId);
-      setCompanyDetails(res.data);
+      if (res.data) {
+        setCompanyDetails({
+          gstNumber:   res.data.gstNumber   || '',
+          companyName: res.data.companyName || '',
+          address:     res.data.address     || '',
+        });
+        if (res.data.companyName || res.data.gstNumber || res.data.address) {
+          setIsUpdate(true);
+        }
+      }
     } catch {
-      setCompanyDetails(null);
+      setCompanyDetails({ gstNumber: '', companyName: '', address: '' });
+    }
+  };
+
+  // ── Company details handlers ──────────────────────────────
+  const handleOpenCompanyPopup = () => {
+    // Initialize form data with current company details
+    setCompanyFormData({ ...companyDetails });
+    setShowCompanyPopup(true);
+  };
+
+  const handleCloseCompanyPopup = () => {
+    // Reset form data and close popup
+    setCompanyFormData({ gstNumber: '', companyName: '', address: '' });
+    setShowCompanyPopup(false);
+  };
+
+  const handleCompanyChange = (e) => {
+    const { name, value } = e.target;
+    setCompanyFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleCompanySubmit = async () => {
+    try {
+      setLoading(true);
+      const payload = {
+        tenantId:    localStorage.getItem("tenant_id"),
+        gstNumber:   companyFormData.gstNumber,
+        companyName: companyFormData.companyName,
+        address:     companyFormData.address,
+      };
+      await companyDetailsServices.upsertCompanyDetails(payload);
+      
+      // Update the main company details after successful submission
+      setCompanyDetails({ ...companyFormData });
+      
+      if (isUpdate) {
+        toast.success("Company details updated successfully");
+      } else {
+        toast.success("Company details submitted successfully");
+        setIsUpdate(true);
+      }
+      // Refresh company details after update
+      await fetchCompanyDetails();
+      handleCloseCompanyPopup();
+    } catch {
+      toast.error("Failed to Submit company details");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -350,6 +420,27 @@ const BuyPlan = () => {
     setWalletApplied(false); setWalletRedeemAmount(0);
     setWalletInputAmount(''); setWalletInputError('');
     toast.info("Wallet credits removed", { autoClose: 1000 });
+  };
+
+  // Open payment popup and refresh company details + GST
+  const handleOpenPaymentPopup = async () => {
+    await fetchCompanyDetails();
+    await fetchGST();
+    setIsPaymentPopupOpen(true);
+  };
+
+  // Check if company details are filled
+  const isCompanyDetailsFilled = () => {
+    return companyDetails.companyName?.trim() && companyDetails.address?.trim();
+  };
+
+  // Handle payment with company details validation
+  const handlePaymentWithValidation = async () => {
+    if (!isCompanyDetailsFilled()) {
+      toast.error("Please fill the company details before proceeding.");
+      return;
+    }
+    await handlePayment();
   };
 
   const CASHFREE_ENV = "sandbox";
@@ -842,7 +933,7 @@ const BuyPlan = () => {
               )}
 
               <div className="pp-action">
-                <button className="pp-proceed-btn" onClick={() => setIsPaymentPopupOpen(true)}>
+                <button className="pp-proceed-btn" onClick={handleOpenPaymentPopup}>
                   <div className="pp-proceed-btn__inner">
                     <span className="pp-proceed-btn__label">Proceed to Pay</span>
                     <span className="pp-proceed-btn__amount">₹{fmt(calculateFinalPayable())}</span>
@@ -889,7 +980,17 @@ const BuyPlan = () => {
 
             <div className="inv__parties">
               <div className="inv__party">
-                <div className="inv__party-label">Billed To</div>
+                <div className="inv__party-label">
+                  Billed To
+                  <button
+                    className="inv__edit-btn"
+                    type="button"
+                    title="Edit billing details"
+                    onClick={handleOpenCompanyPopup}
+                  >
+                    <i className="bi bi-pencil-square" />
+                  </button>
+                </div>
                 {companyDetails ? (
                   <>
                     <div className="inv__party-name">{companyDetails.companyName || 'Your Company'}</div>
@@ -1065,8 +1166,8 @@ const BuyPlan = () => {
             </button>
             <button
               className="inv__pay-btn"
-              onClick={handlePayment}
-              disabled={processingPayment}
+              onClick={handlePaymentWithValidation}
+              disabled={processingPayment || !isCompanyDetailsFilled()}
             >
               {processingPayment ? (
                 <><span className="inv__pay-spinner" /> Processing...</>
@@ -1081,6 +1182,59 @@ const BuyPlan = () => {
           </div>
 
         </div>
+      </PopUp>
+
+
+      {/* ── Company Details popup ─────────────────────────── */}
+      <PopUp
+        isOpen={showCompanyPopup}
+        onClose={handleCloseCompanyPopup}
+        title="Company Details"
+        size="medium"
+      >
+        <div className="company-details-container">
+          <div className="company-details-row">
+            <InputField
+              label={formConfig.vendorprofile.gstno.label}
+              name="gstNumber"
+              value={companyFormData.gstNumber}
+              onChange={handleCompanyChange}
+              validationType="GST"
+              max={15}
+              classN="large"
+            />
+            <InputField
+              label={formConfig.CompanyDetails.companyName.label}
+              name="companyName"
+              value={companyFormData.companyName}
+              onChange={handleCompanyChange}
+              required
+              max={150}
+              classN="large"
+            />
+          </div>
+          <div className="company-details-row">
+            <div className={`company-details-field floating-textarea ${companyFormData.address ? 'has-value' : ''}`}>
+              <textarea
+                name={formConfig.CompanyDetails.address.label}
+                required
+                value={companyFormData.address}
+                onChange={handleCompanyChange}
+                maxLength={255}
+                placeholder=" "
+              />
+              <label>
+                {formConfig.CompanyDetails.address.label}
+                <span className="required">*</span>
+              </label>
+            </div>
+          </div>
+        </div>
+        <Button
+          text={loading ? "Saving..." : isUpdate ? "Update" : "Submit"}
+          onClick={handleCompanySubmit}
+          disabled={loading || !companyFormData.companyName?.trim() || !companyFormData.address?.trim()}
+        />
       </PopUp>
 
       <PopUp

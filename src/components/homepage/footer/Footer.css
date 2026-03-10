@@ -4,10 +4,18 @@
 
 .ft-footer {
     width: 100%;
+    box-sizing: border-box;
     background: linear-gradient(160deg, #1e1b4b 0%, #2e1065 60%, #1e1b4b 100%);
     color: rgba(255, 255, 255, 0.85);
-    padding: 1.5rem 1.5rem 0.5rem 1.5rem;
+    padding: 4rem 1.75rem 0.5rem;
     border-top: 1px solid rgba(168, 85, 247, 0.3);
+    overflow-x: hidden;
+}
+
+.ft-footer *,
+.ft-footer *::before,
+.ft-footer *::after {
+    box-sizing: border-box;
 }
 
 /* ── 4-column top grid ── */
@@ -19,7 +27,13 @@
 }
 
 /* ── Brand column ── */
+.ft-brand-col {
+    max-width: 450px;
+}
+
 .ft-logo {
+    display: block;
+    width: 100%;
     font-size: 1.5rem;
     font-weight: 900;
     background: linear-gradient(135deg, #c084fc, #a855f7);
@@ -28,6 +42,10 @@
     background-clip: text;
     margin-bottom: 1rem;
     letter-spacing: -0.02em;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
 }
 
 .ft-tagline {
@@ -54,6 +72,9 @@
     font-size: 0.83rem;
     color: rgba(255, 255, 255, 0.6);
     line-height: 1.75;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    max-width: 100%;
 }
 
 .ft-address i {
@@ -67,12 +88,13 @@
     text-decoration: none;
     display: block;
     width: 100%;
-    max-width: 350px;
+    margin-top: 0.5rem;
 }
 
 .ft-map-square {
-    width: 100%;
-    height: 180px;
+    width: 95%;
+    aspect-ratio: 21 / 9;
+    min-height: 150px;
     border-radius: 12px;
     overflow: hidden;
     border: 1px solid rgba(168, 85, 247, 0.25);
@@ -264,37 +286,78 @@
 }
 
 /* ── Responsive ── */
+@media (max-width: 1200px) {
+    .ft-grid {
+        gap: 2rem;
+    }
+}
+
 @media (max-width: 1024px) {
+    .ft-footer {
+        padding: 4rem 5% 1.5rem;
+    }
+
     .ft-grid {
         grid-template-columns: 1fr 1fr;
-        gap: 2.5rem;
+        gap: 3rem 2rem;
     }
 
     .ft-brand-col {
         grid-column: 1 / -1;
+        max-width: 100%;
+    }
+
+    .ft-logo {
+        font-size: 1.35rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .ft-brand-details {
+        max-width: 600px;
+    }
+
+    .ft-map-square {
+        aspect-ratio: 16 / 9;
     }
 }
 
-@media (max-width: 640px) {
-    .ft-footer {
-        padding: 3rem 5% 0;
-    }
-
+@media (max-width: 768px) {
     .ft-grid {
         grid-template-columns: 1fr;
+        gap: 2.5rem;
     }
 
     .ft-brand-col {
         grid-column: auto;
     }
 
-    .ft-copyright {
+    .ft-social-row {
         flex-direction: column;
-        text-align: center;
+        gap: 1.5rem;
+        padding: 2rem 0;
     }
 
-    .ft-brand-details {
+    .ft-copyright {
         flex-direction: column;
-        gap: 1.25rem;
+        gap: 1rem;
+        padding-bottom: 2.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .ft-footer {
+        padding: 3.5rem 1.25rem 1rem;
+    }
+
+    .ft-logo {
+        font-size: 1.15rem;
+    }
+
+    .ft-address {
+        font-size: 0.8rem;
+    }
+
+    .ft-grid {
+        gap: 2rem;
     }
 }

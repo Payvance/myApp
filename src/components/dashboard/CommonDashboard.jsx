@@ -67,7 +67,6 @@ const CommonDashboard = () => {
         'active_users': '/usermanagement',
         'inactive_users': '/usermanagement',
         'plan': '/tenantplanss',
-        'addons': '/addonplans',
         'companies_allowed': '/BuyPlan'
       },
       // Vendor (Role 3)

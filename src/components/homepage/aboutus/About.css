@@ -327,61 +327,6 @@
     margin: 0;
 }
 
-/* ── Responsive ── */
-@media (max-width: 1024px) {
-    .about-why-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 2rem;
-    }
-}
-
-@media (max-width: 768px) {
-    .about-intro-wrap {
-        grid-template-columns: 1fr;
-        gap: 3rem;
-        padding: 4rem 5%;
-    }
-
-    .about-circle {
-        width: 240px;
-        height: 240px;
-    }
-
-    .about-circle-brand {
-        font-size: 1.5rem;
-    }
-
-    .about-why-wrap {
-        padding: 3rem 5%;
-    }
-
-    .about-why-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .about-story-timeline {
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .about-story-timeline::before {
-        display: none;
-    }
-
-    .about-team-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 1.5rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .about-story-timeline {
-        grid-template-columns: 1fr;
-    }
-
-    .about-team-grid {
-        grid-template-columns: 1fr;
-    }
-}
 
 /* ── 4. Mission & Vision ── */
 .about-mv-wrap {
@@ -576,4 +521,76 @@
     background: linear-gradient(135deg, #a855f7, #7c3aed);
     color: #ffffff;
     border-color: transparent;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+    .about-why-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+    }
+
+    .about-mv-wrap {
+        grid-template-columns: 1fr;
+    }
+
+    .about-mv-card {
+        padding: 4rem 10%;
+    }
+}
+
+@media (max-width: 768px) {
+    .about-intro-wrap {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+        padding: 4rem 5%;
+    }
+
+    .about-circle {
+        width: 240px;
+        height: 240px;
+    }
+
+    .about-circle-brand {
+        font-size: 1.5rem;
+    }
+
+    .about-why-wrap {
+        padding: 3rem 5%;
+    }
+
+    .about-why-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .about-story-timeline {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .about-story-timeline::before {
+        display: none;
+    }
+
+    .about-mv-wrap {
+        grid-template-columns: 1fr;
+    }
+
+    .about-mv-card {
+        padding: 4rem 10%;
+    }
+
+    .about-team-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .about-story-timeline {
+        grid-template-columns: 1fr;
+    }
+
+    .about-team-grid {
+        grid-template-columns: 1fr;
+    }
 }

@@ -20,7 +20,7 @@ const PrivacyPolicyPage = () => {
                 <i className="bi bi-arrow-left"></i> Back to Home
             </button>
 
-            <header className="pp-header">
+            <header className="pp-header-privacy">
                 <div className="pp-app-name">FinlyticZ</div>
                 <div className="pp-company-name">by Payvance</div>
             </header>
@@ -32,7 +32,7 @@ const PrivacyPolicyPage = () => {
                         <h1>Privacy Policy - FinlyticZ</h1>
                         <p className="pp-updated">Operated by PayVance Innovation Private Limited</p>
 
-                        <hr />
+
 
                         <h2>1. Legal Introduction & Acceptance</h2>
                         <p>
@@ -54,7 +54,7 @@ const PrivacyPolicyPage = () => {
                             If you do not agree, you must discontinue use immediately.
                         </p>
 
-                        <hr />
+
 
                         <h2>2. Information We Collect</h2>
 
@@ -98,7 +98,7 @@ const PrivacyPolicyPage = () => {
                             similar tools to understand platform usage and improve services.
                         </p>
 
-                        <hr />
+
 
                         <h2>3. Purpose of Data Processing</h2>
                         <p>We process data strictly for:</p>
@@ -118,7 +118,7 @@ const PrivacyPolicyPage = () => {
                             notifications, account alerts, and transactional communications via email.
                         </p>
 
-                        <hr />
+
 
                         <h2>4. Data Sharing</h2>
                         <p>Data may be shared with:</p>
@@ -133,7 +133,7 @@ const PrivacyPolicyPage = () => {
                             All third parties operate under strict confidentiality obligations.
                         </p>
 
-                        <hr />
+
 
                         <h2>5. Data Security</h2>
                         <p>
@@ -153,7 +153,7 @@ const PrivacyPolicyPage = () => {
                             secure, and users acknowledge inherent internet risks.
                         </p>
 
-                        <hr />
+
 
                         <h2>6. Data Retention</h2>
                         <p>
@@ -162,7 +162,7 @@ const PrivacyPolicyPage = () => {
                             Data may be anonymized or securely deleted when no longer required.
                         </p>
 
-                        <hr />
+
 
                         <h2>7. User Rights</h2>
 
@@ -180,7 +180,7 @@ const PrivacyPolicyPage = () => {
                             Requests can be made by contacting the Grievance Officer below.
                         </p>
 
-                        <hr />
+
 
                         <h2>8. Cookies Policy</h2>
 
@@ -190,7 +190,7 @@ const PrivacyPolicyPage = () => {
                             although certain features of the platform may not function properly.
                         </p>
 
-                        <hr />
+
 
                         <h2>9. Limitation of Liability</h2>
 
@@ -201,7 +201,7 @@ const PrivacyPolicyPage = () => {
                             infrastructure failures beyond reasonable control.
                         </p>
 
-                        <hr />
+
 
                         <h2>10. Indemnification</h2>
 
@@ -211,7 +211,7 @@ const PrivacyPolicyPage = () => {
                             of the platform or violation of this Privacy Policy.
                         </p>
 
-                        <hr />
+
 
                         <h2>11. Governing Law & Jurisdiction</h2>
 
@@ -220,7 +220,7 @@ const PrivacyPolicyPage = () => {
                             Thane, Maharashtra shall have exclusive jurisdiction.
                         </p>
 
-                        <hr />
+
 
                         <h2>12. Grievance Officer</h2>
 

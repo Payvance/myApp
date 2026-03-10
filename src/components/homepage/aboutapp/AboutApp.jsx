@@ -22,7 +22,7 @@ const AboutAppPage = () => {
                 <i className="bi bi-arrow-left"></i> Back to Home
             </button>
 
-            <header className="pp-header">
+            <header className="pp-header-privacy">
                 <div className="pp-app-name">FinlyticZ</div>
                 <div className="pp-company-name">by Payvance</div>
             </header>

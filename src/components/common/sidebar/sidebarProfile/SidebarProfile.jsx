@@ -312,12 +312,6 @@ const handleCompanySubmit = async () => {
               </Link>
             )}
 
-            {showPersonalization && (
-              <Link to="/personalization" className="dropdown-item" onClick={() => setOpenMenu(false)}>
-                <i className="bi bi-palette-fill" />
-                <span>Personalization</span>
-              </Link>
-            )}
             {showcompanyDetails && roleId === 2 && (
              <div
              className="dropdown-item"
@@ -526,19 +520,20 @@ const handleCompanySubmit = async () => {
         </div>
         <div className="company-details-row">
           
-          <div className="company-details-field">
-            <label>
-              {formConfig.CompanyDetails.address.label}
-              <span className="required">*</span>
-            </label>
-            <textarea
-              name="address"
-              required
-              value={companyDetails.address}
-              onChange={handleCompanyChange}
-              max={255}
-            />
-          </div>
+          <div className={`company-details-field floating-textarea ${companyDetails.address ? 'has-value' : ''}`}>
+  <textarea
+    name={formConfig.CompanyDetails.address.label}
+    required
+    value={companyDetails.address}
+    onChange={handleCompanyChange}
+    maxLength={255}
+    placeholder=" "  
+  />
+  <label>
+    {formConfig.CompanyDetails.address.label}
+    <span className="required">*</span>
+  </label>
+</div>
         </div>
       </div>
     <Button text="Submit" onClick={handleCompanySubmit} disabled={Object.values(companyDetails).some((value) => !value.trim())} />
