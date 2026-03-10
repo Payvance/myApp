@@ -1196,3 +1196,48 @@
   .inv__cancel-btn { padding: 0 14px; font-size: 12px; }
   .inv__pay-btn    { font-size: 13px; }
 }
+
+/* ── Billed To edit button ── */
+.inv__party-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.inv__edit-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 5px;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--purple-500, #7E56E4);
+  font-size: 13px;
+  cursor: pointer;
+  line-height: 1;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.inv__edit-btn:hover {
+  background: var(--purple-50, rgba(126, 86, 228, 0.08));
+  border-color: var(--purple-300, #c4b5fd);
+  color: var(--purple-600, #6d28d9);
+}
+
+/* Empty state — clickable "Add billing details" prompt */
+.inv__party-name--empty {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--purple-500, #7E56E4);
+  cursor: pointer;
+  font-style: italic;
+  opacity: 0.8;
+  transition: opacity 0.15s;
+}
+
+.inv__party-name--empty:hover {
+  opacity: 1;
+}

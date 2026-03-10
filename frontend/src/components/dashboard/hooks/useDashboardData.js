@@ -2,12 +2,16 @@ import { useState, useEffect } from 'react';
 import { dashboardServices } from '../../../services/apiService';
 import { getRoleId } from '../../../services/authService';
 
-let globalCache = null;
-let activePromise = null;
+// Lazy cache storage - initialized on first use (avoids temporal dead zone issues)
+const getCacheStore = (() => {
+  let store = { cache: null, promise: null };
+  return () => store;
+})();
 
 // Single API call hook to fetch all dashboard data intelligently
 export const useDashboardData = (yearRange = null) => {
-  const [data, setData] = useState(globalCache);
+  const cacheStore = getCacheStore();
+  const [data, setData] = useState(cacheStore.cache);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -33,12 +37,12 @@ export const useDashboardData = (yearRange = null) => {
         }
 
         // Return existing promise if already fetching to prevent duplicate API hits
-        if (!activePromise || (yearRange && yearRange.startYear)) {
-          activePromise = dashboardServices.getDashboardData(roleId, payload);
+        if (!cacheStore.promise || (yearRange && yearRange.startYear)) {
+          cacheStore.promise = dashboardServices.getDashboardData(roleId, payload);
         }
 
-        const response = await activePromise;
-        globalCache = response.data;
+        const response = await cacheStore.promise;
+        cacheStore.cache = response.data;
         setData(response.data);
         setError(null);
       } catch (err) {

@@ -13,6 +13,17 @@ const Navbar = () => {
     };
 
     useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth > 768) {
+                setIsMenuOpen(false);
+            }
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    useEffect(() => {
         const sections = ['home', 'about', 'features', 'pricing', 'contact'];
         const sectionElements = sections.map(id => document.getElementById(id)).filter(Boolean);
 
@@ -35,6 +46,15 @@ const Navbar = () => {
         return () => observer.disconnect();
     }, []);
 
+    const menuItems = [
+        { id: 'home', label: 'Home', icon: 'bi-house-door', path: '#home' },
+        { id: 'about', label: 'About Us', icon: 'bi-person', path: '#about' },
+        { id: 'features', label: 'Features', icon: 'bi-grid', path: '#features' },
+        { id: 'pricing', label: 'Pricing Plans', icon: 'bi-stack', path: '#pricing' },
+        { id: 'partner', label: 'Partner With Us', icon: 'bi-people', path: '#', isAction: true, navigateTo: '/partnerwithus' },
+        { id: 'contact', label: 'Contact Us', icon: 'bi-chat-left-text', path: '#contact' },
+    ];
+
     return (
         <nav className="navbar">
             <div className="navbar-container">
@@ -42,30 +62,58 @@ const Navbar = () => {
                     FinlyticZ
                 </div>
 
-                {/* Desktop Links */}
-                <ul className={`navbar-links ${isMenuOpen ? 'active' : ''}`}>
-                    <li><a href="#home" className={activeSection === 'home' ? 'active' : ''} onClick={() => setIsMenuOpen(false)}>Home</a></li>
-                    <li><a href="#about" className={activeSection === 'about' ? 'active' : ''} onClick={() => setIsMenuOpen(false)}>About Us</a></li>
-                    <li><a href="#features" className={activeSection === 'features' ? 'active' : ''} onClick={() => setIsMenuOpen(false)}>Features</a></li>
-                    <li><a href="#pricing" className={activeSection === 'pricing' ? 'active' : ''} onClick={() => setIsMenuOpen(false)}>Pricing Plans</a></li>
-                    <li><a href="#" onClick={(e) => { e.preventDefault(); setIsMenuOpen(false); navigate('/partnerwithus'); }}>Partner With Us</a></li>
-                    <li><a href="#contact" className={activeSection === 'contact' ? 'active' : ''} onClick={() => setIsMenuOpen(false)}>Contact Us</a></li>
+                {/* Hamburger Menu Icon (Desktop Hidden, Mobile Visible) */}
+                {!isMenuOpen && (
+                    <div className="hamburger" onClick={toggleMenu}>
+                        <i className="bi bi-list"></i>
+                    </div>
+                )}
 
-                    {/* Mobile Actions (Visible only in mobile menu) */}
+                {/* Mobile/Desktop Menu */}
+                <ul className={`navbar-links ${isMenuOpen ? 'active' : ''}`}>
+                    {/* Header in Mobile Menu (Visible only when open on mobile) */}
+                    {isMenuOpen && (
+                        <div className="mobile-menu-header">
+                            <div className="navbar-logo">FinlyticZ</div>
+                            <div className="menu-close" onClick={toggleMenu}>
+                                <i className="bi bi-x"></i>
+                            </div>
+                        </div>
+                    )}
+
+                    {menuItems.map((item) => (
+                        <li key={item.id} className={activeSection === item.id ? 'active' : ''}>
+                            <a
+                                href={item.path}
+                                className={activeSection === item.id ? 'active' : ''}
+                                onClick={(e) => {
+                                    if (item.isAction) {
+                                        e.preventDefault();
+                                        navigate(item.navigateTo);
+                                    }
+                                    setIsMenuOpen(false);
+                                }}
+                            >
+                                <span className="menu-icon-box">
+                                    <i className={`bi ${item.icon}`}></i>
+                                </span>
+                                <span className="menu-label">{item.label}</span>
+                            </a>
+                        </li>
+                    ))}
+
+                    {/* Mobile Actions */}
                     <div className="mobile-actions">
-                        <Button variant="outline" onClick={() => navigate('/signin')}>Login</Button>
-                        <Button variant="primary" icon="bi-download">Desktop App</Button>
+                        <button className="btn-mobile-login" onClick={() => navigate('/signin')}>Login</button>
+                        <button className="btn-mobile-app" onClick={() => navigate('/download')}>
+                            <i className="bi bi-download"></i> Desktop App
+                        </button>
                     </div>
                 </ul>
 
                 <div className="navbar-actions desktop-only">
                     <Button variant="outline" onClick={() => navigate('/signin')}>Login</Button>
                     <Button variant="primary" icon="bi-download">Desktop App</Button>
-                </div>
-
-                {/* Hamburger Menu Icon */}
-                <div className="hamburger" onClick={toggleMenu}>
-                    <i className={`bi ${isMenuOpen ? 'bi-x-lg' : 'bi-list'}`}></i>
                 </div>
             </div>
         </nav>

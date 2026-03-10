@@ -5,6 +5,16 @@ import "../CardHeader.css";
 
 const RecentUsersTable = ({ title = "Recent Users", data = [], loading, type = "users", onViewClick }) => {
 
+    const isBatches = type === "batches";
+  const isTenants = type === "tenants";
+  const isVendorBatchTenants = type === "vendor_batch_tenants";
+  const isDetailedTenants = type === "detailed_tenants";
+  const entityName = isBatches ? "Batches"
+    : isTenants ? "Tenants"
+      : isVendorBatchTenants ? "Recordings"
+        : isDetailedTenants ? "Tenants"
+          : "Users";
+          
   if (loading) {
     return (
       <div className="users-card">
@@ -32,15 +42,7 @@ const RecentUsersTable = ({ title = "Recent Users", data = [], loading, type = "
     );
   }
 
-  const isBatches = type === "batches";
-  const isTenants = type === "tenants";
-  const isVendorBatchTenants = type === "vendor_batch_tenants";
-  const isDetailedTenants = type === "detailed_tenants";
-  const entityName = isBatches ? "Batches"
-    : isTenants ? "Tenants"
-      : isVendorBatchTenants ? "Recordings"
-        : isDetailedTenants ? "Tenants"
-          : "Users";
+
 
   return (
     <div className="users-card">

@@ -20,7 +20,7 @@ const TermsConditionsPage = () => {
                 <i className="bi bi-arrow-left"></i> Back to Home
             </button>
 
-            <header className="pp-header">
+            <header className="pp-header-privacy">
                 <div className="pp-app-name">FinlyticZ</div>
                 <div className="pp-company-name">by PayVance</div>
             </header>
@@ -30,11 +30,9 @@ const TermsConditionsPage = () => {
                     <article className="pp-prose">
 
                         <h1>Terms and Conditions</h1>
-                        <p className="pp-updated">Last updated: March 5, 2026</p>
+                        <p className="pp-updated">Operated by PayVance Innovation Private Limited</p>
 
-                        <p><strong>Operated by PayVance Innovation Private Limited</strong></p>
 
-                        <hr />
 
                         <h2>1. Introduction</h2>
                         <p>
@@ -51,7 +49,7 @@ const TermsConditionsPage = () => {
                             of the Platform immediately.
                         </p>
 
-                        <hr />
+
 
                         <h2>2. Eligibility</h2>
                         <p>
@@ -59,7 +57,7 @@ const TermsConditionsPage = () => {
                             into binding agreements under applicable law in order to use the Platform.
                         </p>
 
-                        <hr />
+
 
                         <h2>3. User Account</h2>
                         <p>To access certain features of the Platform, users may be required to create an account. You agree to:</p>
@@ -74,7 +72,7 @@ const TermsConditionsPage = () => {
                             The Company reserves the right to suspend or terminate accounts that violate these Terms.
                         </p>
 
-                        <hr />
+
 
                         <h2>4. Services</h2>
                         <p>
@@ -87,7 +85,7 @@ const TermsConditionsPage = () => {
                             of the Platform at any time without prior notice.
                         </p>
 
-                        <hr />
+
 
                         <h2>5. Payments</h2>
                         <p>
@@ -101,7 +99,7 @@ const TermsConditionsPage = () => {
                             payment processors.
                         </p>
 
-                        <hr />
+
 
                         <h2>6. User Obligations</h2>
                         <p>Users agree not to:</p>
@@ -117,7 +115,7 @@ const TermsConditionsPage = () => {
                             Violation of these obligations may result in account termination and legal action.
                         </p>
 
-                        <hr />
+
 
                         <h2>7. Intellectual Property</h2>
                         <p>
@@ -131,7 +129,7 @@ const TermsConditionsPage = () => {
                             use the Platform solely for its intended purpose.
                         </p>
 
-                        <hr />
+
 
                         <h2>8. Limitation of Liability</h2>
                         <p>
@@ -140,7 +138,7 @@ const TermsConditionsPage = () => {
                             from the use or inability to use the Platform.
                         </p>
 
-                        <hr />
+
 
                         <h2>9. Termination</h2>
                         <p>
@@ -149,7 +147,7 @@ const TermsConditionsPage = () => {
                             misuse of the Platform is detected.
                         </p>
 
-                        <hr />
+
 
                         <h2>10. Third-Party Services</h2>
                         <p>
@@ -158,7 +156,7 @@ const TermsConditionsPage = () => {
                             third-party platforms.
                         </p>
 
-                        <hr />
+
 
                         <h2>11. Modification of Terms</h2>
                         <p>
@@ -167,7 +165,7 @@ const TermsConditionsPage = () => {
                             acceptance of the revised Terms.
                         </p>
 
-                        <hr />
+
 
                         <h2>12. Governing Law</h2>
                         <p>
@@ -176,7 +174,7 @@ const TermsConditionsPage = () => {
                             jurisdiction over any disputes arising from these Terms.
                         </p>
 
-                        <hr />
+
 
                         <h2>13. Contact Information</h2>
 

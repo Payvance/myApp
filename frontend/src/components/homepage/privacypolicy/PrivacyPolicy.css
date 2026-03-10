@@ -64,12 +64,13 @@
     color: #4f46e5;
 }
 
-.pp-header {
+.pp-header-privacy {
     max-width: 900px;
     margin: 0 auto 1.5rem;
     text-align: center;
     position: relative;
     z-index: 1;
+    background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
 }
 
 .pp-app-name {
@@ -234,7 +235,7 @@
         font-size: clamp(2.25rem, 7vw, 2.75rem);
     }
 
-    .pp-header {
+    .pp-header-privacy {
         margin-bottom: 2rem;
     }
 
