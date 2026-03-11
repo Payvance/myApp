@@ -216,6 +216,7 @@ public class ReportService {
                     .collect(Collectors.toList());
             dto.setEwayBillDetails(ewayDtos);
         }
+        dto.setIsForex(voucher.getIsForex());
         return dto;
     }
 

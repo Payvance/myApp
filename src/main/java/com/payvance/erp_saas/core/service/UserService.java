@@ -49,6 +49,7 @@ import com.payvance.erp_saas.core.repository.UserAddressRepository;
 import com.payvance.erp_saas.core.repository.UserRepository;
 import com.payvance.erp_saas.core.repository.VendorRepository;
 import com.payvance.erp_saas.core.util.ReferralCodeUtil;
+import com.payvance.erp_saas.exceptions.BadCredentialsException;
 import com.payvance.erp_saas.exceptions.UserNotAllowedException;
 import com.payvance.erp_saas.exceptions.UserNotFoundException;
 
@@ -346,6 +347,9 @@ public class UserService {
 
         if (!user.isActive()) {
             throw new UserNotAllowedException("User is inactive");
+        }
+        if (passwordEncoder.matches(newPassword, user.getPasswordHash())) {
+            throw new BadCredentialsException("New password cannot be the same as the current password");
         }
 
         user.setPasswordHash(passwordEncoder.encode(newPassword));

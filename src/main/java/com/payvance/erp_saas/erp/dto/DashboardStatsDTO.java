@@ -8,5 +8,6 @@ public class DashboardStatsDTO {
     private BigDecimal totalReceivables;
     private BigDecimal totalPayables;
     private BigDecimal cashInHand;
+    private BigDecimal bankOdAccount;
     private BigDecimal bankAccounts;
 }

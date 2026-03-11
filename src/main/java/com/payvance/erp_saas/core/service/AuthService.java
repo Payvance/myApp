@@ -125,7 +125,8 @@ public class AuthService {
         }
 
         if (user.getEmailVerifiedAt() == null) {
-            throw new UserNotAllowedException("Email verification required. Please check your inbox and verify your email address.");
+            throw new UserNotAllowedException(
+                    "Email verification required. Please check your inbox and verify your email address.");
         }
         // for currently, we are allowing multiple sessions as we are moving towards
         // channel-based login
@@ -184,8 +185,8 @@ public class AuthService {
         String token = jwt.generateAccessToken(user.getId(), null, roleId);
         savePAT(user.getId(), null, roleEnum, token);
         return LoginResponse.builder()
-        		.accessToken(token)
-        		.roleId(roleId)
+                .accessToken(token)
+                .roleId(roleId)
                 .userId(user.getId())
                 .redirectUrl("/profile-form")
                 .message("Complete your profile to continue")
@@ -243,7 +244,8 @@ public class AuthService {
                     .build();
         }
 
-        // inactive → allow login but redirect to plan page (sync is always blocked here)
+        // inactive → allow login but redirect to plan page (sync is always blocked
+        // here)
         if (tenant.isInactive()) {
 
             String token = jwt.generateAccessToken(user.getId(), tenantId, roleId);
@@ -255,7 +257,8 @@ public class AuthService {
                     .userId(user.getId()) // for frontend use
                     .tenantId(tenantId)
                     .redirectUrl("/tenant/plan")
-                    .message("Login successful|SYNC_BLOCKED:Your account is inactive. Please subscribe to a plan to enable syncing.")
+                    .message(
+                            "Login successful|SYNC_BLOCKED:Your account is inactive. Please subscribe to a plan to enable syncing.")
                     .build();
         }
 
@@ -269,7 +272,8 @@ public class AuthService {
             case "trial" -> "Your free trial has expired. Please subscribe to a plan to continue syncing.";
             case "EXPIRED" -> "Your license has expired. Please renew your subscription to continue syncing.";
             case "NONE" -> "No active license found. Please contact your vendor or subscribe to a plan.";
-            default -> licenseInfo.getOrDefault("message", "Your license is not active. Please contact support.").toString();
+            default ->
+                licenseInfo.getOrDefault("message", "Your license is not active. Please contact support.").toString();
         };
     }
 
@@ -333,8 +337,8 @@ public class AuthService {
 
         User user = userRepo.findById(jwt.getUserId(token))
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
-        if(user.getEmailVerifiedAt() != null) {
-        	throw new IllegalStateException("Email is already varified");
+        if (user.getEmailVerifiedAt() != null) {
+            throw new IllegalStateException("Email is already varified");
         }
 
         user.setEmailVerifiedAt(LocalDateTime.now());

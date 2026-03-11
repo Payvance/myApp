@@ -26,4 +26,5 @@ public class AddCompanyRequest {
     private String cinNumber;
     private Boolean isBillWiseOn;
     private Boolean isBatchesOn;
+    private String baseCurrency;
 }

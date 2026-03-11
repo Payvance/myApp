@@ -785,6 +785,7 @@ public class TallySyncService {
         company.setCinNumber(req.getCinNumber());
         company.setIsBillWiseOn(req.getIsBillWiseOn());
         company.setIsBatchesOn(req.getIsBatchesOn());
+        company.setBaseCurrency(req.getBaseCurrency());
 
         tallyCompanyRepository.findByGuid(req.getGuid()).ifPresent(existing -> company.setId(existing.getId()));
         TallyCompany saved = tallyCompanyRepository.save(company);
@@ -844,6 +845,7 @@ public class TallySyncService {
         v.setAlterId(d.getAlterId());
         v.setMasterId(d.getMasterId());
         v.setIsInvoice(d.getIsInvoice());
+        v.setIsForex(d.getIsForex());
         v.setPartyLedgerName(d.getPartyLedgerName());
         v.setCompanyId(d.getCompanyId());
 

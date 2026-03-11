@@ -24,13 +24,29 @@ public interface TallyLedgerRepository extends JpaRepository<TallyLedger, Long> 
         Page<TallyLedger> findByTenantIdAndCompanyIdAndGroupName(Long tenantId, String companyId, String groupName,
                         Pageable pageable);
 
-        @org.springframework.data.jpa.repository.Query("SELECT SUM(l.closingBalance) FROM TallyLedger l WHERE l.tenantId = :tenantId AND l.companyId = :companyId AND l.groupName IN (SELECT g.name FROM TallyGroup g WHERE g.tenantId = :tenantId AND (g.name = :rootGroup OR g.primaryGroup = :rootGroup))")
+        @org.springframework.data.jpa.repository.Query(nativeQuery = true, value = "WITH RECURSIVE GroupHierarchy AS ( "
+                        +
+                        "  SELECT name FROM tally_groups WHERE tenant_id = :tenantId AND (name = :rootGroup OR primary_group = :rootGroup) "
+                        +
+                        "  UNION " +
+                        "  SELECT g.name FROM tally_groups g INNER JOIN GroupHierarchy gh ON g.parent_name = gh.name WHERE g.tenant_id = :tenantId "
+                        +
+                        ") " +
+                        "SELECT SUM(l.closing_balance) FROM tally_ledgers l WHERE l.tenant_id = :tenantId AND l.company_id = :companyId AND l.group_name IN (SELECT name FROM GroupHierarchy)")
         BigDecimal sumClosingBalanceByRootGroup(
                         @org.springframework.data.repository.query.Param("tenantId") Long tenantId,
                         @org.springframework.data.repository.query.Param("companyId") String companyId,
                         @org.springframework.data.repository.query.Param("rootGroup") String rootGroup);
 
-        @org.springframework.data.jpa.repository.Query("SELECT l FROM TallyLedger l WHERE l.tenantId = :tenantId AND l.companyId = :companyId AND l.groupName IN (SELECT g.name FROM TallyGroup g WHERE g.tenantId = :tenantId AND (g.name = :rootGroup OR g.primaryGroup = :rootGroup)) ORDER BY ABS(l.closingBalance) DESC")
+        @org.springframework.data.jpa.repository.Query(nativeQuery = true, value = "WITH RECURSIVE GroupHierarchy AS ( "
+                        +
+                        "  SELECT name FROM tally_groups WHERE tenant_id = :tenantId AND (name = :rootGroup OR primary_group = :rootGroup) "
+                        +
+                        "  UNION " +
+                        "  SELECT g.name FROM tally_groups g INNER JOIN GroupHierarchy gh ON g.parent_name = gh.name WHERE g.tenant_id = :tenantId "
+                        +
+                        ") " +
+                        "SELECT * FROM tally_ledgers l WHERE l.tenant_id = :tenantId AND l.company_id = :companyId AND l.group_name IN (SELECT name FROM GroupHierarchy) ORDER BY ABS(l.closing_balance) DESC")
         Page<TallyLedger> findTopLedgersByRootGroup(
                         @org.springframework.data.repository.query.Param("tenantId") Long tenantId,
                         @org.springframework.data.repository.query.Param("companyId") String companyId,

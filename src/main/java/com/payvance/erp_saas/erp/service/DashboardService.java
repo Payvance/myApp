@@ -94,6 +94,11 @@ public class DashboardService {
         stats.setTotalReceivables(getSum(tenantId, companyId, "Sundry Debtors").abs());
         stats.setTotalPayables(getSum(tenantId, companyId, "Sundry Creditors").abs());
 
+        // Adding Cash-in-hand, Bank OD A/c, and Bank Accounts as requested
+        stats.setCashInHand(getSum(tenantId, companyId, "Cash-in-Hand"));
+        stats.setBankOdAccount(getSum(tenantId, companyId, "Bank OD A/c"));
+        stats.setBankAccounts(getSum(tenantId, companyId, "Bank Accounts"));
+
         // Derived from simple logic for now, or could query Vouchers similarly
         return stats;
     }
