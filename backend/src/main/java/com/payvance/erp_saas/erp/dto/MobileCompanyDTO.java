@@ -35,6 +35,7 @@ public class MobileCompanyDTO {
     private String cinNumber;
     private Boolean isBillWiseOn;
     private Boolean isBatchesOn;
+    private String baseCurrency;
 
     // License Info (from TallyConfiguration)
     private LocalDate licenseExpiryDate;

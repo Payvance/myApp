@@ -44,6 +44,9 @@ public class Voucher {
     @Column(name = "is_invoice")
     private Boolean isInvoice;
 
+    @Column(name = "is_forex")
+    private Boolean isForex;
+
     @Column(name = "party_ledger_name", length = 200)
     private String partyLedgerName;
 

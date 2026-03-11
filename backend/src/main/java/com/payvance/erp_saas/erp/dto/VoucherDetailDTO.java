@@ -21,6 +21,7 @@ public class VoucherDetailDTO {
     private BigDecimal totalAmount;
     private BigDecimal invoiceTotal; // Gross Total for display
     private Boolean isInvoice;
+    private Boolean isForex;
 
     private String narration;
     private String deliveryNotes;

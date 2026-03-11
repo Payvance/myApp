@@ -83,6 +83,7 @@ public class MobileAppController {
                     .cinNumber(company.getCinNumber())
                     .isBillWiseOn(company.getIsBillWiseOn())
                     .isBatchesOn(company.getIsBatchesOn())
+                    .baseCurrency(company.getBaseCurrency())
                     .licenseExpiryDate(config != null ? config.getLicenseExpiryDate() : null)
                     .licenseSerialNumber(config != null ? config.getLicenseSerialNumber() : null)
                     .licenseEmail(config != null ? config.getLicenseEmail() : null)

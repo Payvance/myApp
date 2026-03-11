@@ -17,6 +17,7 @@ public class VoucherDTO {
     private java.math.BigDecimal totalAmount;
     private Boolean isInvoice;
     private Boolean isDeleted;
+    private Boolean isForex;
 
     private String companyId;
 

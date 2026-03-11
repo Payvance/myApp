@@ -75,4 +75,7 @@ public class TallyCompany {
 
     @Column(name = "is_batches_on")
     private Boolean isBatchesOn;
+
+    @Column(name = "base_currency", length = 10)
+    private String baseCurrency;
 }
