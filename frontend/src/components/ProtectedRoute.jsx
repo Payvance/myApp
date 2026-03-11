@@ -12,7 +12,7 @@ const ProtectedRoute = ({ children }) => {
       
       // If no token, redirect to login
       if (!token) {
-        navigate('/login', { 
+        navigate('/signin', { 
           state: { from: location.pathname },
           replace: true 
         });

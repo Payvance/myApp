@@ -62,6 +62,7 @@ const BuyPlan = () => {
   const [companyFormData, setCompanyFormData] = useState({
     gstNumber: '', companyName: '', address: '',
   });
+  const [validationErrors, setValidationErrors] = useState({});
   const [showCompanyPopup, setShowCompanyPopup] = useState(false);
   const [isUpdate, setIsUpdate]                 = useState(false);
   const [loading, setLoading]                   = useState(false);
@@ -1188,7 +1189,10 @@ const BuyPlan = () => {
       {/* ── Company Details popup ─────────────────────────── */}
       <PopUp
         isOpen={showCompanyPopup}
-        onClose={handleCloseCompanyPopup}
+        onClose={() => {
+         setShowCompanyPopup(false);
+         setValidationErrors({});
+       }}
         title="Company Details"
         size="medium"
       >
@@ -1202,6 +1206,8 @@ const BuyPlan = () => {
               validationType="GST"
               max={15}
               classN="large"
+              validationErrors={validationErrors}
+              setValidationErrors={setValidationErrors}
             />
             <InputField
               label={formConfig.CompanyDetails.companyName.label}
@@ -1211,6 +1217,8 @@ const BuyPlan = () => {
               required
               max={150}
               classN="large"
+              validationErrors={validationErrors}
+              setValidationErrors={setValidationErrors}
             />
           </div>
           <div className="company-details-row">
@@ -1219,7 +1227,13 @@ const BuyPlan = () => {
                 name={formConfig.CompanyDetails.address.label}
                 required
                 value={companyFormData.address}
-                onChange={handleCompanyChange}
+                onChange={(e) => {
+                  const { value } = e.target;
+                  handleCompanyChange({ target: { name: 'address', value } });
+                  if (value.trim()) {
+                    setValidationErrors(prev => ({ ...prev, address: false }));
+                  }
+                }}
                 maxLength={255}
                 placeholder=" "
               />
@@ -1233,7 +1247,7 @@ const BuyPlan = () => {
         <Button
           text={loading ? "Saving..." : isUpdate ? "Update" : "Submit"}
           onClick={handleCompanySubmit}
-          disabled={loading || !companyFormData.companyName?.trim() || !companyFormData.address?.trim()}
+          disabled={Object.values(companyDetails).some((value) => !value.trim()) || Object.values(validationErrors).some((error) => error) || loading}
         />
       </PopUp>
 
