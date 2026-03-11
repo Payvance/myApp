@@ -63,6 +63,7 @@ const UserProfileMenu = ({
   companyName: "",
   address: "",
   });
+  const [validationErrors, setValidationErrors] = useState({});
   const handleCompanyChange = (e) => {
   const { name, value } = e.target;
   setCompanyDetails((prev) => ({
@@ -318,6 +319,7 @@ const handleCompanySubmit = async () => {
              onClick={async () => {
              setShowCompanyPopup(true);
              setOpenMenu(false);
+             setValidationErrors({});
              await fetchCompanyDetails();
              }}
              >
@@ -492,7 +494,10 @@ const handleCompanySubmit = async () => {
       {/* ── Company Details Popup ── */}
       <PopUp
        isOpen={showCompanyPopup}
-       onClose={() => setShowCompanyPopup(false)}
+       onClose={() => {
+         setShowCompanyPopup(false);
+         setValidationErrors({});
+       }}
        title="Company Details"
        size="medium"
     >
@@ -507,6 +512,8 @@ const handleCompanySubmit = async () => {
               validationType="GST"
               max={15}
               classN="large"
+              validationErrors={validationErrors}
+              setValidationErrors={setValidationErrors}
             />
             <InputField
               label={formConfig.CompanyDetails.companyName.label}
@@ -516,6 +523,8 @@ const handleCompanySubmit = async () => {
               required
               max={150}
               classN="large"
+              validationErrors={validationErrors}
+              setValidationErrors={setValidationErrors}
             />
         </div>
         <div className="company-details-row">
@@ -525,7 +534,13 @@ const handleCompanySubmit = async () => {
     name={formConfig.CompanyDetails.address.label}
     required
     value={companyDetails.address}
-    onChange={handleCompanyChange}
+    onChange={(e) => {
+      const { value } = e.target;
+      handleCompanyChange({ target: { name: 'address', value } });
+      if (value.trim()) {
+        setValidationErrors(prev => ({ ...prev, address: false }));
+      }
+    }}
     maxLength={255}
     placeholder=" "  
   />
@@ -536,7 +551,7 @@ const handleCompanySubmit = async () => {
 </div>
         </div>
       </div>
-    <Button text="Submit" onClick={handleCompanySubmit} disabled={Object.values(companyDetails).some((value) => !value.trim())} />
+    <Button text="Submit" onClick={handleCompanySubmit} disabled={Object.values(companyDetails).some((value) => !value.trim()) || Object.values(validationErrors).some((error) => error) || loading} />
     </PopUp>
     </>
   );
