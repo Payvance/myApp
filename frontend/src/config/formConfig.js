@@ -32,6 +32,9 @@ export const formConfig = {
     subtext : {
       label : "Sign in to continue to your account"
     },
+    Status : {
+      label : "Status"
+    }
   },
 
   caprofile: {
@@ -62,6 +65,18 @@ export const formConfig = {
     aadhaar: {
       label: "Aadhaar No.",
     },
+    panDocument: {
+      label: "PAN Document",
+    },
+    gstDocument: {
+      label: "GST Certificate Document",
+    },
+    msmeRegister: {
+      label: "MSME Registered",
+    },
+    msmeDocument: {
+      label: "MSME Document",
+    },
   },
 
   vendorprofile: {
@@ -72,7 +87,7 @@ export const formConfig = {
       label: "Years of Experience",
     },
     vendortype: {
-      label: "Type",
+      label: "Organization Type",
     },
     gstno: {
       label: "GST No.",
@@ -88,7 +103,28 @@ export const formConfig = {
     },
     assignDiscount: {
       label : "Assigned Discount"
-    }
+    },
+    email: {
+      label: "Email ID",
+    },
+    mobile: {
+      label: "Mobile Number",
+    },
+    companyname: {
+      label: "Company Name",
+    },
+    panDocument: {
+      label: "PAN Document",
+    },
+    gstDocument: {
+      label: "GST Certificate Document",
+    },
+    msmeRegister: {
+      label: "MSME Registered",
+    },
+    msmeDocument: {
+      label: "MSME Document",
+    },
   },
 
   bankdetails: {

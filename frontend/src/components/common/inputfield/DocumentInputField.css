@@ -1,0 +1,99 @@
+/* DocumentInputField specific styles can go here */
+/* Currently using shared .input-container styles from global/common CSS */
+
+.input-container input[type="file"] {
+    cursor: pointer;
+}
+
+.input-container input[type="file"]:disabled {
+    cursor: not-allowed;
+    background-color: rgb(225 225 225 / 37%) !important;
+}
+
+/* Ensure file input labels behave like floating labels even though it's a file input */
+.input-container input[type="file"]+label {
+    top: 0;
+    transform: translateY(-50%);
+    font-size: 12px;
+    color: #6366f1;
+    font-weight: 600;
+}
+
+.document-input-container {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.file-info-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    font-size: 13px;
+    color: #10b981;
+    /* Success green */
+    width: fit-content;
+    max-width: 100%;
+}
+
+.file-name {
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: inherit;
+    max-width: 250px;
+}
+
+.file-name::before {
+    content: "Selected: ";
+}
+
+.file-size {
+    display: none;
+    /* Hide size to match minimalistic design */
+}
+
+.file-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.view-file-btn {
+    background: none;
+    border: none;
+    color: #6366f1;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 2px 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    border-radius: 4px;
+}
+
+.view-file-btn:hover {
+    background-color: #eef2ff;
+    color: #4338ca;
+}
+
+.clear-file-btn {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 0 4px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.clear-file-btn:hover {
+    color: #ef4444;
+    transform: scale(1.1);
+}

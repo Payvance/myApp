@@ -49,7 +49,7 @@ api.interceptors.response.use(
       localStorage.removeItem('roleId');
       localStorage.removeItem('userId');
       // Redirect to login page
-      window.location.href = '/login';
+      window.location.href = '/signin';
     }
     return Promise.reject(error);
   }

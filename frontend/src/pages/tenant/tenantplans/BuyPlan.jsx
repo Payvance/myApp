@@ -1205,6 +1205,7 @@ const BuyPlan = () => {
               onChange={handleCompanyChange}
               validationType="GST"
               max={15}
+              required
               classN="large"
               validationErrors={validationErrors}
               setValidationErrors={setValidationErrors}
@@ -1247,7 +1248,7 @@ const BuyPlan = () => {
         <Button
           text={loading ? "Saving..." : isUpdate ? "Update" : "Submit"}
           onClick={handleCompanySubmit}
-          disabled={Object.values(companyDetails).some((value) => !value.trim()) || Object.values(validationErrors).some((error) => error) || loading}
+          disabled={Object.values(companyFormData).some((value) => !value.trim()) || Object.values(validationErrors).some((error) => error) || loading}
         />
       </PopUp>
 

@@ -134,7 +134,7 @@ const ForgotPassword = () => {
           target={email}
           otp={otp}
           otpLoading={otpLoading}
-          totalSeconds={90}
+          totalSeconds={300}
           canResend={canResend}
           verifyError={verifyError}
           onOtpChange={handleOtpChange}

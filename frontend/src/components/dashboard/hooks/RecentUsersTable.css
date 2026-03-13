@@ -29,11 +29,10 @@
 .users-table td {
 
   border-top: 1px solid #f1f5f9;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .users-table tr:hover {
-  background: #f8fafc;
   transition: 0.2s ease;
 }
 
@@ -58,6 +57,7 @@
 
 .user-name {
   font-weight: 600;
+  font-size: 13px;
 }
 
 .user-email {

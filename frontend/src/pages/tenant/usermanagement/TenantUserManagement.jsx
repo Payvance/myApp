@@ -14,12 +14,21 @@ import OtpModal from "../../../components/common/otpModal/OtpModal";
 import { authServices, tenantServices, userServices } from "../../../services/apiService";
 import { useNavigate } from "react-router-dom";
 import { COMPANY_INFO } from "../../../config/Config";
+import OptionInputBox from "../../../components/common/optioninputbox/OptionInputBox";
 
 const TenantUserManagement = () => {
   // ---------------- Popup State ----------------
   const [isCreatePopupOpen, setIsCreatePopupOpen] = useState(false);
+  const [tenantUserActive, setTenantUserActive] = useState(true);
 
-  const handleOpenCreatePopup = () => setIsCreatePopupOpen(true);
+  const handleOpenCreatePopup = () => {
+    
+  // resetForm();
+  setIsEditMode(false);        // ✅ clear edit mode
+  setEditingUserId(null);      // ✅ clear editing user
+  setPersonalData({});         // ✅ clear personal data
+  setIsCreatePopupOpen(true);
+};
 
 
 
@@ -32,13 +41,16 @@ const TenantUserManagement = () => {
   const [loading, setLoading] = useState(false);
   const [isSuccessPopupOpen, setIsSuccessPopupOpen] = useState(false);
   const [validationErrors, setValidationErrors] = useState({});
+  const [personalData, setPersonalData] = useState({});
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editingUserId, setEditingUserId] = useState(null);
   const [planDetails, setPlanDetails] = useState({
     activeUsers: 0,
     createdUsers: 0,
   });
   const navigate = useNavigate();
   const canCreateUser =
-  planDetails.createdUsers < planDetails.activeUsers;
+  planDetails.createdUsers < planDetails.activeUsers - 1;
   // ---------------- OTP Hook ----------------
   const {
     otp,
@@ -66,6 +78,7 @@ const TenantUserManagement = () => {
     resetOtp(); // reset OTP state
     // Reset OTP verified state manually
     setValidationErrors({});
+    setTenantUserActive(true);
     resetOtpVerification(); // <-- add this
   };
 
@@ -197,6 +210,61 @@ const fetchData = useCallback(async (params = {}) => {
     gatPlanDetails();
   }, []);
 
+
+  const getUserData = async (user) => {
+  try {
+    const payload = { userId: user.userId };
+    const response = await tenantServices.fetchTenantUserById(
+      payload,
+      localStorage.getItem("tenant_id")
+    );
+    const data = response.data;
+
+    setFullName(data.name);
+    setEmail(data.email);
+    setMobileNumber(data.phone);
+    setTenantUserActive(data.tenantUserActive); // ✅ set status
+
+    setPersonalData({
+      userName: data.name,
+      userEmail: data.email,
+      userPhone: data.phone,
+      userRole: data.roleId,
+    });
+
+    setEditingUserId(data.userId);
+    setIsEditMode(true);
+    setIsCreatePopupOpen(true);
+  } catch (error) {
+    toast.error("Failed to fetch user data");
+  }
+};
+
+const handleUpdateUser = async () => {
+  try {
+    setLoading(true);
+
+    const payload = {
+      userId: editingUserId,
+      active: tenantUserActive,
+      name: fullName,
+    };
+
+    const tenant_id = localStorage.getItem("tenant_id");
+
+    await tenantServices.updateTenantUserStatus(payload, tenant_id);
+
+    toast.success("User updated successfully");
+
+    setTimeout(() => {
+      window.location.reload();
+    }, 250);                    // ✅ wait for toast to show, then reload
+
+  } catch (error) {
+    toast.error("Failed to update user");
+    setLoading(false);           // ✅ only reset loading on error, reload handles the rest
+  }
+};
   
 
   return (
@@ -228,11 +296,11 @@ const fetchData = useCallback(async (params = {}) => {
             data={tableData}
             columns={TANENT_COLUMNS}
             loading={loading}
-            basePath="/usermanagement"
             primaryKeys={["userId"]}
             className="license-table"
             showEditButton={true}
-            editButtonDisabled={(row) => row.roleName === "TENANT_ADMIN"}
+            onEdit={getUserData}
+            
           />
 
         </div>
@@ -241,7 +309,7 @@ const fetchData = useCallback(async (params = {}) => {
         <PopUp
           isOpen={isCreatePopupOpen}
           onClose={!showOtpModal ? handleCloseCreatePopup : undefined}
-          title="Create New User"
+          title={isEditMode ? "Edit User" : "Create New User"}
           size="small"
         >
           <div className="signup-panel pop-pannel">
@@ -268,25 +336,27 @@ const fetchData = useCallback(async (params = {}) => {
                     onChange={(e) => setMobileNumber(e.target.value)}
                     name="mobileNumber"
                     validationType="MOBILE"
-                    disabled={otpVerified}
+                    disabled={otpVerified || isEditMode}
                     required={true}
                     max={10}
                   />
                 </div>
-                <div className="otp-btn-col">
-                  {!otpVerified ? (
-                    <button
-                      type="button"
-                      className="otp-btn"
-                      onClick={() => sendOtp(mobileNumber)}
-                      disabled={otpLoading}
-                    >
-                      {otpLoading ? "Sending..." : "Send OTP"}
-                    </button>
-                  ) : (
-                    <span className="otp-verified">✔ Verified</span>
-                  )}
-                </div>
+                {!isEditMode && (
+                  <div className="otp-btn-col">
+                    {!otpVerified ? (
+                      <button
+                        type="button"
+                        className="otp-btn"
+                        onClick={() => sendOtp(mobileNumber)}
+                        disabled={otpLoading}
+                      >
+                        {otpLoading ? "Sending..." : "Send OTP"}
+                      </button>
+                    ) : (
+                      <span className="otp-verified">✔ Verified</span>
+                    )}
+                  </div>
+                )}
               </div>
  
               {/* Email */}
@@ -299,16 +369,43 @@ const fetchData = useCallback(async (params = {}) => {
                 validationType="EMAIL"
                 required={true}
                 max={50}
+                disabled={isEditMode}
                 validationErrors={validationErrors}
                 setValidationErrors={setValidationErrors}
               />
+
+              {/* Status dropdown - only in edit mode */}
+              {isEditMode && (
+                <OptionInputBox
+                  label={formConfig.signin.Status.label}
+                  name="tenantUserActive"
+                  classN="large"
+                  required={true}
+                  value={tenantUserActive === true ? "true" : "false"}
+                  onChange={(e) =>
+                    setTenantUserActive(e.target.value === "true")  // ✅ convert back to boolean
+                  }
+                  options={[
+                    { code: "true", value: "Active" },
+                    { code: "false", value: "Inactive" },
+                  ]}
+                  disabled={
+                    (tenantUserActive ? false : !canCreateUser) ||  
+                    personalData.userRole == 2       
+                  }
+                />
+              )}
  
               {/* Submit */}
               <div className="signin-submit">
                 <Button
-                  text="Create Account"
-                  onClick={handleSignup}
-                  disabled={!otpVerified || otpLoading || !!validationErrors.signupEmail}
+                  text={isEditMode ? "Update User" : "Create Account"}
+                  onClick={isEditMode ? handleUpdateUser : handleSignup}
+                  disabled={
+                    isEditMode
+                      ? !fullName.trim() || !email.trim()
+                      : (!otpVerified || otpLoading || !!validationErrors.signupEmail || !fullName.trim())
+                  }
                 />
               </div>
             </div>

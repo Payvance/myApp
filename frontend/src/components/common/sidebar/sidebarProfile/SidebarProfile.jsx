@@ -1,8 +1,8 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, use } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Button from "../../button/Button";
 import PopUp from "../../popups/PopUp";
-import { authServices, resetPasswordServices, companyDetailsServices, userServices } from "../../../../services/apiService";
+import { authServices, resetPasswordServices, companyDetailsServices, userServices, companyConfigServices } from "../../../../services/apiService";
 import { toast } from "react-toastify";
 import "./SidebarProfile.css";
 import { useTheme } from "../../../../context/ThemeContext";
@@ -121,6 +121,31 @@ const handleCompanySubmit = async () => {
   }
 };
 
+  //----------------------FETCH SUPPORT DETAILS----------------------
+  const [supportInfo, setSupportInfo] = useState({ email: "", phone: "" });
+
+  useEffect(() => {
+    fetchSupportDetails();
+  }, []);
+
+  const fetchSupportDetails = async () => {
+  try {
+    const res = await companyConfigServices.getCompanyDetails();
+    const data = res?.data || [];
+
+    const emailObj = data.find(item => item.code === "email");
+    const phoneObj = data.find(item => item.code === "phone");
+
+    setSupportInfo({
+      email: emailObj?.value || "",
+      phone: phoneObj?.value || ""
+    });
+  } catch (error) {
+    // In production, avoid console.error if needed
+    console.error("Failed to fetch support details:", error);
+    setSupportInfo({ email: "", phone: "" }); // fallback
+  }
+};
 
   // -------------------- THEME CONTEXT --------------------
   const { theme, setTheme, isDark, isCustom } = useTheme();
@@ -338,30 +363,30 @@ const handleCompanySubmit = async () => {
               </div>
 
               {openSupport && (
-                <div className={`support-box slide-fade support-${supportPosition}`}>
-                  <p className="support-title">Support</p>
+  <div className={`support-box slide-fade support-${supportPosition}`}>
+    <p className="support-title">Support</p>
 
-                  {/* Email row */}
-                  <div className="support-item">
-                    <i className="bi bi-envelope-fill" />
-                    <span title={SUPPORT_INFO.email}>{SUPPORT_INFO.email}</span>
-                    <i
-                      className={`bi ${copiedField === 'email' ? 'bi-check2-all copy-icon copy-icon--done' : 'bi-clipboard copy-icon'}`}
-                      onClick={() => copyToClipboard(SUPPORT_INFO.email, 'email')}
-                    />
-                  </div>
+    {/* Email row */}
+    <div className="support-item">
+      <i className="bi bi-envelope-fill" />
+      <span title={supportInfo.email}>{supportInfo.email}</span>
+      <i
+        className={`bi ${copiedField === 'email' ? 'bi-check2-all copy-icon copy-icon--done' : 'bi-clipboard copy-icon'}`}
+        onClick={() => copyToClipboard(supportInfo.email, 'email')}
+      />
+    </div>
 
-                  {/* Phone row */}
-                  <div className="support-item">
-                    <i className="bi bi-telephone-fill" />
-                    <span title={SUPPORT_INFO.phone}>{SUPPORT_INFO.phone}</span>
-                    <i
-                      className={`bi ${copiedField === 'phone' ? 'bi-check2-all copy-icon copy-icon--done' : 'bi-clipboard copy-icon'}`}
-                      onClick={() => copyToClipboard(SUPPORT_INFO.phone, 'phone')}
-                    />
-                  </div>
-                </div>
-              )}
+    {/* Phone row */}
+    <div className="support-item">
+      <i className="bi bi-telephone-fill" />
+      <span title={supportInfo.phone}>{supportInfo.phone}</span>
+      <i
+        className={`bi ${copiedField === 'phone' ? 'bi-check2-all copy-icon copy-icon--done' : 'bi-clipboard copy-icon'}`}
+        onClick={() => copyToClipboard(supportInfo.phone, 'phone')}
+      />
+    </div>
+  </div>
+)}
             </div>
 
             {showForgotPassword && (
@@ -510,6 +535,7 @@ const handleCompanySubmit = async () => {
               value={companyDetails.gstNumber}
               onChange={handleCompanyChange}
               validationType="GST"
+              required
               max={15}
               classN="large"
               validationErrors={validationErrors}

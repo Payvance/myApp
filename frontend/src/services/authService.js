@@ -37,7 +37,7 @@ export const isAuthenticated = () => {
 
 export const requireAuth = () => {
   if (!isAuthenticated()) {
-    window.location.href = '/login';
+    window.location.href = '/signin';
     return false;
   }
   return true;

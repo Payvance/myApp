@@ -131,6 +131,7 @@ const UserProfile = () => {
         setRoleId(data.roleId); // Extract roleId from response
         setIsActive(data.isActive ?? true);
         mapAddressAndBank(data);
+
         // Map Personal Data
         setPersonalData({
           userName: data.userName ?? "",
@@ -143,41 +144,50 @@ const UserProfile = () => {
           setVendorData({
             vendorId: data.vendorId ?? "",
             vendorType: data.vendorType ?? "",
+            companyName: data.vendorName ?? "", // Map vendorName to companyName
             gstNo: data.gstNo ?? "",
             cinNo: data.cinNo ?? "",
             panNo: data.panNo ?? "",
             tanNo: data.tanNo ?? "",
             vendorDiscountId: data.vendorDiscountId ?? "",
+            panDocument: data.panDocument ?? "",
+            gstDocument: data.gstDocument ?? "",
+            msmeDocument: data.msmeDocument ?? "",
+            msmeRegister: !!data.msmeDocument, // Assume registered if document exists
           });
         }
 
         if (data.role === "CA") {
-  // Mapping CA-prefixed API keys to the state used by the UI
-  const caBasicDetails = {
-    vendorType: data.caType ?? "", 
-    gstNo: data.caGstNo ?? "", 
-    cinNo: data.caCinNo ?? "",
-    panNo: data.caPanNo ?? "",
-    tanNo: data.caTanNo ?? "",
-  };
+          // Mapping CA-prefixed API keys to the state used by the UI
+          const caBasicDetails = {
+            vendorType: data.caType ?? "",
+            companyName: data.firmName ?? "", // Map firmName to companyName
+            gstNo: data.caGstNo ?? "",
+            cinNo: data.caCinNo ?? "",
+            panNo: data.caPanNo ?? "",
+            tanNo: data.caTanNo ?? "",
+            panDocument: data.panDocument ?? "", // These seem to be global in DTO
+            gstDocument: data.gstDocument ?? "",
+            msmeDocument: data.msmeDocument ?? "",
+            msmeRegister: !!data.msmeDocument,
+          };
 
-  setVendorData(caBasicDetails);
-  setCaData((prev) => ({
-    ...prev,
-    caRegNo: data.caRegNo ?? "",
-    enrollmentYear: data.enrollmentYear ?? "",
-    icaiMemberStatus: data.icaiMemberStatus ?? "",
-    firmName: data.firmName ?? "",
-    practiceType: data.practiceType ?? "",
-    icaiMemberNo: data.icaiMemberNo ?? "",
-    caType: data.caType ?? "",
-    // Keep these in caData as well if needed for other logic
-    gstNo: data.caGstNo ?? "",
-    cinNo: data.caCinNo ?? "",
-    panNo: data.caPanNo ?? "",
-    tanNo: data.caTanNo ?? "",
-  }));
-}
+          setVendorData(caBasicDetails);
+          setCaData((prev) => ({
+            ...prev,
+            caRegNo: data.caRegNo ?? "",
+            enrollmentYear: data.enrollmentYear ?? "",
+            icaiMemberStatus: data.icaiMemberStatus ?? "",
+            firmName: data.firmName ?? "",
+            practiceType: data.practiceType ?? "",
+            icaiMemberNo: data.icaiMemberNo ?? "",
+            caType: data.caType ?? "",
+            gstNo: data.caGstNo ?? "",
+            cinNo: data.caCinNo ?? "",
+            panNo: data.caPanNo ?? "",
+            tanNo: data.caTanNo ?? "",
+          }));
+        }
       } catch (error) {
         toast.error("Error fetching profile:", error);
       } finally {
@@ -355,43 +365,43 @@ const UserProfile = () => {
           <div className="profile-sections-container">
 
             <PersonalDetails
-            personalData={personalData}
-            setPersonalData={setPersonalData}
-            disabled={isDisabled}
+              personalData={personalData}
+              setPersonalData={setPersonalData}
+              disabled={isDisabled}
             />
 
-  
+
             {(role === "VENDOR" || role === "CA") && (
-            <>
-            <VendorPersonalInfo
-            vendorData={vendorData}
-            setVendorData={setVendorData}
-            disabled={isDisabled}
-            role={role}
-            canEditDiscount={role === "VENDOR" && !isViewMode}
-            />
+              <>
+                <VendorPersonalInfo
+                  vendorData={vendorData}
+                  setVendorData={setVendorData}
+                  disabled={isDisabled}
+                  role={role}
+                  canEditDiscount={role === "VENDOR" && !isViewMode}
+                />
 
-            <AddressDetails
-            addressData={addressData}
-            setAddressData={setAddressData}
-            disabled={isDisabled}
-           />
+                <AddressDetails
+                  addressData={addressData}
+                  setAddressData={setAddressData}
+                  disabled={isDisabled}
+                />
 
-           <BankDetails
-           bankData={bankData}
-           setBankData={setBankData}
-           disabled={isDisabled}
-           />
+                <BankDetails
+                  bankData={bankData}
+                  setBankData={setBankData}
+                  disabled={isDisabled}
+                />
 
-          {role === "CA" && (
-          <CAPersonalInfo
-          caData={caData}
-          setCaData={setCaData}
-          disabled={isDisabled}
-        />
-      )}
-    </>
-  )}
+                {role === "CA" && (
+                  <CAPersonalInfo
+                    caData={caData}
+                    setCaData={setCaData}
+                    disabled={isDisabled}
+                  />
+                )}
+              </>
+            )}
 
 
 

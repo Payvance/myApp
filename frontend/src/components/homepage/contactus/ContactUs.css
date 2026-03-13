@@ -286,3 +286,28 @@
     font-weight: 600;
     margin-top: 0.2rem;
 }
+
+/* ── Disclaimer ── */
+.cu-footer-disclaimer {
+    padding: 1.5rem 5% 1.5rem;
+    background: #e5c6e4;
+    border-top: 1px solid #ede9fe;
+    text-align: center;
+}
+
+.cu-disclaimer-text {
+    font-size: 0.8rem;
+    color: #040a14;
+    line-height: 1.6;
+    margin: 0 auto;
+}
+
+@media (max-width: 640px) {
+    .cu-footer-disclaimer {
+        padding: 2rem 5% 2.5rem;
+    }
+
+    .cu-disclaimer-text {
+        font-size: 0.75rem;
+    }
+}

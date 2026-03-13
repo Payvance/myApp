@@ -25,7 +25,9 @@ const PieChartComponent = ({ title, data, loading }) => {
         dataLabels: {
           enabled: true,
           style: { fontSize: "11px" },
-          format: "{point.name}"
+          format: "{point.name}",
+          color: "var(--text-secondary)"
+
         }
       }
     },
@@ -33,10 +35,13 @@ const PieChartComponent = ({ title, data, loading }) => {
       pointFormat: "<b>{point.percentage:.1f}%</b>"
     },
     legend: {
-      align: "center",
-      verticalAlign: "bottom",
-      itemStyle: { fontSize: "11px" }
-    },
+    align: "center",
+    verticalAlign: "bottom",
+    itemStyle: {
+      fontSize: "11px",
+      color: "var(--text-secondary)"
+    }
+  },
     credits: { enabled: false },
     series: [
       {

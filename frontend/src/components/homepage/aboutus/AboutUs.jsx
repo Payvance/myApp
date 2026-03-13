@@ -52,10 +52,43 @@ const storyMilestones = [
 ];
 
 const teamMembers = [
-    { initials: 'FD', name: 'Falgun Dharmshi', role: 'CEO & Co-founder', linkedin: '#', twitter: '#' },
-    { initials: 'ND', name: 'Nidhi Dharmshi', role: 'CTO & Co-founder', linkedin: '#', twitter: '#' },
-    { initials: 'AS', name: 'Akash Singh', role: 'Head of Product', linkedin: '#', twitter: '#' },
-    { initials: 'AD', name: 'Aniket Desai', role: 'Head of Product', linkedin: '#', twitter: '#' },
+    { initials: 'SP', name: 'Shrinivas Patil', role: 'Director', linkedin: '#', twitter: '#' },
+    { initials: 'SS', name: 'Sohel Shaikh', role: 'Key Accounts Manager', linkedin: '#', twitter: '#' },
+    { initials: 'AS', name: 'Akash Singh', role: 'Staff Engineer', linkedin: '#', twitter: '#' },
+    { initials: 'AD', name: 'Aniket Desai', role: 'Associate Engineering Manager', linkedin: '#', twitter: '#' },
+];
+
+const coreValues = [
+    {
+        icon: 'bi-magic',
+        title: 'Simplicity First',
+        tagline: '“Clarity drives better decisions.”',
+        desc: 'Business intelligence should be simple and easy to understand. We transform complex financial data into clear insights so business owners can quickly understand their numbers and make confident decisions.',
+    },
+    {
+        icon: 'bi-person-heart',
+        title: 'Customer-Centric Thinking',
+        tagline: '“Build what truly matters.”',
+        desc: 'We design every feature with our users in mind. By understanding real business challenges, we focus on solutions that create meaningful value for our customers'
+    },
+    {
+        icon: 'bi-shield-lock-fill',
+        title: 'Security First',
+        tagline: '“Trust is built on protection.”',
+        desc: 'Financial data is highly sensitive, and protecting it is our priority. We ensure strong security, privacy, and reliable systems to keep our users’ data safe.'
+    },
+    {
+        icon: 'bi-graph-up-arrow',
+        title: 'Continuous Innovation',
+        tagline: '“Always improving.”',
+        desc: 'Businesses evolve, and so do we. We continuously enhance our platform to deliver smarter, faster, and more intuitive business analytics.'
+    },
+    {
+        icon: 'bi-patch-check-fill',
+        title: 'Data Integrity',
+        tagline: '“Accuracy in every decimal.”',
+        desc: 'Financial insights must be precise and reliable. We maintain accurate data and consistent reporting to provide a trustworthy source of truth for every business.'
+    },
 ];
 
 const AboutUs = () => {
@@ -138,21 +171,39 @@ const AboutUs = () => {
 
             {/* ── 4. Mission & Vision ── */}
             <div className="about-mv-wrap">
-                <div className="about-mv-card mission">
-                    <div className="mv-icon"><i className="bi bi-rocket-takeoff-fill"></i></div>
-                    <span className="about-eyebrow">OUR MISSION</span>
-                    <h3>Empowering digital finance through innovation & agility</h3>
-                    <ul className="mv-list">
-                        <li>Empowering digital finance through innovation, agility and secure cloud-native solutions with zero compromise on security.</li>
-                    </ul>
-                </div>
                 <div className="about-mv-card vision">
                     <div className="mv-icon"><i className="bi bi-eye-fill"></i></div>
                     <span className="about-eyebrow">OUR VISION</span>
-                    <h3>Redefining global banking through India's FinTech brilliance</h3>
-                    <ul className="mv-list">
-                        <li>To unlock financial potential through next-gen software built in trust, tech and transformation.</li>
-                    </ul>
+                    <h3>To empower every business owner with real-time financial intelligence, right in the palm of their hand</h3>
+
+                </div>
+                <div className="about-mv-card mission">
+                    <div className="mv-icon"><i className="bi bi-rocket-takeoff-fill"></i></div>
+                    <span className="about-eyebrow">OUR MISSION</span>
+                    <h3>To simplify complex data into actionable insights through a secure, intuitive mobile interface, enabling entrepreneurs to make faster, data-driven decisions anytime, anywhere</h3>
+                </div>
+            </div>
+
+            {/* ── 5. Our Core Values ── */}
+            <div className="about-values-wrap">
+                <div className="about-values-header">
+                    <span className="about-eyebrow">OUR VALUES</span>
+                    <h2>The principles that guide us</h2>
+                    <p>Our core values reflect our commitment to integrity, innovation, and our values shape the way we build, collaborate, and deliver meaningful solutions.</p>
+                </div>
+                <div className="about-values-grid">
+                    {coreValues.map((value, i) => (
+                        <div className="value-card" key={i}>
+                            <div className="value-icon">
+                                <i className={`bi ${value.icon}`}></i>
+                            </div>
+                            <div className="value-content">
+                                <h4>{value.title}</h4>
+                                <span className="value-tagline">{value.tagline}</span>
+                                <p>{value.desc}</p>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </div>
 

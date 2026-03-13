@@ -66,7 +66,7 @@
 
   /* Gradient Definitions - More Vibrant */
   --gradient-primary: #e179ef;
-  --gradient-secondary: linear-gradient(135deg, #e6a8fa 0%, #f0803c 25%, #fad8b5 50%, #dc87f6 75%, #f7c08c 100%);
+  --gradient-secondary: linear-gradient(135deg, #e6a8fa 0%, #e6a8fa 25%, #e6a8fa 50%, #dc87f6 75%, #e6a8fa 100%);
   --gradient-hero: linear-gradient(135deg, #fdf4f0 0%, #eec8fd 30%, #fce9d6 60%, #e6a8fa 100%);
 
   /* Component Specific Colors - Warmer */

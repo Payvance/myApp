@@ -1,7 +1,7 @@
 .data-view-card {
   background: var(--card-bg, #ffffff);
   border-radius: 18px;
-  padding: 12px;
+  padding: 20px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
   box-sizing: border-box;
   flex: 1;
@@ -21,16 +21,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 0;
+  padding: 6px 0;
   border-bottom: 1px solid var(--border-light, #f0f0f0);
   transition: background-color 0.2s ease;
-}
-
-.data-view__row:hover {
-  background-color: var(--hover-bg, #f8f9fa);
-  margin: 0 -6px;
-  padding: 8px 6px;
-  border-radius: 4px;
 }
 
 .data-view__row:last-child {
@@ -40,7 +33,7 @@
 .data-view__name {
   font-weight: 700;
   color: var(--text-secondary, #6c757d);
-  font-size: 15px;
+  font-size: 13px;
   flex: 1;
   margin-right: 6px;
 }
