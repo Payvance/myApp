@@ -50,7 +50,8 @@ public class Voucher {
     @Column(name = "party_ledger_name", length = 200)
     private String partyLedgerName;
 
-    @Column(name = "delivery_notes", length = 500)
+    @Lob
+    @Column(name = "delivery_notes", columnDefinition = "TEXT")
     private String deliveryNotes;
 
     @Lob
@@ -279,4 +280,7 @@ public class Voucher {
 
     @OneToMany(mappedBy = "voucher", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<InventoryEntry> inventoryEntries;
+
+    @OneToMany(mappedBy = "voucher", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<VoucherDeliveryNote> deliveryNotesList;
 }

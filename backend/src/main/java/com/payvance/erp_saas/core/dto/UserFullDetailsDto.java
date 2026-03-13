@@ -62,10 +62,17 @@ public class UserFullDetailsDto {
 	private String branchName;
 	private String accountNumber;
 	private String ifscCode;
+
+	// Documents
+	private byte[] panDocument;
+	private byte[] msmeDocument;
+	private byte[] gstDocument;
+
 	public UserFullDetailsDto() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+
 	public UserFullDetailsDto(Long userId, String userName, String userEmail, String userPhone, Boolean isActive,
 			String role, Long roleId, Long caId, String caRegNo, Integer enrollmentYear, String icaiMemberStatus,
 			String practiceType, String firmName, String icaiMemberNo, String caStatus, String caType, String caGstNo,
@@ -74,7 +81,8 @@ public class UserFullDetailsDto {
 			String vendorAadharNo, String vendorStatus, Long addressId, String houseBuildingNo,
 			String houseBuildingName, String roadAreaPlace, String landmark, String village, String taluka, String city,
 			String district, String state, String pincode, String postOffice, String country, Long bankId,
-			String bankName, String branchName, String accountNumber, String ifscCode) {
+			String bankName, String branchName, String accountNumber, String ifscCode,
+			byte[] panDocument, byte[] msmeDocument, byte[] gstDocument) {
 		super();
 		this.userId = userId;
 		this.userName = userName;
@@ -125,8 +133,9 @@ public class UserFullDetailsDto {
 		this.branchName = branchName;
 		this.accountNumber = accountNumber;
 		this.ifscCode = ifscCode;
+		this.panDocument = panDocument;
+		this.msmeDocument = msmeDocument;
+		this.gstDocument = gstDocument;
 	}
 
-	
-	
 }

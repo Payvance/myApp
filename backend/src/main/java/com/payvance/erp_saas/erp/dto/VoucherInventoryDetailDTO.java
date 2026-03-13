@@ -33,5 +33,8 @@ public class VoucherInventoryDetailDTO {
     private BigDecimal sgstAmount;
     private BigDecimal igstAmount;
 
+    private String basicUserDescription;
+    private Boolean isDeemedPositive;
+
     private List<BatchAllocationDetailDTO> batchAllocations;
 }

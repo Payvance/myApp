@@ -20,4 +20,5 @@ public class VoucherLedgerDetailDTO {
     private String gstDutyHead;
     private String gstClass;
     private String costCenterName;
+    private String userDescription;
 }

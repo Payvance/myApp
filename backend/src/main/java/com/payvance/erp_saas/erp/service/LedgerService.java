@@ -54,23 +54,38 @@ public class LedgerService {
         BigDecimal totalCredit = BigDecimal.ZERO;
 
         for (Voucher voucher : vouchers) {
-            // Use voucher amount directly - negative means debit, positive means credit
-            BigDecimal amount = voucher.getAmount();
-            if (amount == null)
-                continue;
+            // Find the ledger entry for the requested ledger
+            BigDecimal entryAmount = BigDecimal.ZERO;
+            boolean isDebit = false;
+            boolean entryFound = false;
 
-            // System.err.println("Voucher: " + voucher.getVoucherType() + " Amount: " +
-            // amount);
-            // Determine debit/credit based on amount sign
-            boolean isDebit = amount.compareTo(BigDecimal.ZERO) < 0;
-            BigDecimal absAmount = amount.abs();
+            if (voucher.getLedgerEntries() != null) {
+                for (com.payvance.erp_saas.erp.entity.LedgerEntry le : voucher.getLedgerEntries()) {
+                    if (le.getLedgerName() != null && le.getLedgerName().equals(ledgerName)) {
+                        entryAmount = le.getAmount();
+                        isDebit = Boolean.TRUE.equals(le.getIsDebit());
+                        entryFound = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!entryFound) {
+                // Fallback to voucher level if no specific ledger entry found (should not
+                // happen for valid data)
+                BigDecimal voucherAmount = voucher.getAmount();
+                if (voucherAmount == null)
+                    continue;
+                isDebit = voucherAmount.compareTo(BigDecimal.ZERO) < 0;
+                entryAmount = voucherAmount.abs();
+            }
 
             if (isDebit) {
-                runningBalance = runningBalance.add(absAmount);
-                totalDebit = totalDebit.add(absAmount);
+                runningBalance = runningBalance.add(entryAmount);
+                totalDebit = totalDebit.add(entryAmount);
             } else {
-                runningBalance = runningBalance.subtract(absAmount);
-                totalCredit = totalCredit.add(absAmount);
+                runningBalance = runningBalance.subtract(entryAmount);
+                totalCredit = totalCredit.add(entryAmount);
             }
 
             // Get particulars from partyLedgerName or voucher type
@@ -86,7 +101,7 @@ public class LedgerService {
                     .voucherType(voucher.getVoucherType())
                     .date(voucher.getDate())
                     .particulars(particulars)
-                    .amount(absAmount)
+                    .amount(entryAmount)
                     .isDebit(isDebit)
                     .runningBalance(runningBalance)
                     .narration(voucher.getNarration())

@@ -6,8 +6,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class VendorRequest {
-    private Long vendorId;       // Optional, for update
-    private Long userId;         // Mandatory for both create & update
+    private Long vendorId; // Optional, for update
+    private Long userId; // Mandatory for both create & update
     private String name;
     private String email;
     private String phone;
@@ -38,4 +38,8 @@ public class VendorRequest {
     private String branchName;
     private String accountNumber;
     private String ifscCode;
+
+    private byte[] panDocument;
+    private byte[] msmeDocument;
+    private byte[] gstDocument;
 }

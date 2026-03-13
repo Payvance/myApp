@@ -13,14 +13,16 @@ import com.payvance.erp_saas.core.entity.Ca;
 import com.payvance.erp_saas.core.entity.PersonalAccessToken;
 import com.payvance.erp_saas.core.entity.Role;
 import com.payvance.erp_saas.core.entity.UserAddress;
-import com.payvance.erp_saas.core.enums.RoleEnum;
 import com.payvance.erp_saas.core.repository.CaRepository;
+import com.payvance.erp_saas.core.repository.DocumentsRepository;
 import com.payvance.erp_saas.core.repository.PersonalAccessTokenRepository;
 import com.payvance.erp_saas.core.repository.RoleRepository;
 import com.payvance.erp_saas.core.repository.UserRepository;
+import com.payvance.erp_saas.core.entity.Documents;
 import com.payvance.erp_saas.security.util.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
+
 // Service for managing CA profiles including upserting profile, address, and bank details
 @Service
 @RequiredArgsConstructor
@@ -31,20 +33,21 @@ public class CaProfileService {
     private final BankService bankService;
     private final EmailService emailService;
     private final UserRepository userRepository;
-    private final JwtUtil jwt;                       
-    private final PersonalAccessTokenRepository patRepo; 
+    private final JwtUtil jwt;
+    private final PersonalAccessTokenRepository patRepo;
     private final RoleRepository roleRepository;
+    private final DocumentsRepository documentsRepository;
+
     @Transactional
     public LoginResponse upsertCaProfile(CaRequest request, String token) {
 
         Long userId = request.getUserId();
 
-        
         // 2. Fetch the registered email from the User table
         String registeredEmail = userRepository.findById(userId)
                 .map(user -> user.getEmail())
                 .orElse(null);
-        
+
         Ca ca;
 
         // Check if CA exists
@@ -93,7 +96,7 @@ public class CaProfileService {
             ca.setFirmName(request.getFirmName());
             ca.setIcaiMemberNo(request.getIcaiMemberNo());
             ca.setAadharNo(request.getAadharNo());
-            
+
             ca.setGstNo(request.getGstNo());
             ca.setCinNo(request.getCinNo());
             ca.setPanNo(request.getPanNo());
@@ -103,7 +106,6 @@ public class CaProfileService {
             // ===== STATUS =====
             ca.setStatus(request.getStatus() != null ? request.getStatus() : "active");
         }
-
 
         // Upsert Address
         UserAddress address = new UserAddress();
@@ -134,6 +136,18 @@ public class CaProfileService {
         ca.setBankDetailsId(savedBank.getId());
 
         ca = caRepository.save(ca);
+
+        // ===== UPSERT DOCUMENTS =====
+        Documents documents = documentsRepository.findByCaId(ca.getId()).orElse(new Documents());
+        documents.setCa(ca);
+        if (request.getPanDocument() != null)
+            documents.setPanDocument(request.getPanDocument());
+        if (request.getMsmeDocument() != null)
+            documents.setMsmeDocument(request.getMsmeDocument());
+        if (request.getGstDocument() != null)
+            documents.setGstCertificate(request.getGstDocument());
+        documentsRepository.save(documents);
+
         String tokenId = jwt.getTokenId(token);
         patRepo.deleteByTokenId(tokenId);
 
@@ -154,7 +168,7 @@ public class CaProfileService {
                 .name("ACCESS_TOKEN")
                 .expiresAt(jwt.getExpiration(newToken))
                 .build());
-        
+
         if (registeredEmail != null && !registeredEmail.isBlank()) {
             emailService.sendProfileSubmittedEmail(userId);
         }

@@ -335,6 +335,7 @@ public class TallySyncService {
             s.setOutwardQuantity(d.getOutwardQuantity());
             s.setOutwardValue(d.getOutwardValue());
             s.setClosingQuantity(d.getClosingQuantity());
+            s.setClosingBalance(d.getClosingBalance());
             s.setClosingRate(d.getClosingRate());
             s.setClosingValue(d.getClosingValue());
 
@@ -356,6 +357,12 @@ public class TallySyncService {
             s.setCgstRate(d.getCgstRate());
             s.setSgstRate(d.getSgstRate());
             s.setCessRate(d.getCessRate());
+            s.setIsReverseChargeApplicable(d.getIsReverseChargeApplicable());
+            s.setGstIneligibleItc(d.getGstIneligibleItc());
+
+            System.out.println("[SYNC] Stock Item: " + s.getName() +
+                    " | Reverse Charge: " + s.getIsReverseChargeApplicable() +
+                    " | Ineligible ITC: " + s.getGstIneligibleItc());
 
             stockItemRepository.findByGuidAndTenantId(s.getGuid(), tenantId)
                     .ifPresent(existing -> s.setId(existing.getId()));
@@ -741,7 +748,7 @@ public class TallySyncService {
         }
 
         // 2. Check Limits & Upsert Setup
-        var existingCompany = tallyCompanyRepository.findByGuid(req.getGuid());
+        var existingCompany = tallyCompanyRepository.findByTenantIdAndGuid(tenantId,req.getGuid());
         if (existingCompany.isEmpty()) {
             TenantSetting settings = tenantSettingsRepository.findByTenantId(tenantId)
                     .orElseThrow(() -> new RuntimeException("Tenant settings not found"));
@@ -823,6 +830,23 @@ public class TallySyncService {
 
         reportDataRepository.save(reportData);
         System.out.println("[API] Report saved: " + req.getReportName() + " for tenant: " + tenantId);
+    }
+
+    @Transactional(value = "erpTransactionManager", readOnly = true)
+    public List<com.payvance.erp_saas.erp.dto.BalanceSheetNodeDTO> getBalanceSheetTree(String companyId) {
+        Long tenantId = TenantContext.getCurrentTenant();
+        if (tenantId == null)
+            throw new RuntimeException("Tenant ID not found in context");
+
+        ReportData reportData = reportDataRepository
+                .findByTenantIdAndCompanyIdAndReportName(tenantId, companyId, "BALANCE_SHEET")
+                .orElse(null);
+
+        if (reportData == null || reportData.getPayload() == null) {
+            return java.util.Collections.emptyList();
+        }
+
+        return com.payvance.erp_saas.erp.util.BalanceSheetTreeBuilder.buildTree(reportData.getPayload());
     }
 
     private void mapVoucherDtoToEntity(Voucher v, VoucherDTO d, Long tenantId) {
@@ -960,6 +984,29 @@ public class TallySyncService {
             }
         }
 
+        // Map Delivery Notes
+        if (v.getDeliveryNotesList() != null) {
+            v.getDeliveryNotesList().clear();
+        } else {
+            v.setDeliveryNotesList(new java.util.ArrayList<>());
+        }
+
+        if (d.getDeliveryNotesList() != null) {
+            for (VoucherDeliveryNoteDTO dnDto : d.getDeliveryNotesList()) {
+                VoucherDeliveryNote dn = new VoucherDeliveryNote();
+                dn.setVoucher(v);
+                dn.setNoteNumber(dnDto.getNumber());
+                if (dnDto.getDate() != null && !dnDto.getDate().trim().isEmpty()) {
+                    try {
+                        dn.setNoteDate(com.payvance.erp_saas.erp.util.TallyXmlParser.parseDate(dnDto.getDate()));
+                    } catch (Exception e) {
+                        System.err.println("[WARN] Failed to parse delivery note date: " + dnDto.getDate());
+                    }
+                }
+                v.getDeliveryNotesList().add(dn);
+            }
+        }
+
         // Map E-way Bills
         if (v.getEwayBillDetails() != null) {
             v.getEwayBillDetails().clear();
@@ -1035,6 +1082,7 @@ public class TallySyncService {
                 entity.setGstDutyHead(le.getGstDutyHead());
                 entity.setCostCenterName(le.getCostCenterName());
                 entity.setCostCategoryName(le.getCostCategoryName());
+                entity.setUserDescription(le.getUserDescription());
 
                 entity.setVoucher(v);
                 ledgers.add(entity);
@@ -1068,6 +1116,8 @@ public class TallySyncService {
                 entity.setCgstAmount(ie.getCgstAmount());
                 entity.setSgstAmount(ie.getSgstAmount());
                 entity.setIgstAmount(ie.getIgstAmount());
+                entity.setBasicUserDescription(ie.getBasicUserDescription());
+                entity.setIsDeemedPositive(ie.getIsDeemedPositive());
 
                 entity.setActualQtyNum(ie.getActualQtyNum());
                 entity.setLedgerName(v.getPartyLedgerName()); // Fallback to Party Ledger

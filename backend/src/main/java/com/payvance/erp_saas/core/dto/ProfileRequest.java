@@ -4,7 +4,8 @@ import lombok.Data;
 
 @Data
 public class ProfileRequest {
-    // Role id will be provided in the request payload to decide which profile service to invoke
+    // Role id will be provided in the request payload to decide which profile
+    // service to invoke
     private Integer roleId;
     private Long userId;
     private String name;
@@ -28,10 +29,12 @@ public class ProfileRequest {
     private String firmName;
     private String icaiMemberNo;
     private String caType;
-    
 
     private AddressDTO address;
     private BankDTO bank;
+    private byte[] panDocument;
+    private byte[] msmeDocument;
+    private byte[] gstDocument;
     private String status;
 
     // Convert to VendorRequest
@@ -69,6 +72,15 @@ public class ProfileRequest {
             vendor.setBranchName(bank.getBranchName());
             vendor.setAccountNumber(bank.getAccountNumber());
             vendor.setIfscCode(bank.getIfscCode());
+        }
+        if (this.panDocument != null) {
+            vendor.setPanDocument(this.panDocument);
+        }
+        if (this.msmeDocument != null) {
+            vendor.setMsmeDocument(this.msmeDocument);
+        }
+        if (this.gstDocument != null) {
+            vendor.setGstDocument(this.gstDocument);
         }
         return vendor;
     }
@@ -113,6 +125,15 @@ public class ProfileRequest {
             ca.setBranchName(bank.getBranchName());
             ca.setAccountNumber(bank.getAccountNumber());
             ca.setIfscCode(bank.getIfscCode());
+        }
+        if (this.panDocument != null) {
+            ca.setPanDocument(this.panDocument);
+        }
+        if (this.msmeDocument != null) {
+            ca.setMsmeDocument(this.msmeDocument);
+        }
+        if (this.gstDocument != null) {
+            ca.setGstDocument(this.gstDocument);
         }
         return ca;
     }

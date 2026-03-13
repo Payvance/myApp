@@ -13,14 +13,16 @@ import com.payvance.erp_saas.core.entity.PersonalAccessToken;
 import com.payvance.erp_saas.core.entity.Role;
 import com.payvance.erp_saas.core.entity.UserAddress;
 import com.payvance.erp_saas.core.entity.Vendor;
-import com.payvance.erp_saas.core.enums.RoleEnum;
+import com.payvance.erp_saas.core.repository.DocumentsRepository;
 import com.payvance.erp_saas.core.repository.PersonalAccessTokenRepository;
 import com.payvance.erp_saas.core.repository.RoleRepository;
 import com.payvance.erp_saas.core.repository.UserRepository;
 import com.payvance.erp_saas.core.repository.VendorRepository;
+import com.payvance.erp_saas.core.entity.Documents;
 import com.payvance.erp_saas.security.util.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
+
 // Service for managing vendor profiles including upserting profile, address, and bank details
 @Service
 @RequiredArgsConstructor
@@ -31,9 +33,10 @@ public class VendorProfileService {
     private final BankService bankService;
     private final EmailService emailService;
     private final UserRepository userRepository;
-    private final JwtUtil jwt;                       
-    private final PersonalAccessTokenRepository patRepo; 
+    private final JwtUtil jwt;
+    private final PersonalAccessTokenRepository patRepo;
     private final RoleRepository roleRepository;
+    private final DocumentsRepository documentsRepository;
 
     @Transactional
     public LoginResponse upsertVendorProfile(VendorRequest request, String token) {
@@ -42,7 +45,7 @@ public class VendorProfileService {
         String registeredEmail = userRepository.findById(userId)
                 .map(user -> user.getEmail())
                 .orElse(null);
-        
+
         Vendor vendor;
 
         // Check if vendor exists
@@ -97,7 +100,6 @@ public class VendorProfileService {
             vendor.setStatus(request.getStatus() != null ? request.getStatus() : "active");
         }
 
-
         // Upsert Address
         UserAddress address = new UserAddress();
         address.setHouseBuildingNo(request.getHouseBuildingNo());
@@ -127,7 +129,18 @@ public class VendorProfileService {
         vendor.setBankDetailsId(savedBank.getId());
 
         vendor = vendorRepository.save(vendor);
-        
+
+        // ===== UPSERT DOCUMENTS =====
+        Documents documents = documentsRepository.findByVendorId(vendor.getId()).orElse(new Documents());
+        documents.setVendor(vendor);
+        if (request.getPanDocument() != null)
+            documents.setPanDocument(request.getPanDocument());
+        if (request.getMsmeDocument() != null)
+            documents.setMsmeDocument(request.getMsmeDocument());
+        if (request.getGstDocument() != null)
+            documents.setGstCertificate(request.getGstDocument());
+        documentsRepository.save(documents);
+
         String tokenId = jwt.getTokenId(token);
         patRepo.deleteByTokenId(tokenId);
 
@@ -149,7 +162,7 @@ public class VendorProfileService {
                 .name("ACCESS_TOKEN")
                 .expiresAt(jwt.getExpiration(newToken))
                 .build());
-        
+
         if (registeredEmail != null && !registeredEmail.isBlank()) {
             emailService.sendProfileSubmittedEmail(userId);
         }

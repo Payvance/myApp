@@ -82,6 +82,12 @@ public class InventoryEntry {
     @Column(name = "igst_amount", precision = 19, scale = 4)
     private java.math.BigDecimal igstAmount;
 
+    @Column(name = "basic_user_description", columnDefinition = "TEXT")
+    private String basicUserDescription;
+
+    @Column(name = "is_deemed_positive")
+    private Boolean isDeemedPositive;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "voucher_id")
     private Voucher voucher;
