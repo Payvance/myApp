@@ -2,6 +2,7 @@ package com.payvance.erp_saas.core.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -253,15 +254,30 @@ public class SubscriptionService {
         // Generate System Activation Key upon subscription.
         // This will throw an error if the tenant already has an active key.
         logger.info("[DEBUG] Starting Key Generation for tenantId: {}", tenantId);
-        java.util.Map<String, String> keyData = activationKeyService.generateSystemKeyForTenant(
-                tenantId,
-                tenant.getEmail(),
-                tenant.getPhone()
-        );
         
-        String plainKey = keyData.get("plainKey");
-        String keyHash = keyData.get("hash");
-        logger.info("[DEBUG] Key Generated Successfully. plainKey prefix: {}", (plainKey != null ? plainKey.substring(0, 4) : "NULL"));
+
+        String plainKey = null;
+        String keyHash = null;
+        boolean keyExists = activationKeyRepository.existsByRedeemedTenantId(tenantId);
+
+        if (!keyExists) {
+
+            logger.info("[DEBUG] Generating new activation key for tenant: {}", tenantId);
+
+            Map<String, String> keyData = activationKeyService.generateSystemKeyForTenant(
+                    tenantId,
+                    tenant.getEmail(),
+                    tenant.getPhone()
+            );
+
+            plainKey = keyData.get("plainKey");
+            keyHash = keyData.get("hash");
+
+        } else {
+
+            logger.info("[DEBUG] Tenant already has activation key. Skipping generation.");
+        }
+       
 
         // Check for existing TenantActivation to decide whether to create or update
         java.util.List<TenantActivation> existingActivations = tenantActivationRepository.findByTenantIdAndStatus(tenantId, "active");
@@ -283,11 +299,13 @@ public class SubscriptionService {
         // Send License Key Email with plain key
         try {
             logger.info("[DEBUG] Attempting to send License Key Email to: {}", tenant.getEmail());
-            emailService.sendLicenseIssuedEmailSync(
-                    tenant.getEmail(),
-                    null,
-                    plainKey
-            );
+            if (plainKey != null) {
+                emailService.sendLicenseIssuedEmailSync(
+                        tenant.getEmail(),
+                        null,
+                        plainKey
+                );
+            }
             logger.info("[DEBUG] License Key Email Sent Successfully.");
         } catch (Exception e) {
             logger.error("[ERROR] Failed to send License Key Email: {}. But the key is saved in DB.", e.getMessage());
@@ -408,7 +426,20 @@ public class SubscriptionService {
         event.setEventType("renewal_success");
         subscriptionEventRepository.save(event);
     }
+    private void updateTenantUsageForPlan(Long tenantId, Plan plan) {
 
+        TenantUsage usage = tenantUsageRepository.findByTenantId(tenantId)
+                .orElseThrow(() -> new RuntimeException("Tenant usage not found"));
+
+        PlanLimitation limitation = planLimitationRepository.findByPlan(plan);
+
+        if (limitation != null) {
+            usage.setActiveUsersCount(limitation.getAllowedUserCount());
+            usage.setCompaniesCount(limitation.getAllowedCompanyCount());
+        }
+
+        tenantUsageRepository.save(usage);
+    }
     @Transactional
     public Invoice startUpgrade(Long tenantId, Long toPlanId, Long toPlanPriceId) {
         Subscription sub = subscriptionRepository.findFirstByTenantIdOrderByCreatedAtDesc(tenantId)
@@ -492,6 +523,8 @@ public class SubscriptionService {
                 sub.setPlanPriceId(toPlanPriceId);
                 // Expiry remains unchanged as requested
                 subscriptionRepository.save(sub);
+             // update tenant usage limits based on new plan
+                updateTenantUsageForPlan(sub.getTenantId(), toPlan);
 
                 // Log success
                 SubscriptionEvent successEv = new SubscriptionEvent();
@@ -551,7 +584,9 @@ public class SubscriptionService {
         activation.setActivatedAt(LocalDateTime.now());
         activation.setExpiresAt(subscription.getCurrentPeriodEnd());
         activation.setStatus("active");
-        activation.setActivationCodeHash(keyHash);
+        if (keyHash != null) {
+            activation.setActivationCodeHash(keyHash);
+        }
         if (invoice != null) {
             activation.setActivationPrice(invoice.getTotalPayable());
             activation.setCurrency(invoice.getCurrency());
@@ -686,7 +721,7 @@ public class SubscriptionService {
             TenantActivation activation = latestActivationOpt.get();
             Subscription currentSub = latestSubOpt.get();
             LocalDateTime now = LocalDateTime.now();
-            boolean isExpired = activation.getExpiresAt() != null && activation.getExpiresAt().isBefore(now);
+            boolean isExpired = currentSub.getCurrentPeriodEnd() != null && currentSub.getCurrentPeriodEnd().isBefore(now);
             
             // 3. Renewal: Activation key exists AND [is actually expired OR in payment_pending state for extension]
             if (keyExists && (isExpired || "payment_pending".equalsIgnoreCase(tenantStatus))) {
