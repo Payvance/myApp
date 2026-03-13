@@ -12,7 +12,7 @@ import {
 // ASYNC THUNKS
 // ======================================
 export const login = createAsyncThunk(
-  "auth/login",
+  "auth/signin",
   async ({ username, password }, { rejectWithValue }) => {
     try {
       const response = await loginUser(username, password);

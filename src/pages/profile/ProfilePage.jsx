@@ -22,12 +22,11 @@ import CAPersonalInfo from "./ca/CAPersonalInfo";
 import BankDetails from "./common/BankDetails";
 import AddressDetails from "./common/AddressDetails";
 import Button from "../../components/common/button/Button";
-import { profileServices } from "../../services/apiService";
+import { profileServices, authServices, userServices } from "../../services/apiService";
 import { toast } from "react-toastify";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import PopUp from "../../components/common/popups/PopUp";
-import { authServices } from "../../services/apiService";
 
 const ProfilePage = () => {
   const userId = useSelector((state) => state.auth.userId);
@@ -45,25 +44,60 @@ const ProfilePage = () => {
   const [validationErrors, setValidationErrors] = useState({});
   const hasValidationErrors = Object.values(validationErrors).some(error => error);
 
+  /* Fetch user details to pre-populate email and mobile */
+  useEffect(() => {
+    // If Redux userId is not available, try to get it from localStorage (fallback)
+    const effectiveUserId = userId || localStorage.getItem("user_id") || localStorage.getItem("userId");
+
+    if (!effectiveUserId) return;
+
+    const fetchUserData = async () => {
+      try {
+        const response = await userServices.getUserData(effectiveUserId);
+        const userData = response.data;
+        if (userData) {
+          // Check for multiple possible field names from the API response
+          const email = userData.userEmail || userData.email || "";
+          const phone = userData.userPhone || userData.phone || userData.mobile || "";
+
+          setVendorData(prev => ({
+            ...prev,
+            email: email,
+            mobile: phone
+          }));
+          setCaData(prev => ({
+            ...prev,
+            email: email,
+            phone: phone
+          }));
+        }
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+      }
+    };
+
+    fetchUserData();
+  }, [userId]);
+
   /* Getting roles for the dropdown and passed this role to the payload while checkbox clicking */
   useEffect(() => {
-  const fetchRoles = async () => {
-    try {
-      const response = await authServices.getRoles();
-      const rolesData = response?.data || [];
-      setRoles(rolesData);
-      const vendorRole = rolesData.find(
-        (role) => role.value === "Vendor"
-      );
-      if (vendorRole) {
-        setSelectedRoleId(vendorRole.code); 
+    const fetchRoles = async () => {
+      try {
+        const response = await authServices.getRoles();
+        const rolesData = response?.data || [];
+        setRoles(rolesData);
+        const vendorRole = rolesData.find(
+          (role) => role.value === "Vendor"
+        );
+        if (vendorRole) {
+          setSelectedRoleId(vendorRole.code);
+        }
+      } catch (error) {
+        toast.error("Failed to fetch roles");
       }
-    } catch (error) {
-      toast.error("Failed to fetch roles");
-    }
-  };
-  fetchRoles();
-}, []);
+    };
+    fetchRoles();
+  }, []);
 
 
   // ==============================
@@ -73,11 +107,13 @@ const ProfilePage = () => {
   // const hasValidationErrors = Object.values(validationErrors).some(error => error);
 
   const isFormIncomplete =
+    !vendorData.companyName ||
+    !vendorData.email ||
+    !vendorData.mobile ||
     !vendorData.vendorType ||
     !vendorData.gstNo ||
     !vendorData.cinNo ||
     !vendorData.panNo ||
-    !vendorData.tanNo ||
     !addressData.houseNo ||
     !addressData.area ||
     !addressData.pincode ||
@@ -88,7 +124,11 @@ const ProfilePage = () => {
     !bankData.bankName ||
     !bankData.branchName ||
     !bankData.accountNumber ||
-    !bankData.ifscCode;
+    !bankData.ifscCode ||
+    !vendorData.panDocument ||
+    !vendorData.gstDocument ||
+    (vendorData.msmeRegister && !vendorData.msmeDocument);
+
 
   const isCAIncomplete = showCA && (
     !caData.caRegNo ||
@@ -105,15 +145,19 @@ const ProfilePage = () => {
   */
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("Submit button clicked");
+    console.log("isFormIncomplete:", isFormIncomplete);
+    console.log("hasValidationErrors:", hasValidationErrors);
+    console.log("isCAIncomplete:", isCAIncomplete);
 
 
     let payload = {
       userId,
       roleId: selectedRoleId,
       status: "pending_approval",
-   
+
       /* Vendor */
-      name: vendorData.businessName || "",
+      name: vendorData.companyName || "",
       email: vendorData.email || "",
       phone: vendorData.mobile || "",
       vendorType: vendorData.vendorType || "",
@@ -121,7 +165,12 @@ const ProfilePage = () => {
       gstNo: vendorData.gstNo || "",
       cinNo: vendorData.cinNo || "",
       panNo: vendorData.panNo || "",
+      panDocument: vendorData.panDocument || "",
+      gstDocument: vendorData.gstDocument || "",
+      msmeRegister: vendorData.msmeRegister || false,
+      msmeDocument: vendorData.msmeDocument || "",
       tanNo: vendorData.tanNo || "",
+
       aadharNo: vendorData.aadhaarNo || "",
 
       /* Address */
@@ -149,26 +198,31 @@ const ProfilePage = () => {
       },
     };
 
+    console.log("Constructed Payload:", payload);
+    console.log("Selected Role ID:", selectedRoleId);
+
     /* Append CA details only if toggle enabled */
     if (showCA) {
       payload = {
         ...payload,
-          name: caData.name || "",
-          email: caData.email || "",
-          phone: caData.phone || "",
-          caRegNo: caData.caRegNo || "",
-          enrollmentYear: caData.enrollmentYear || "",
-          icaiMemberStatus: caData.icaiMemberStatus || "",
-          practiceType: caData.practiceType || "",
-          firmName: caData.firmName || "",
-          icaiMemberNo: caData.icaiMemberNo || "",
-          aadharNo: caData.aadharNo || "",
-          caType: vendorData.vendorType || "",
+        name: caData.name || "",
+        email: caData.email || "",
+        phone: caData.phone || "",
+        caRegNo: caData.caRegNo || "",
+        enrollmentYear: caData.enrollmentYear || "",
+        icaiMemberStatus: caData.icaiMemberStatus || "",
+        practiceType: caData.practiceType || "",
+        firmName: caData.firmName || "",
+        icaiMemberNo: caData.icaiMemberNo || "",
+        aadharNo: caData.aadharNo || "",
+        caType: vendorData.vendorType || "",
       };
     }
 
     try {
-      const res = await profileServices.createOrUpdateProfile(payload);
+
+      const res = await profileServices.createOrUpdateProfile(payload, selectedRoleId);
+
       if (res?.data?.success === false) {
         toast.error(res.data.message || "Profile submission failed");
         return;
@@ -180,11 +234,19 @@ const ProfilePage = () => {
     }
   };
 
-  const handleLogout = () => {
-  navigate("/signin");
-};
+  const handleLogout = async () => {
+    try {
+      await authServices.logout();
+      localStorage.removeItem("token");
+      sessionStorage.removeItem("token");
+      navigate("/signin");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
   return (
-    <div className="form-page">
+    <div>
       <form className="form-card" onSubmit={handleSubmit}>
 
         {/* Header with gradient title and subtitle */}
@@ -192,7 +254,14 @@ const ProfilePage = () => {
         <span className="form-subtitle">Complete your profile information</span>
         <div className="gradient-line"></div>
         <div className="btn-logout">
-          <Button text="Logout" type="button" variant="primary" onClick={handleLogout} />
+          <button
+            type="button"
+            className="btn-logout-trigger"
+            onClick={handleLogout}
+          >
+            <i className="bi bi-box-arrow-right" />
+            <span>Logout</span>
+          </button>
         </div>
         {/* Vendor Section - Single card, just a title */}
         <div className="form-section">
@@ -258,8 +327,8 @@ const ProfilePage = () => {
         )}
 
         {/* Submit Button */}
-        <div className="profile-footer">
-          <Button type="submit" text="Submit" disabled={hasValidationErrors || isFormIncomplete || isCAIncomplete}/>
+        <div className="profile-footer" style={{ margin: "0px", padding: "0px" }}>
+          <Button type="submit" text="Submit" disabled={hasValidationErrors || isFormIncomplete || isCAIncomplete} />
         </div>
       </form>
 
@@ -274,11 +343,11 @@ const ProfilePage = () => {
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', alignItems: 'center', textAlign: 'center' }}>
           <div style={{ maxWidth: '350px' }}>
-      <p style={{ fontSize: '16px' }}>
-        Your profile has been submitted for verification. 
-        You will receive an email notification once approved.
-      </p>
-    </div>
+            <p style={{ fontSize: '16px' }}>
+              Your profile has been submitted for verification.
+              You will receive an email notification once approved.
+            </p>
+          </div>
           <div style={{ width: '100px' }}>
             <Button
               text="OK"

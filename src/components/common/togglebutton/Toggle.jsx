@@ -1,17 +1,17 @@
 import React from 'react';
 import './Toggle.css';
 
-const Toggle = ({ 
-  isOn, 
-  onToggle, 
-  labelOn, 
-  labelOff, 
+const Toggle = ({
+  isOn,
+  onToggle,
+  labelOn,
+  labelOff,
   disabled = false,
   size = 'medium'
 }) => {
   return (
     <div className={`toggle-container toggle-${size}`}>
-      
+
       {/* toggle button FIRST */}
       <button
         type="button"

@@ -294,6 +294,13 @@ const ContactUs = () => {
                 </div>
 
             </div>
+
+            {/* Trademark Disclaimer */}
+            <div className="cu-footer-disclaimer">
+                <p className="cu-disclaimer-text">
+                    Tally is a registered trademark of its respective owner. This website, mobile application, and any of our affiliated platforms are not associated with, endorsed by, or sponsored by the trademark owner in any manner. The trademark is referenced only for identification purposes and is used in good faith, following fair and honest practices, without any intention to mislead users, gain unfair benefit from the trademark’s reputation, or damage the goodwill of the trademark holder.
+                </p>
+            </div>
         </section>
     );
 };

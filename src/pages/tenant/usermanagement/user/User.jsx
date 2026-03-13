@@ -32,7 +32,7 @@ const User = () => {
     });
     const navigate = useNavigate();
     // Only allow toggling if plan limit not reached
-    const canToggleUser = planDetails.createdUsers < planDetails.activeUsers;
+    const canToggleUser = planDetails.createdUsers < planDetails.activeUsers  - 1;
 
 
   
@@ -111,8 +111,7 @@ const User = () => {
     });
 
   } catch (error) {
-    toast.error("Failed to fetch plan details");
-    console.error("Plan details error:", error);
+    //Empty as the error as this api works internally and failing text is not required for the user.
   }
 };
 

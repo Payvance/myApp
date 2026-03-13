@@ -127,7 +127,7 @@
 }
 
 .data-table th.sortable:hover {
-  background-color: var(--bg-hover, #eeeeee);
+  /* background-color: var(--bg-hover, #eeeeee); */
 }
 
 .sort-indicator {

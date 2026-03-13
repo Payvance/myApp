@@ -408,7 +408,92 @@
     font-weight: 800;
 }
 
-/* ── 5. Meet Our Team ── */
+/* ── 5. Our Core Values ── */
+.about-values-wrap {
+    background: #ffffff;
+    padding: 4rem 5%;
+    text-align: center;
+    border-top: 1px solid #ede9fe;
+}
+
+.about-values-header {
+    margin-bottom: 4rem;
+}
+
+.about-values-header h2 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #1e1b4b;
+    margin: 0.5rem 0 1rem;
+}
+
+.about-values-header p {
+    font-size: 1.05rem;
+    color: #64748b;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.7;
+}
+
+.about-values-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 2rem;
+    text-align: left;
+}
+
+.value-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    background: #fdf4ff;
+    padding: 0.7rem;
+    border-radius: 1.5rem;
+}
+
+.value-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: 2px solid #c4b5fd;
+    color: #a855f7;
+    font-size: 1.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+    transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+.value-card:hover .value-icon {
+    background: linear-gradient(135deg, #a855f7, #7c3aed);
+    color: #ffffff;
+    border-color: transparent;
+}
+
+.value-content h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1e1b4b;
+    margin: 0;
+}
+
+.value-tagline {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #a855f7;
+    font-style: italic;
+}
+
+.value-content p {
+    font-size: 0.88rem;
+    color: #64748b;
+    line-height: 1.7;
+    margin: 0;
+}
+
+/* ── 6. Meet Our Team ── */
 
 .about-team-wrap {
     background: linear-gradient(180deg, #fdf4ff 0%, #ffffff 100%);
@@ -530,6 +615,11 @@
         gap: 2rem;
     }
 
+    .about-values-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+    }
+
     .about-mv-wrap {
         grid-template-columns: 1fr;
     }
@@ -560,6 +650,10 @@
     }
 
     .about-why-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .about-values-grid {
         grid-template-columns: 1fr;
     }
 
