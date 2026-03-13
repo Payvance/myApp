@@ -23,12 +23,9 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(
-    name = "ca",
-    uniqueConstraints = {
+@Table(name = "ca", uniqueConstraints = {
         @UniqueConstraint(columnNames = "user_id")
-    }
-)
+})
 @Getter
 @Setter
 public class Ca {
@@ -49,6 +46,7 @@ public class Ca {
     private Long bankDetailsId;
 
     // 👤 CA profile
+
     @Column(name = "name")
     private String name;
 
@@ -82,7 +80,7 @@ public class Ca {
 
     @Column(name = "aadhar_no")
     private String aadharNo;
-    
+
     @Column(name = "gst_no")
     private String gstNo;
 
@@ -94,7 +92,7 @@ public class Ca {
 
     @Column(name = "tan_no")
     private String tanNo;
-    
+
     @Column(name = "ca_type")
     private String caType;
 
@@ -108,7 +106,7 @@ public class Ca {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-    
+
     @Column(name = "rejection_remark", length = 500)
     private String rejectionRemark;
 

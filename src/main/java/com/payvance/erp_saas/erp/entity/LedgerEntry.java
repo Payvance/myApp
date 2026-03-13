@@ -69,6 +69,9 @@ public class LedgerEntry {
     @Column(name = "cost_category_name", length = 100)
     private String costCategoryName;
 
+    @Column(name = "user_description", columnDefinition = "TEXT")
+    private String userDescription;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "voucher_id")
     private Voucher voucher;

@@ -137,6 +137,9 @@ public class TallyStockItem {
     @Column(name = "closing_quantity")
     private Double closingQuantity;
 
+    @Column(name = "closing_balance")
+    private Double closingBalance;
+
     @Column(name = "closing_rate")
     private Double closingRate;
 
@@ -178,4 +181,10 @@ public class TallyStockItem {
 
     @Column(name = "cess_rate")
     private Double cessRate;
+
+    @Column(name = "is_reverse_charge_applicable")
+    private Boolean isReverseChargeApplicable;
+
+    @Column(name = "gst_ineligible_itc")
+    private Boolean gstIneligibleItc;
 }

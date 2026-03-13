@@ -178,7 +178,7 @@ public class VoucherReportRepositoryImpl implements VoucherReportRepositoryCusto
                 sql.append("SELECT cc.name, CAST(COUNT(*) AS DECIMAL(19,4)), SUM(le.amount) FROM tally_vouchers v ");
                 sql.append("JOIN tally_ledger_entries le ON le.voucher_id = v.id AND le.amount != v.amount ");
                 sql.append(
-                        "JOIN tally_cost_centres cc ON cc.name = le.ledger_name AND cc.tenant_id = v.tenant_id AND cc.company_id = v.company_id ");
+                        "JOIN tally_cost_centres cc ON cc.name = le.cost_center_name AND cc.tenant_id = v.tenant_id AND cc.company_id = v.company_id ");
                 break;
             case "month":
                 groupColumn = "txn_month";
@@ -320,7 +320,9 @@ public class VoucherReportRepositoryImpl implements VoucherReportRepositoryCusto
 
         Query query = entityManager.createNativeQuery(sql.toString());
         query.setParameter("tenantId", tenantId);
-        query.setParameter("negationTypes", negationTypes); // Always set
+        if (sql.toString().contains(":negationTypes")) {
+            query.setParameter("negationTypes", negationTypes);
+        }
 
         if (companyId != null && !companyId.isEmpty())
             query.setParameter("companyId", companyId);

@@ -22,6 +22,7 @@ public class VoucherDetailDTO {
     private BigDecimal invoiceTotal; // Gross Total for display
     private Boolean isInvoice;
     private Boolean isForex;
+    private BigDecimal partyClosingBalance;
 
     private String narration;
     private String deliveryNotes;
@@ -103,6 +104,7 @@ public class VoucherDetailDTO {
     private List<VoucherLedgerDetailDTO> ledgerEntries;
     private List<VoucherOrderDetailDTO> orders;
     private List<VoucherEwayBillDTO> ewayBillDetails;
+    private List<VoucherDeliveryNoteDTO> deliveryNotesList;
 
     private String voucherCategory;
     private String natureOfVoucher;

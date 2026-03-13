@@ -106,7 +106,7 @@ public class Vendor {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-    
+
     @Column(name = "rejection_remark", length = 500)
     private String rejectionRemark;
 

@@ -46,6 +46,7 @@ public class StockItemDTO {
     private java.math.BigDecimal outwardValue;
 
     private Double closingQuantity;
+    private Double closingBalance;
     private Double closingRate;
     private java.math.BigDecimal closingValue;
 
@@ -63,6 +64,8 @@ public class StockItemDTO {
     private Double cgstRate;
     private Double sgstRate;
     private Double cessRate;
+    private Boolean isReverseChargeApplicable;
+    private Boolean gstIneligibleItc;
 
     // Company context
     private String companyGuid;

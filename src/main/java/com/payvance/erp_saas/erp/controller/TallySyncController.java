@@ -13,7 +13,8 @@ public class TallySyncController {
     private final TallySyncService syncService;
     private final com.payvance.erp_saas.core.service.TenantService tenantService;
 
-    public TallySyncController(TallySyncService syncService, com.payvance.erp_saas.core.service.TenantService tenantService) {
+    public TallySyncController(TallySyncService syncService,
+            com.payvance.erp_saas.core.service.TenantService tenantService) {
         this.syncService = syncService;
         this.tenantService = tenantService;
     }
@@ -33,7 +34,9 @@ public class TallySyncController {
             // Convert entity to Map to add licenseStatus field and keep it flat
             com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
             mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
-            java.util.Map<String, Object> response = mapper.convertValue(config, new com.fasterxml.jackson.core.type.TypeReference<java.util.Map<String, Object>>() {});
+            java.util.Map<String, Object> response = mapper.convertValue(config,
+                    new com.fasterxml.jackson.core.type.TypeReference<java.util.Map<String, Object>>() {
+                    });
             response.put("licenseStatus", licenseStatus);
 
             return ResponseEntity.ok(response);
@@ -229,6 +232,16 @@ public class TallySyncController {
             return ResponseEntity.ok("Report synchronized successfully");
         } catch (Exception e) {
             System.err.println("[API] Report sync failed: " + e.getMessage());
+            return ResponseEntity.internalServerError().body("Error: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/tally/balance-sheet/{companyGuid}/tree")
+    public ResponseEntity<?> getBalanceSheetTree(@PathVariable String companyGuid) {
+        try {
+            java.util.List<BalanceSheetNodeDTO> tree = syncService.getBalanceSheetTree(companyGuid);
+            return ResponseEntity.ok(tree);
+        } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Error: " + e.getMessage());
         }
     }

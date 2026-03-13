@@ -86,6 +86,7 @@ public class VoucherDTO {
     private java.math.BigDecimal invoiceTotal;
     private java.util.List<VoucherOrderDTO> orders;
     private java.util.List<EwayBillDTO> ewayBillDetails;
+    private java.util.List<VoucherDeliveryNoteDTO> deliveryNotesList;
 
     private String shippedBy;
     private String destinationCountry;

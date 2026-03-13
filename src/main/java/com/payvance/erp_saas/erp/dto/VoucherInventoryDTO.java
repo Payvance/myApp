@@ -30,4 +30,7 @@ public class VoucherInventoryDTO {
     private java.math.BigDecimal igstAmount;
 
     private java.util.List<VoucherBatchAllocationDTO> batchAllocations;
+
+    private String basicUserDescription;
+    private Boolean isDeemedPositive;
 }

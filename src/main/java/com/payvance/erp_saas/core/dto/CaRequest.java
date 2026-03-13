@@ -19,7 +19,6 @@ public class CaRequest {
     private String icaiMemberNo;
     private String aadharNo;
 
-
     // Address fields
     private String houseBuildingNo;
     private String houseBuildingName;
@@ -41,10 +40,14 @@ public class CaRequest {
     private String ifscCode;
 
     private String status; // optional
-    
+
     private String gstNo;
     private String cinNo;
     private String panNo;
     private String tanNo;
     private String caType;
+
+    private byte[] panDocument;
+    private byte[] msmeDocument;
+    private byte[] gstDocument;
 }

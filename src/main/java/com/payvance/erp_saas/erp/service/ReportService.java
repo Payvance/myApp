@@ -5,6 +5,7 @@ import com.payvance.erp_saas.erp.entity.Voucher;
 import com.payvance.erp_saas.erp.entity.InventoryEntry;
 import com.payvance.erp_saas.erp.entity.LedgerEntry;
 import com.payvance.erp_saas.erp.entity.TallyBatchAllocation;
+import com.payvance.erp_saas.erp.entity.VoucherDeliveryNote;
 import com.payvance.erp_saas.erp.repository.VoucherRepository;
 import com.payvance.erp_saas.erp.repository.VoucherReportRepositoryCustom;
 import lombok.RequiredArgsConstructor;
@@ -103,6 +104,15 @@ public class ReportService {
         dto.setPartyLedgerName(voucher.getPartyLedgerName());
         dto.setTotalAmount(voucher.getAmount());
         dto.setIsInvoice(voucher.getIsInvoice());
+
+        // Party Closing Balance
+        if (voucher.getPartyLedgerName() != null && voucher.getCompanyId() != null) {
+            List<com.payvance.erp_saas.erp.entity.TallyLedger> ledgers = tallyLedgerRepository
+                    .findByTenantIdAndCompanyIdAndName(tenantId, voucher.getCompanyId(), voucher.getPartyLedgerName());
+            if (!ledgers.isEmpty()) {
+                dto.setPartyClosingBalance(ledgers.get(0).getClosingBalance());
+            }
+        }
 
         dto.setNarration(voucher.getNarration());
         dto.setDeliveryNotes(voucher.getDeliveryNotes());
@@ -216,6 +226,13 @@ public class ReportService {
                     .collect(Collectors.toList());
             dto.setEwayBillDetails(ewayDtos);
         }
+
+        if (voucher.getDeliveryNotesList() != null) {
+            List<VoucherDeliveryNoteDTO> dnDtos = voucher.getDeliveryNotesList().stream()
+                    .map(this::mapDeliveryNoteEntry)
+                    .collect(Collectors.toList());
+            dto.setDeliveryNotesList(dnDtos);
+        }
         dto.setIsForex(voucher.getIsForex());
         return dto;
     }
@@ -243,6 +260,8 @@ public class ReportService {
         dto.setCgstAmount(entry.getCgstAmount());
         dto.setSgstAmount(entry.getSgstAmount());
         dto.setIgstAmount(entry.getIgstAmount());
+        dto.setBasicUserDescription(entry.getBasicUserDescription());
+        dto.setIsDeemedPositive(entry.getIsDeemedPositive());
 
         // Map batch allocations
         if (entry.getBatchAllocations() != null) {
@@ -251,6 +270,8 @@ public class ReportService {
                     .collect(Collectors.toList());
             dto.setBatchAllocations(batchDtos);
         }
+
+        dto.setBasicUserDescription(entry.getBasicUserDescription());
 
         return dto;
     }
@@ -277,6 +298,7 @@ public class ReportService {
         dto.setGstDutyHead(entry.getGstDutyHead());
         dto.setGstClass(entry.getGstNature()); // Mapping gstNature to gstClass in DTO or use specialized field
         dto.setCostCenterName(entry.getCostCenterName());
+        dto.setUserDescription(entry.getUserDescription());
 
         return dto;
     }
@@ -311,6 +333,15 @@ public class ReportService {
         dto.setValidUpto(eway.getValidUpto());
         dto.setCancelDate(eway.getCancelDate());
         dto.setCancelReason(eway.getCancelReason());
+        return dto;
+    }
+
+    private VoucherDeliveryNoteDTO mapDeliveryNoteEntry(VoucherDeliveryNote entry) {
+        VoucherDeliveryNoteDTO dto = new VoucherDeliveryNoteDTO();
+        dto.setNumber(entry.getNoteNumber());
+        if (entry.getNoteDate() != null) {
+            dto.setDate(entry.getNoteDate().toString());
+        }
         return dto;
     }
 }
