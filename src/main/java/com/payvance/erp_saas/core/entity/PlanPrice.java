@@ -36,6 +36,9 @@ public class PlanPrice {
 
     @Column(name = "currency", length = 10, nullable = false)
     private String currency = "INR";
+    
+    @Column(name = "base_price", nullable = true, precision = 12, scale = 2)
+    private BigDecimal basePrice = BigDecimal.ZERO;
 
     @Column(name = "amount", nullable = false, precision = 12, scale = 2)
     private BigDecimal amount = BigDecimal.ZERO;

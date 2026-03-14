@@ -212,6 +212,17 @@ public class TallySyncController {
         }
     }
 
+    @DeleteMapping("/tally/companies/{guid}")
+    public ResponseEntity<String> deleteCompany(@PathVariable String guid) {
+        try {
+            syncService.softDeleteCompany(guid);
+            return ResponseEntity.ok("Company deleted successfully");
+        } catch (Exception e) {
+            System.err.println("[API] Company deletion failed: " + e.getMessage());
+            return ResponseEntity.internalServerError().body("Error: " + e.getMessage());
+        }
+    }
+
     @GetMapping("/tally/sync-state/{companyGuid}")
     public ResponseEntity<?> getSyncState(@PathVariable String companyGuid) {
         try {

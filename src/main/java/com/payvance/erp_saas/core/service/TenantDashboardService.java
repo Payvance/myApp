@@ -110,7 +110,7 @@ public class TenantDashboardService {
         }
 
      // ✅ Fetch company count directly from tally_companies table
-        long totalCompanies = tallyCompanyRepository.countByTenantId(tenantId);
+        long totalCompanies = tallyCompanyRepository.countByTenantIdAndIsDeletedFalse(tenantId);
         String companyCount = String.valueOf(totalCompanies);
 
         // Get Plan ID only once

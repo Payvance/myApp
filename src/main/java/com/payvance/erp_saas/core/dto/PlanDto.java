@@ -1,5 +1,6 @@
 package com.payvance.erp_saas.core.dto;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -36,6 +37,9 @@ public class PlanDto {
 
     @JsonProperty("is_for_vendor")
     private String isForVendor = "0";
+    
+    @JsonProperty("base_price")
+    private BigDecimal basePrice;
 
     private List<Long> tenantIds;
 

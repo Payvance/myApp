@@ -68,7 +68,8 @@ public final class ApiPermissions {
             "/api/ca/referrals/redemptions/referral/details",
             "/api/v1/sync/writeback/job",
             "/api/v1/sync/writeback/**",
-            "/api/mobile/**"
+            "/api/mobile/**",
+            "/api/tenants/tally/companies/{guid}"
     };
 
     /* ===================== TENANT USER ===================== */
