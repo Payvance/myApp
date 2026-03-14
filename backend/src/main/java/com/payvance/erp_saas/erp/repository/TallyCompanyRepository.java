@@ -6,11 +6,15 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TallyCompanyRepository extends JpaRepository<TallyCompany, Long> {
-    List<TallyCompany> findByTenantId(Long tenantId);
+    List<TallyCompany> findByTenantIdAndIsDeletedFalse(Long tenantId);
 
     Optional<TallyCompany> findByGuid(String guid);
 
-    long countByTenantId(Long tenantId);
+    long countByTenantIdAndIsDeletedFalse(Long tenantId);
 
     Optional<TallyCompany> findByTenantIdAndGuid(Long tenantId, String guid);
+
+	List<TallyCompany> findByTenantId(Long tenantId);
+	
+	 Optional<TallyCompany> findByTenantIdAndGuidAndIsDeletedFalse(Long tenantId,String guid);
 }

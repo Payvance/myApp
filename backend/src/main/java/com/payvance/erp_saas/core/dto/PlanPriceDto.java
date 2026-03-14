@@ -28,4 +28,7 @@ public class PlanPriceDto {
 
     @JsonProperty("is_active")
     private Byte isActive = 1;
+
+    @JsonProperty("base_price")
+    private BigDecimal basePrice;
 }

@@ -141,6 +141,7 @@ public class PlanService {
         price.setBillingPeriod(dto.getBillingPeriod());
         price.setCurrency(dto.getCurrency());
         price.setAmount(dto.getAmount());
+        price.setBasePrice(dto.getBasePrice());
         price.setIsActive(dto.getIsActive());
         price.setDuration(dto.getDuration());
     }
@@ -153,6 +154,7 @@ public class PlanService {
         dto.setIsActive(plan.getIsActive());
         dto.setIsSeparateDb(plan.getIsSeparateDb());
         dto.setIsForVendor(plan.getIsForVendor());
+        
 
         List<Long> tenantIds = subscriptionRepository.findTenantIdsByPlanId(plan.getId());
 
@@ -175,6 +177,7 @@ public class PlanService {
             priceDto.setAmount(plan.getPlanPrice().getAmount());
             priceDto.setIsActive(plan.getPlanPrice().getIsActive());
             priceDto.setDuration(plan.getPlanPrice().getDuration());
+            priceDto.setBasePrice(plan.getPlanPrice().getBasePrice());
             dto.setPlanPrice(priceDto);
         }
 

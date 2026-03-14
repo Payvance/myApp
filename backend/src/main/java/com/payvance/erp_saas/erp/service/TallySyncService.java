@@ -123,8 +123,8 @@ public class TallySyncService {
         if (tenantId == null)
             throw new RuntimeException("Tenant ID not found in context");
         System.out.println("[API] Added companies for tenant: " + tenantId);
-        List<TallyCompany> companies = tallyCompanyRepository.findByTenantId(tenantId);
-        System.out.println("[API] Found " + companies.size() + " companies for tenant: " + tenantId);
+        List<TallyCompany> companies = tallyCompanyRepository.findByTenantIdAndIsDeletedFalse(tenantId);
+        System.out.println("[API] Found " + companies.size() + " active companies for tenant: " + tenantId);
         return companies;
     }
 
@@ -748,11 +748,11 @@ public class TallySyncService {
         }
 
         // 2. Check Limits & Upsert Setup
-        var existingCompany = tallyCompanyRepository.findByTenantIdAndGuid(tenantId,req.getGuid());
+        var existingCompany = tallyCompanyRepository.findByTenantIdAndGuidAndIsDeletedFalse(tenantId,req.getGuid());
         if (existingCompany.isEmpty()) {
             TenantSetting settings = tenantSettingsRepository.findByTenantId(tenantId)
                     .orElseThrow(() -> new RuntimeException("Tenant settings not found"));
-            long currentCount = tallyCompanyRepository.countByTenantId(tenantId);
+            long currentCount = tallyCompanyRepository.countByTenantIdAndIsDeletedFalse(tenantId);
             if (currentCount >= settings.getMaxCompanies()) {
                 throw new RuntimeException("Company limit reached. Max allowed: " + settings.getMaxCompanies());
             }
@@ -795,6 +795,10 @@ public class TallySyncService {
         company.setBaseCurrency(req.getBaseCurrency());
 
         tallyCompanyRepository.findByGuid(req.getGuid()).ifPresent(existing -> company.setId(existing.getId()));
+        
+        // Ensure the company is not marked as deleted if being re-added or updated
+        company.setIsDeleted(false);
+        
         TallyCompany saved = tallyCompanyRepository.save(company);
 
         updateLastSyncTime(tenantId, req.getGuid());
@@ -802,6 +806,20 @@ public class TallySyncService {
         System.out.println("[API] Company added/updated: " + req.getName() + " (ID: " + saved.getId() + ") for tenant: "
                 + tenantId);
         System.out.println("[DEBUG] Saved Pan: " + saved.getPan() + ", LastVchDate: " + saved.getLastVoucherDate());
+    }
+
+    @Transactional("erpTransactionManager")
+    public void softDeleteCompany(String guid) {
+        Long tenantId = TenantContext.getCurrentTenant();
+        if (tenantId == null)
+            throw new RuntimeException("Tenant ID not found in context");
+
+        TallyCompany company = tallyCompanyRepository.findByTenantIdAndGuid(tenantId, guid)
+                .orElseThrow(() -> new RuntimeException("Company not found with GUID: " + guid));
+
+        company.setIsDeleted(true);
+        tallyCompanyRepository.save(company);
+        System.out.println("[API] Company soft-deleted: " + company.getName() + " for tenant: " + tenantId);
     }
 
     @Transactional(value = "erpTransactionManager", readOnly = true)

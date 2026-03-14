@@ -78,4 +78,7 @@ public class TallyCompany {
 
     @Column(name = "base_currency", length = 10)
     private String baseCurrency;
+
+    @Column(name = "is_deleted")
+    private Boolean isDeleted = false;
 }
