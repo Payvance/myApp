@@ -182,7 +182,7 @@ const enforcePattern = (inputValue, validationType) => {
 
   // If input does NOT match the pattern
   if (!pattern.test(inputValue)) {
-    toast.error(message || "Invalid input", { toastId: "patternError" });
+    // Remove toast error to prevent showing on every keystroke
     return inputValue.replace(/[^A-Za-z0-9\s]/g, ""); // ✅ FILTER
   }
 
@@ -399,7 +399,17 @@ const formatWithCommas = (value) => {
 
   // Handle blur event to validate and format amount if needed
   const handleBlur = (e) => {
-  const newValue = e.target.value;
+  let newValue = e.target.value;
+  
+  // Enforce pattern on blur to clean up any invalid characters
+  if (validationType && VALIDATION_PATTERNS[validationType]) {
+    newValue = enforcePattern(newValue, validationType);
+    // Update the input value with cleaned value
+    e.target.value = newValue;
+    setDisplayValue(newValue);
+    onChange({ target: { name, value: newValue, error: "" } });
+  }
+  
   const errorMessage = validate(newValue);
   setError(errorMessage); // Set local error
   if (setValidationErrors) {
@@ -491,7 +501,7 @@ const formatWithCommas = (value) => {
             min={min}
             max={max}
             onChange={handleChange}
-            onBlur={onBlur} // Attach onBlur event
+            onBlur={handleBlur} // Use internal handleBlur function
             onKeyDown={handleKeyDown}
             onMouseEnter={() => inputRef.current}
             onClick={handleInputClick}

@@ -244,6 +244,9 @@ export const formConfig = {
     }, 
     status : {
       label : "Status"
+    },
+    basePrice : {
+      label : "Base Price (INR)"
     }
   },
 

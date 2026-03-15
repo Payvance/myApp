@@ -105,7 +105,7 @@ const Navbar = () => {
                     {/* Mobile Actions */}
                     <div className="mobile-actions">
                         <button className="btn-mobile-login" onClick={() => navigate('/signin')}>Login</button>
-                        <button className="btn-mobile-app" onClick={() => navigate('/download')}>
+                        <button className="btn-mobile-app" onClick={() => window.location.href = 'https://finlyticz.com/downloads/tally-connector/latest/FinlyticZ-Connector-latest.exe'}>
                             <i className="bi bi-download"></i> Desktop App
                         </button>
                     </div>
@@ -113,7 +113,7 @@ const Navbar = () => {
 
                 <div className="navbar-actions desktop-only">
                     <Button variant="outline" onClick={() => navigate('/signin')}>Login</Button>
-                    <Button variant="primary" icon="bi-download">Desktop App</Button>
+                    <Button variant="primary" icon="bi-download" onClick={() => window.location.href = 'https://finlyticz.com/downloads/tally-connector/latest/FinlyticZ-Connector-latest.exe'}>Desktop App</Button>
                 </div>
             </div>
         </nav>

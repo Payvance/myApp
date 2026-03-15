@@ -106,10 +106,10 @@ export const profileServices = {
 export const companyDetailsServices = {
   upsertCompanyDetails: (data) =>
     api.post(API_ENDPOINTS.COMPANY_DETAILS.UPSERT, data),
-  
+
   getCompanyDetails: (tenantId) =>
     api.get(API_ENDPOINTS.COMPANY_DETAILS.GET_BY_TENANT(tenantId)),
-  
+
   getByTenant: (tenantId) => {
     return api.get(API_ENDPOINTS.COMPANY_DETAILS.GET_BY_TENANT(tenantId), {
       headers: {
@@ -324,6 +324,22 @@ export const vendorLicenseServices = {
 
     const url = `${API_ENDPOINTS.VENDOR_LICENSES.BATCHES}?${queryParams.toString()}`;
     return api.get(url);
+  },
+
+  // Get vendor-specific license batches
+  getVendorLicenseBatches: (params = {}) => {
+    const queryParams = new URLSearchParams();
+    const { userId, ...rest } = params;
+
+    if (rest.page !== undefined) queryParams.append('page', rest.page);
+    if (rest.size !== undefined) queryParams.append('size', rest.size);
+    if (rest.sortBy && rest.sortDir) {
+      queryParams.append('sort', `${rest.sortBy},${rest.sortDir}`);
+    }
+    if (rest.status) queryParams.append('status', rest.status);
+
+    const url = `${API_ENDPOINTS.VENDOR_LICENSES.VENDOR_BATCHES}?${queryParams.toString()}`;
+    return api.post(url, { userId });
   },
 
   subscribePlan: (data) =>

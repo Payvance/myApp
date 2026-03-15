@@ -1241,3 +1241,23 @@
 .inv__party-name--empty:hover {
   opacity: 1;
 }
+
+.company-warning-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff8ec;
+  border: 1px solid #f5a623;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #92570a;
+}
+
+.company-warning-banner i {
+  font-size: 15px;
+  color: #f5a623;
+  flex-shrink: 0;
+}

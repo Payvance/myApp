@@ -3,7 +3,7 @@ import React from 'react';
 import './SubscriptionCard.css';
 
 const SubscriptionCard = ({ plan, onEdit, onBuy, buttonDisabled }) => {
-  const { id, name, subtitle, status, price, period, stats, features } = plan;
+  const { id, name, subtitle, status, price, period, basePrice, stats, features } = plan;
   const isActive = status.toLowerCase() === 'active' || status.toLowerCase() === 'available';
 
   return (
@@ -28,7 +28,14 @@ const SubscriptionCard = ({ plan, onEdit, onBuy, buttonDisabled }) => {
         {/* ── Pricing ── */}
         <div className="sc-pricing">
           <div className="sc-price-wrap">
-            <span className="sc-price">₹{price}</span>
+          {basePrice && basePrice > price ? (
+              <div className="sc-price-inline">
+                <span className="sc-base-price">₹{basePrice}</span>
+                <span className="sc-price">₹{price}</span>
+              </div>
+             ) : (
+                <span className="sc-price">₹{price}</span>
+              )}
             <span className="sc-period">{period}</span>
           </div>
         </div>

@@ -110,10 +110,14 @@ const ProfilePage = () => {
     !vendorData.companyName ||
     !vendorData.email ||
     !vendorData.mobile ||
+    vendorData.mobile.length !== 10 ||
     !vendorData.vendorType ||
     !vendorData.gstNo ||
-    !vendorData.cinNo ||
-    !vendorData.panNo ||
+    !vendorData.gstDocument ||
+    // PAN document upload mandatory, but only if a PAN number entered
+    (vendorData.panNo && !vendorData.panDocument) ||
+    // MSME document mandatory if MSME registered is checked
+    (vendorData.msmeRegister && !vendorData.msmeDocument) ||
     !addressData.houseNo ||
     !addressData.area ||
     !addressData.pincode ||
@@ -124,10 +128,7 @@ const ProfilePage = () => {
     !bankData.bankName ||
     !bankData.branchName ||
     !bankData.accountNumber ||
-    !bankData.ifscCode ||
-    !vendorData.panDocument ||
-    !vendorData.gstDocument ||
-    (vendorData.msmeRegister && !vendorData.msmeDocument);
+    !bankData.ifscCode;
 
 
   const isCAIncomplete = showCA && (
@@ -205,7 +206,7 @@ const ProfilePage = () => {
     if (showCA) {
       payload = {
         ...payload,
-        name: caData.name || "",
+        name: vendorData.companyName || "",
         email: caData.email || "",
         phone: caData.phone || "",
         caRegNo: caData.caRegNo || "",
@@ -270,6 +271,7 @@ const ProfilePage = () => {
             setVendorData={setVendorData}
             validationErrors={validationErrors}
             setValidationErrors={setValidationErrors}
+            isPrepopulated={true}
           />
         </div>
 

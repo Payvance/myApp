@@ -29,6 +29,7 @@ export const API_ENDPOINTS = {
     BATCHES: "/api/vendor/licenses/batches",
     BATCH_DETAIL: (id) => `/api/vendor/licenses/batches/${id}`,
     SUBSCRIPTION: "/api/billing/subscribe",
+    VENDOR_BATCHES: "/api/vendor/licenses/vendor/batches",
 
     SIMULATE_PAYMENT: "/api/billing/simulate-payment",
     // sending batch status

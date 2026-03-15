@@ -24,7 +24,7 @@ import { formConfig } from "../../../config/formConfig";
 import { vendorDiscountServices } from "../../../services/apiService";
 import { toast } from "react-toastify";
 
-const VendorPersonalInfo = ({ vendorData, setVendorData, disabled, role, validationErrors, setValidationErrors, canEditDiscount }) => {
+const VendorPersonalInfo = ({ vendorData, setVendorData, disabled, role, validationErrors, setValidationErrors, canEditDiscount, isPrepopulated }) => {
 
   useEffect(() => {
     // console.log("VendorPersonalInfo updated props:", { vendorData, disabled, role, canEditDiscount });
@@ -168,7 +168,7 @@ const VendorPersonalInfo = ({ vendorData, setVendorData, disabled, role, validat
             required
             validationErrors={validationErrors || {}}
             setValidationErrors={setValidationErrors}
-            disabled={disabled}
+            disabled={disabled || isPrepopulated}
           />
           <InputField
             label={formConfig.vendorprofile.mobile.label}
@@ -177,9 +177,10 @@ const VendorPersonalInfo = ({ vendorData, setVendorData, disabled, role, validat
             onChange={(e) => handleChange("mobile", e.target.value)}
             validationType="MOBILE"
             required
+            max={10}
             validationErrors={validationErrors || {}}
             setValidationErrors={setValidationErrors}
-            disabled={disabled}
+            disabled={disabled || isPrepopulated}
           />
           {role === "VENDOR" && (
             <OptionInputBox
@@ -218,6 +219,7 @@ const VendorPersonalInfo = ({ vendorData, setVendorData, disabled, role, validat
             name="panDocument"
             onChange={(e) => handleFileChange(e, "panDocument")}
             value={vendorData.panDocument}
+            required={!!vendorData.panNo}
             disabled={disabled}
             validationErrors={validationErrors}
           />
@@ -227,6 +229,7 @@ const VendorPersonalInfo = ({ vendorData, setVendorData, disabled, role, validat
             value={vendorData.gstNo || ""}
             onChange={(e) => handleChange("gstNo", e.target.value)}
             validationType="GST"
+            required
             validationErrors={validationErrors || {}}
             setValidationErrors={setValidationErrors}
             disabled={disabled}
@@ -236,6 +239,7 @@ const VendorPersonalInfo = ({ vendorData, setVendorData, disabled, role, validat
             name="gstDocument"
             onChange={(e) => handleFileChange(e, "gstDocument")}
             value={vendorData.gstDocument}
+            required
             disabled={disabled}
             validationErrors={validationErrors}
           />
@@ -258,6 +262,7 @@ const VendorPersonalInfo = ({ vendorData, setVendorData, disabled, role, validat
               name="msmeDocument"
               onChange={(e) => handleFileChange(e, "msmeDocument")}
               value={vendorData.msmeDocument}
+              required={vendorData.msmeRegister}
               disabled={disabled}
               validationErrors={validationErrors}
             />

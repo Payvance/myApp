@@ -192,6 +192,7 @@ const handleCompanySubmit = async () => {
       await authServices.logout();
       localStorage.removeItem("token");
       sessionStorage.removeItem("token");
+      sessionStorage.removeItem("plan_required_seen")
       navigate("/signin");
     } catch (error) {
       console.error("Logout failed:", error);
@@ -535,7 +536,6 @@ const handleCompanySubmit = async () => {
               value={companyDetails.gstNumber}
               onChange={handleCompanyChange}
               validationType="GST"
-              required
               max={15}
               classN="large"
               validationErrors={validationErrors}
@@ -577,7 +577,12 @@ const handleCompanySubmit = async () => {
 </div>
         </div>
       </div>
-    <Button text="Submit" onClick={handleCompanySubmit} disabled={Object.values(companyDetails).some((value) => !value.trim()) || Object.values(validationErrors).some((error) => error) || loading} />
+    <Button text="Submit" onClick={handleCompanySubmit} disabled={
+      !companyDetails.companyName.trim() ||
+      !companyDetails.address.trim() ||
+      Object.values(validationErrors).some((error) => error) ||
+      loading
+    } />
     </PopUp>
     </>
   );

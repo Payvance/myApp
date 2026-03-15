@@ -136,8 +136,8 @@ ICAI_MEMBER_NO: {
 },
 
 FIRM_NAME: {
-  pattern: /^[A-Z ]*$/,
-  message: "Firm name can contain only capital letters and spaces",
+  pattern: /^[A-Za-z0-9 ]*$/,
+  message: "Firm name can contain letters, numbers, and spaces",
 },
   LANDMARK: {
     pattern: /^[a-zA-Z0-9\s,\-/]*$/,
