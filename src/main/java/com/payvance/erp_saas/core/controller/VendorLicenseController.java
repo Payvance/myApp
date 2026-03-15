@@ -68,8 +68,8 @@ public class VendorLicenseController {
 
     private final TenantService licenseService;
 
-	private final TenantRepository tenantRepository;
-    
+    private final TenantRepository tenantRepository;
+
     private final PlanPriceService planPriceService;
 
     private final VendorDiscountService vendorDiscountService;
@@ -79,7 +79,6 @@ public class VendorLicenseController {
     private final PlanService planService;
 
     private final VendorRepository vendorRepository;
-
 
     @PostMapping("/batches")
     public ResponseEntity<VendorBatchResponseDto> createBatch(@Valid @RequestBody VendorBatchRequestDto request) {
@@ -130,6 +129,14 @@ public class VendorLicenseController {
             Pageable pageable) {
         return ResponseEntity.ok(
                 vendorLicenseService.searchBatches(request, vendorId, pageable));
+    }
+
+    @PostMapping("/vendor/batches")
+    public ResponseEntity<Page<VendorBatchResponseDto>> getBatchesByVendorUser(
+            @RequestBody Map<String, Long> request,
+            Pageable pageable) {
+        Long userId = request.get("userId");
+        return ResponseEntity.ok(vendorLicenseService.getBatchesByUserId(userId, pageable));
     }
 
     @GetMapping("/keys")
@@ -213,7 +220,7 @@ public class VendorLicenseController {
         ActivationKey entity = vendorLicenseService.issueLicense(request);
         ActivationKeyResponseDto dto = new ActivationKeyResponseDto();
         BeanUtils.copyProperties(entity, dto);
-      
+
         // Set redeemed tenant name if applicable
         if (entity.getRedeemedTenantId() != null) {
             String tenantName = tenantRepository

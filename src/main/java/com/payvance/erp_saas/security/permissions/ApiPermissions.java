@@ -39,7 +39,8 @@ public final class ApiPermissions {
             "/api/billing/process", // Subscription initiation
             "/api/billing/renew",
             "/api/billing/upgrade",
-            "/api/users/**"
+            "/api/users/**",
+            "/api/tenants/trial-config"
             
     };
 

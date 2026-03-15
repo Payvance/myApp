@@ -88,16 +88,15 @@ public class VendorLicenseService {
     private final UserRepository userRepository;
     private final VendorTenantsRepository vendorTenantsRepository;
     private final SubscriptionRepository subscriptionRepository;
-     private final InvoiceRepository InvoiceRepository;
-     private final InvoiceItemRepository InvoiceItemRepository;
-     private final TenantActivationRepository tenantActivationRepository;
-     private final TenantUsageRepository tenantUsageRepository;
-     private final SubscriptionEventRepository subscriptionEventRepository;
+    private final InvoiceRepository InvoiceRepository;
+    private final InvoiceItemRepository InvoiceItemRepository;
+    private final TenantActivationRepository tenantActivationRepository;
+    private final TenantUsageRepository tenantUsageRepository;
+    private final SubscriptionEventRepository subscriptionEventRepository;
 
-     
     private static final String CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private final Random random = new SecureRandom();
-    
+
     private final EmailService emailService;
 
     @Transactional
@@ -225,9 +224,9 @@ public class VendorLicenseService {
         batchRepository.save(batch);
 
         ActivationKey savedKey = activationKeyRepository.save(key);
-        
+
         Plan plan = batch.getPlan();
-        
+
         // ===============================
         // 2️⃣ INSERT subscriptions
         // ===============================
@@ -279,11 +278,11 @@ public class VendorLicenseService {
         activation.setActivatedAt(LocalDateTime.now());
         activation.setExpiresAt(savedKey.getExpiresAt());
         activation.setStatus("active");
-        
+
         // Set activation price from batch resale price
         activation.setActivationPrice(batch.getCostPrice());
         activation.setCurrency(batch.getCurrency());
-        
+
         tenantActivationRepository.save(activation);
 
         // ===============================
@@ -307,9 +306,7 @@ public class VendorLicenseService {
 
         // ---------------- FETCH VENDOR EMAIL PROPERLY ----------------
         String vendorEmail = vendorRepository.findById(request.getVendorId())
-                .flatMap(vendor ->
-                        userRepository.findById(vendor.getUserId())
-                )
+                .flatMap(vendor -> userRepository.findById(vendor.getUserId()))
                 .map(User::getEmail)
                 .orElse(null);
 
@@ -322,8 +319,8 @@ public class VendorLicenseService {
         if (request.getIssuedToEmail() != null) {
             emailService.sendLicenseIssuedEmail(
                     request.getIssuedToEmail(), // TO
-                    ccEmails,                   // CC (nullable)
-                    plainCode                   // Plain license key
+                    ccEmails, // CC (nullable)
+                    plainCode // Plain license key
             );
         }
 
@@ -462,6 +459,10 @@ public class VendorLicenseService {
 
             return dto;
         });
+    }
+
+    public Page<VendorBatchResponseDto> getBatchesByUserId(Long userId, Pageable pageable) {
+        return searchBatches(new VendorBatchSearchRequestDto(), userId, pageable);
     }
 
     public Page<ActivationKey> searchActivationKeys(ActivationKeySearchRequestDto request, Long vendorBatchId) {
