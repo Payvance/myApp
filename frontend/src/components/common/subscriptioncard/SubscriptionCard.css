@@ -261,3 +261,30 @@
   cursor: not-allowed;
   box-shadow: none;
 }
+
+.sc-price-inline {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.sc-base-price {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-decoration: line-through;
+  text-decoration-color: var(--text-tertiary);
+  letter-spacing: -0.02em;
+}
+
+.sc-savings-badge {
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: #E1F5EE;
+  color: #085041;
+  padding: 2px 5px;
+  border-radius: 4px;
+  align-self: center;
+}

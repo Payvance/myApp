@@ -10,6 +10,7 @@ const DocumentInputField = ({
     value = null, // Pre-existing document (e.g. base64 or URL)
     accept = ".pdf,.jpg,.jpeg,.png",
     disabled = false,
+    required = false,
     validationErrors = {},
 }) => {
     const [selectedFile, setSelectedFile] = useState(null);
@@ -95,9 +96,11 @@ const DocumentInputField = ({
                 onChange={handleInternalChange}
                 disabled={disabled}
                 placeholder=" "
+                required={required}
             />
             <label htmlFor={inputId}>
                 {label}
+                {required && <span className="required">*</span>}
             </label>
 
             {(selectedFile || (value && !selectedFile)) && (

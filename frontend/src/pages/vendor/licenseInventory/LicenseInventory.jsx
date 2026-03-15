@@ -703,6 +703,7 @@ const LicenseInventory = () => {
   const fetchData = useCallback(async ({ page, size, sortField, sortOrder, filters }) => {
     try {
       setLoading(true);
+      const userIdFromStorage = localStorage.getItem("userId") || localStorage.getItem("user_id");
       const apiParams = {
         page: page || 0,
         size: size || 10,
@@ -711,7 +712,14 @@ const LicenseInventory = () => {
         ...(filters?.search && { status: filters.search }),
       };
 
-      const response = await vendorLicenseServices.getLicenseBatches(apiParams);
+      if (!isSuperAdmin) {
+        apiParams.userId = userIdFromStorage;
+        apiParams.vendorId = userIdFromStorage;
+      }
+
+      const response = isSuperAdmin
+        ? await vendorLicenseServices.getLicenseBatches(apiParams)
+        : await vendorLicenseServices.getVendorLicenseBatches(apiParams);
       const data = response.data;
 
       let transformedContent = data.content || [];

@@ -4,28 +4,53 @@ import './Feature.css';
 const features = [
     {
         icon: 'bi-receipt-cutoff',
-        title: 'Easy Billing',
-        desc: 'Generate professional invoices in seconds. Customise templates, add discounts, and send to clients with one click.',
+        title: 'Live Tally Data',
+        desc: 'Access your Tally data in real time from anywhere and stay updated with every business transaction.',
     },
     {
         icon: 'bi-graph-up-arrow',
-        title: 'Profit / Loss Reports',
-        desc: 'Real-time P&L dashboards with drill-down by category, date range, and product. Know exactly where you stand.',
+        title: 'Inventory Control',
+        desc: 'Manage stock efficiently by tracking inventory levels, product movement, and item availability with ease.',
     },
     {
         icon: 'bi-shield-lock-fill',
-        title: 'Secure Data',
-        desc: 'Bank-grade encryption, role-based access, and daily backups keep your financial data completely protected.',
+        title: 'Outstanding Tracking',
+        desc: 'Keep a clear record of pending payments, receivables, and payables for better financial control.',
     },
     {
         icon: 'bi-boxes',
-        title: 'Stock & Inventory',
-        desc: 'Track stock levels in real time, set low-stock alerts, and manage multiple warehouses from a single dashboard.',
+        title: 'Business Reports',
+        desc: 'Generate meaningful business reports to analyze performance and make informed decisions with confidence.',
     },
     {
         icon: 'bi-people-fill',
-        title: 'Party Management',
-        desc: 'Maintain a complete ledger for every customer and vendor — outstanding dues, payment history, and credit limits.',
+        title: 'Multi User Access',
+        desc: 'Allow multiple users to access the system securely with role-based permissions and better collaboration.',
+    },
+    {
+        icon: 'bi-cloud-check-fill',
+        title: 'Cloud Backup',
+        desc: 'Secure your important business data with reliable cloud backup and easy recovery whenever needed.',
+    },
+    {
+        icon: 'bi-bag-check-fill',
+        title: 'Order Booking',
+        desc: 'Simplify order management by creating, tracking, and processing orders in an organized way.',
+    },
+    {
+        icon: 'bi-calculator-fill',
+        title: 'Accounting Made Easy',
+        desc: 'Make daily accounting simple and hassle-free with user-friendly features and smooth record management.',
+    },
+    {
+        icon: 'bi-cash-stack',
+        title: 'Cash Flow Insights',
+        desc: 'Monitor cash inflow and outflow to understand your financial position and plan better for growth.',
+    },
+    {
+        icon: 'bi-journal-text',
+        title: 'Registers',
+        desc: 'Access all essential Tally registers like sales, purchase, cash, and bank records in one place.',
     },
 ];
 
@@ -46,10 +71,12 @@ const Features = () => {
             <div className="features-grid">
                 {features.map((f, i) => (
                     <div className="feature-card" key={i}>
-                        <div className="feature-icon">
-                            <i className={`bi ${f.icon}`}></i>
+                        <div className="feature-card-header">
+                            <div className="feature-icon">
+                                <i className={`bi ${f.icon}`}></i>
+                            </div>
+                            <h3>{f.title}</h3>
                         </div>
-                        <h3>{f.title}</h3>
                         <p>{f.desc}</p>
                     </div>
                 ))}

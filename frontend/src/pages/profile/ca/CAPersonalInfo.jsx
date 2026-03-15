@@ -96,7 +96,7 @@ const CAPersonalInfo = ({ caData, setCaData, disabled,validationErrors,setValida
           label={formConfig.caprofile.firmName.label}
           name="firmName"
           value={caData.firmName || ""}
-          validationType="BANK"
+          validationType="FIRM_NAME"
           onChange={(e) => handleChange("firmName", e.target.value)}
           max={100}
           disabled={disabled}

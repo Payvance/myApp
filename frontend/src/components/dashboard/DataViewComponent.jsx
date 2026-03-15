@@ -1,9 +1,24 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { formatDateStandardSpace } from '../../utils/dateUtils';
 import './DataViewComponent.css';
 import './CardHeader.css';
+import PopUp from '../common/popups/PopUp';
+import Button from '../common/button/Button';
+import { Navigate, useNavigate } from 'react-router-dom';
 
-const DataViewComponent = ({ title, data, loading }) => {
+const DataViewComponent = ({ title, data, loading, isTenant  }) => {
+  const [showInactivePopup, setShowInactivePopup] = useState(false);
+  const navigate = useNavigate(); 
+
+  useEffect(() => {
+  if (isTenant && title === "Plan Details") {
+    const statusItem = data?.find(item => item.name === "Status");
+    const alreadySeen = sessionStorage.getItem("plan_required_seen"); // ← sessionStorage
+    if (statusItem?.value === "Inactive" && !alreadySeen) {
+      setShowInactivePopup(true);
+    }
+  }
+}, [data, title, isTenant]);
   if (loading) {
     return (
       <div className="data-view-card">
@@ -56,6 +71,56 @@ const DataViewComponent = ({ title, data, loading }) => {
           ))
         )}
       </div>
+
+      <PopUp
+  isOpen={showInactivePopup}
+  onClose={() => setShowInactivePopup(false)}
+  title=""
+  size="small"
+>
+  <div className="plan-required-popup">
+
+    <div className="prp__icon-wrap">
+      <i className="bi bi-stars" />
+    </div>
+
+    <h2 className="prp__title">Welcome aboard!</h2>
+    <p className="prp__subtitle">
+      You're one step away from unlocking everything. Activate a plan or start a free trial to get going.
+    </p>
+
+    <div className="prp__features">
+      <div className="prp__feature">
+        <i className="bi bi-check-circle-fill" />
+        <span>Get access to mobile app</span>
+      </div>
+      <div className="prp__feature">
+        <i className="bi bi-check-circle-fill" />
+        <span>Manage users & companies</span>
+      </div>
+    </div>
+
+    <div className="prp__actions">
+      <button
+        className="prp__btn prp__btn--primary"
+        onClick={() => {
+          sessionStorage.setItem("plan_required_seen", "true");
+          setShowInactivePopup(false);
+          navigate("/tenantplanss");
+        }}
+      >
+        <i className="bi bi-bag-check" /> View Plans
+      </button>
+      <button
+        className="prp__btn prp__btn--ghost"
+        onClick={() => setShowInactivePopup(false)}
+      >
+        Maybe later
+      </button>
+    </div>
+
+  </div>
+</PopUp>
     </div>
   );
 };

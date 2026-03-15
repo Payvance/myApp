@@ -68,6 +68,7 @@ const TenantPlans = () => {
           name:     plan.name.trim(),
           subtitle: plan.code,
           price:    plan.plan_price.amount,
+          basePrice: plan.plan_price.base_price,
           period:   plan.plan_price.billing_period === "yearly" ? "per 12 months" : "per 1 month",
           isOwned:  plan.tenantIds?.includes(currentTenantId) ?? false,
           features: [
@@ -76,9 +77,13 @@ const TenantPlans = () => {
             plan.is_separate_db === "1" ? "Separate DB" : "Shared DB",
           ],
         }));
+
+        // Sort ascending by price
+    mappedPlans.sort((a, b) => a.price - b.price);
+
       setPlans(mappedPlans);
     } catch (error) {
-      console.error("Error fetching plans for tenant:", error);
+    
       toast.error("Failed to load plans.");
     } finally {
       setLoadingPlans(false);
@@ -197,6 +202,7 @@ const TenantPlans = () => {
                     name:       plan.name,
                     subtitle:   plan.subtitle,
                     price:      plan.price,
+                    basePrice: plan.basePrice,
                     period:     plan.period,
                     expiryDate: endDate,
                     features:   plan.features,

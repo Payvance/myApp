@@ -238,6 +238,7 @@ const CommonDashboard = () => {
                     key={view.id}
                     {...view}
                     loading={dataLoading}
+                    isTenant={Number(roleId) === 2}
                   />
                 );
               }

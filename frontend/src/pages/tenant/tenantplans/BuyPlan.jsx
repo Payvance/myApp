@@ -54,6 +54,7 @@ const BuyPlan = () => {
   const [creditAmount, setCreditAmount]         = useState(0);
   const [creditLabel, setCreditLabel]           = useState('');
   const [hasExistingPlan, setHasExistingPlan]   = useState(false);
+  const [showCompanyWarning, setShowCompanyWarning] = useState(false);
 
   // ── Company details ───────────────────────────────────────
   const [companyDetails, setCompanyDetails] = useState({
@@ -233,6 +234,7 @@ const BuyPlan = () => {
     // Reset form data and close popup
     setCompanyFormData({ gstNumber: '', companyName: '', address: '' });
     setShowCompanyPopup(false);
+    setShowCompanyWarning(false);
   };
 
   const handleCompanyChange = (e) => {
@@ -262,6 +264,7 @@ const BuyPlan = () => {
       }
       // Refresh company details after update
       await fetchCompanyDetails();
+      setShowCompanyWarning(false);
       handleCloseCompanyPopup();
     } catch {
       toast.error("Failed to Submit company details");
@@ -423,12 +426,19 @@ const BuyPlan = () => {
     toast.info("Wallet credits removed", { autoClose: 1000 });
   };
 
-  // Open payment popup and refresh company details + GST
   const handleOpenPaymentPopup = async () => {
-    await fetchCompanyDetails();
-    await fetchGST();
-    setIsPaymentPopupOpen(true);
-  };
+  await fetchCompanyDetails();
+  await fetchGST();
+
+  if (!isCompanyDetailsFilled()) {
+    setCompanyFormData({ ...companyDetails });
+    setShowCompanyWarning(true);
+    setShowCompanyPopup(true);
+    return; // ← don't open payment popup at all
+  }
+
+  setIsPaymentPopupOpen(true);
+};
 
   // Check if company details are filled
   const isCompanyDetailsFilled = () => {
@@ -439,6 +449,9 @@ const BuyPlan = () => {
   const handlePaymentWithValidation = async () => {
     if (!isCompanyDetailsFilled()) {
       toast.error("Please fill the company details before proceeding.");
+      setCompanyFormData({ ...companyDetails });
+    setShowCompanyPopup(true);
+    setShowCompanyWarning(true); // ← new flag
       return;
     }
     await handlePayment();
@@ -965,7 +978,7 @@ const BuyPlan = () => {
                   <i className="bi bi-receipt-cutoff inv__logo-icon" />
                 </div>
                 <div>
-                  <div className="inv__brand">Tax Invoice</div>
+                  <div className="inv__brand">Order Summary</div>
                   <div className={`inv__status-chip inv__status-chip--${isRenew ? 'renew' : isAddon ? 'addon' : 'new'}`}>
                     {isRenew ? 'Renewal' : isAddon ? 'Add-on' : 'New Subscription'}
                   </div>
@@ -982,7 +995,7 @@ const BuyPlan = () => {
             <div className="inv__parties">
               <div className="inv__party">
                 <div className="inv__party-label">
-                  Billed To
+                  Company Details
                   <button
                     className="inv__edit-btn"
                     type="button"
@@ -1152,7 +1165,7 @@ const BuyPlan = () => {
 
             <div className="inv__footer-note">
               <i className="bi bi-shield-check" />
-              This is a proforma invoice. Official invoice will be sent post payment.
+              This is a summary of your order. The official confirmation will be sent after payment.
             </div>
 
           </div>
@@ -1196,6 +1209,13 @@ const BuyPlan = () => {
         title="Company Details"
         size="medium"
       >
+        {/* ── Warning banner ── */}
+        {showCompanyWarning && (
+          <div className="company-warning-banner">
+            <i className="bi bi-exclamation-triangle-fill" />
+            <span>Please fill in your company details before proceeding to payment.</span>
+          </div>
+        )}
         <div className="company-details-container">
           <div className="company-details-row">
             <InputField
@@ -1205,7 +1225,6 @@ const BuyPlan = () => {
               onChange={handleCompanyChange}
               validationType="GST"
               max={15}
-              required
               classN="large"
               validationErrors={validationErrors}
               setValidationErrors={setValidationErrors}
@@ -1248,7 +1267,12 @@ const BuyPlan = () => {
         <Button
           text={loading ? "Saving..." : isUpdate ? "Update" : "Submit"}
           onClick={handleCompanySubmit}
-          disabled={Object.values(companyFormData).some((value) => !value.trim()) || Object.values(validationErrors).some((error) => error) || loading}
+          disabled={
+            !companyFormData.companyName.trim() ||
+            !companyFormData.address.trim() ||
+            Object.values(validationErrors).some((error) => error) ||
+            loading
+          }
         />
       </PopUp>
 

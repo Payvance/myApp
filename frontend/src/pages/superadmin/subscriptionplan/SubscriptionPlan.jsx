@@ -43,6 +43,7 @@ const SubscriptionPlan = () => {
     allowedCompany: '',
     periodType: 'monthly',
     duration: 1,
+    basePrice: '',
     planPrice: '',
     status: 'active',
     databaseShared: true
@@ -71,6 +72,7 @@ const SubscriptionPlan = () => {
         allowedCompany: data.plan_limitation?.allowed_company_count ?? 0,
         periodType: data.plan_price?.billing_period ?? "monthly",
         duration: data.plan_price?.duration ?? 1,
+        basePrice: data.plan_price?.base_price ?? 0,
         planPrice: data.plan_price?.amount ?? 0,
         status: data.is_active === "1" ? "active" : "inactive",
         databaseShared: data.is_separate_db === "0" ? true : false,
@@ -135,6 +137,7 @@ const SubscriptionPlan = () => {
       plan_price: {
         billing_period: formData.periodType,
         currency: 'INR',
+        base_price: Number(formData.basePrice),
         amount: Number(formData.planPrice),
         duration: Number(formData.duration),
       },
@@ -208,6 +211,7 @@ const SubscriptionPlan = () => {
           subtitle: plan.code,
           status: plan.is_active === "1" ? "ACTIVE" : "INACTIVE",
           price: plan.plan_price?.amount ?? 0,
+          basePrice: plan.plan_price?.base_price ?? 0,
 
           //  USE BACKEND DURATION HERE
           period:
@@ -250,6 +254,7 @@ const SubscriptionPlan = () => {
       plan_price: {
         billing_period: formData.periodType,
         currency: 'INR',
+        base_price: Number(formData.basePrice),
         amount: Number(formData.planPrice),
         duration: Number(formData.duration),
       },
@@ -287,7 +292,9 @@ const SubscriptionPlan = () => {
       Number(formData.allowedCompany) > 0 &&
       formData.periodType !== '' &&
       (Number(formData.duration) >= 1 && Number(formData.duration) <= 12) &&
+      Number(formData.basePrice) >= 0 &&
       Number(formData.planPrice) > 0 &&
+      Number(formData.planPrice) <= Number(formData.basePrice) &&
       formData.status !== ''
     );
   };
@@ -405,6 +412,7 @@ const SubscriptionPlan = () => {
                 classN="large"
                 disabled={isEditMode ? true : false}
               />
+              
               {/* period duration */}
               <InputField
                 label={formConfig.subscriptionPlan.periodDuration.label}
@@ -420,6 +428,21 @@ const SubscriptionPlan = () => {
                 disabled={isEditMode ? true : false}
               />
             </div>
+            {/* NEW BASE PRICE FIELD */}
+              <InputField
+                label={formConfig.subscriptionPlan.basePrice.label}
+                name="basePrice"
+                value={formData.basePrice}
+                onChange={handleInputChange}
+                validationType="AMOUNT"
+                required
+                classN="large"
+                disabled={isEditMode ? true : false}
+              />
+            
+          </div>
+
+          <div className="form-row">
             {/* plan price */}
             <InputField
               label={formConfig.subscriptionPlan.planPrice.label}
@@ -431,9 +454,6 @@ const SubscriptionPlan = () => {
               classN="large"
               disabled={isEditMode ? true : false}
             />
-          </div>
-
-          <div className="form-row">
             {/* status */}
             <OptionInputBox
               label={formConfig.subscriptionPlan.status.label}
@@ -447,7 +467,11 @@ const SubscriptionPlan = () => {
               required
               classN="large"
             />
-            {/* database shared or not */}
+            
+          </div>
+
+          <div className="form-row" style={{justifyContent: "flex-start"}} >
+              {/* database shared or not */}
 
             <StateToggle
               isOn={formData.databaseShared}

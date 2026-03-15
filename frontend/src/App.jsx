@@ -114,9 +114,9 @@ function App() {
       {/* Toast container (add only once in whole app) */}
       <ToastContainer
         position="top-right"
-        autoClose={3000}
+        autoClose={2000}
         hideProgressBar={false}
-        closeOnClick
+        closeOnClick={true}
         pauseOnHover
         draggable
         theme="light"

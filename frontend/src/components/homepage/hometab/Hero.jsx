@@ -26,7 +26,7 @@ const Hero = () => {
 
             {/* Subtitle */}
             <p className="hero-subtitle">
-                FinlyticZ is a next-generation mobile Application that streamlines accounting, billing, sales, data backup, and payment recovery powered by smart financial analytics for faster, better decisions.
+                FinlyticZ empowers businesses with automated accounting, seamless Tally integration, and secure cloud backup to keep your financial data organized and accessible.
             </p>
 
             {/* CTA Buttons */}

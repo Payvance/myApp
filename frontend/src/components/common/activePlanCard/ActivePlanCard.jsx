@@ -25,7 +25,7 @@ const ActivePlanCard = ({
   onAddons,
   buttonDisabled,
 }) => {
-  const { name, subtitle, price, period, expiryDate, features = [] } = plan;
+  const { name, subtitle, price, period, basePrice, expiryDate, features = [] } = plan;
 
   return (
     <div className={`apc-card${isActive ? '' : ' apc-card--regular'}`}>
@@ -49,8 +49,15 @@ const ActivePlanCard = ({
 
         <div className="apc-pricing">
           <div className="apc-price-wrap">
+            {plan.basePrice && plan.basePrice > price ? (
+            <div className="apc-price-inline">
+              <span className="apc-base-price">₹{Math.max(basePrice, price)}</span>
+              <span className="apc-price">₹{Math.min(basePrice, price)}</span>
+            </div>
+          ) : (
             <span className="apc-price">₹{price}</span>
-            <span className="apc-period">{period}</span>
+          )}
+            <span className="apc-period" style={{ marginLeft: '6px' }}>{period}</span>
           </div>
 
           {/* Expiry chip — active plan only */}

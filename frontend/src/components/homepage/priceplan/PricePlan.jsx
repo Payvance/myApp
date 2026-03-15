@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { planServices } from '../../../services/apiService';
+import { planServices, tenantServices } from '../../../services/apiService';
 import './PricePlan.css';
 
 const PricePlan = () => {
@@ -13,37 +13,78 @@ const PricePlan = () => {
         const fetchPlans = async () => {
             try {
                 setLoading(true);
-                const response = await planServices.getAllPlans();
 
-                // Map API data to UI structure
-                const mappedPlans = (response.data || []).map((plan, index) => {
-                    const priceInfo = plan.plan_price || {};
-                    const amount = priceInfo.amount;
-                    const period = priceInfo.billing_period === 'monthly' ? '/month' :
-                        priceInfo.billing_period === 'yearly' ? '/year' :
-                            `/${priceInfo.billing_period || 'month'}`;
+                // Fetch both standard plans and trial config in parallel
+                const [plansResponse, trialResponse] = await Promise.allSettled([
+                    planServices.getAllPlans(),
+                    tenantServices.getTrialConfig()
+                ]);
 
-                    return {
-                        id: plan.id,
-                        name: plan.name || `Plan ${plan.id}`,
-                        price: amount ? `₹${amount}` : 'Contact Us',
-                        period: amount ? period : '',
-                        tag: index === 1 ? 'Most Popular' : (plan.tag || 'Standard'),
-                        desc: plan.description || 'Flexible plan tailored for your business needs and growth.',
-                        features: plan.planFeatures || [
-                            'GST Billing & Reports',
-                            'Inventory Management',
-                            'Financial Analytics',
-                            'Mobile App Access',
-                            'Secure Data Backup'
+                let allMappedPlans = [];
+
+                // 1. Process Trial Plan if available
+                if (trialResponse.status === 'fulfilled' && trialResponse.value.data) {
+                    const trialConfig = trialResponse.value.data;
+                    const totalDays = (trialConfig.adsUnlockedDays || 0) + (trialConfig.extendedTrialDays || 0);
+
+                    allMappedPlans.push({
+                        id: 'trial',
+                        name: 'Trial Plan',
+                        price: '₹0',
+                        period: `${totalDays} Days Free`,
+                        tag: 'Free Trial',
+                        desc: 'Try all premium features with our fully-functional free trial.',
+                        features: [
+                            `First ${trialConfig.adsUnlockedDays || 0} days without ads`,
+                            `Next ${trialConfig.extendedTrialDays || 0} days with ads`,
+                            `Up to ${trialConfig.activeUsersCount || 0} users`,
+                            `Up to ${trialConfig.companiesCount || 0} company`,
+                            'Full Access to All Modules'
                         ],
-                        cta: amount ? 'Start Free Trial' : 'Contact Sales',
-                        ctaLink: amount ? '/signin' : '#contact',
-                        highlighted: index === 1, // Highlight the second plan by default
-                    };
-                });
+                        cta: 'Start Free Trial',
+                        ctaLink: '/signin',
+                        highlighted: false,
+                    });
+                }
 
-                setPlans(mappedPlans);
+                // 2. Process Standard Plans
+                if (plansResponse.status === 'fulfilled') {
+                    const mappedPlans = (plansResponse.value.data || []).map((plan, index) => {
+                        const priceInfo = plan.plan_price || {};
+                        const amount = priceInfo.amount;
+                        const period = priceInfo.billing_period === 'monthly' ? '/month' :
+                            priceInfo.billing_period === 'yearly' ? '/year' :
+                                `/${priceInfo.billing_period || 'month'}`;
+
+                        return {
+                            id: plan.id,
+                            name: plan.name || `Plan ${plan.id}`,
+                            price: amount ? `₹${amount}` : 'Contact Us',
+                            period: amount ? period : '',
+                            tag: index === 0 ? 'Most Popular' : (plan.tag || 'Standard'),
+                            desc: plan.description || 'Flexible plan tailored for your business needs and growth.',
+                            features: plan.planFeatures || [
+                                'GST Billing & Reports',
+                                'Inventory Management',
+                                'Financial Analytics',
+                                'Mobile App Access',
+                                'Secure Data Backup'
+                            ],
+                            cta: amount ? 'Start Free Trial' : 'Contact Sales',
+                            ctaLink: amount ? '/signin' : '#contact',
+                            highlighted: index === 0,
+                        };
+                    });
+
+                    allMappedPlans = [...allMappedPlans, ...mappedPlans];
+                } else {
+                    console.error('Error fetching plans:', plansResponse.reason);
+                    if (allMappedPlans.length === 0) {
+                        throw new Error('Failed to load pricing plans');
+                    }
+                }
+
+                setPlans(allMappedPlans);
                 setError(null);
             } catch (err) {
                 console.error('Error fetching pricing plans:', err);

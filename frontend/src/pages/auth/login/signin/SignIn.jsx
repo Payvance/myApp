@@ -84,32 +84,32 @@ const SignIn = () => {
   const [validationErrors, setValidationErrors] = useState({});
   const [showVerifiedPopup, setShowVerifiedPopup] = useState(false);
 
-// Check for email verification status in URL query parameters on component mount
-useEffect(() => {
-  const params = new URLSearchParams(location.search);
+  // Check for email verification status in URL query parameters on component mount
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
 
-  const verified = Number(params.get("verified"));
-  const already = Number(params.get("already"));
+    const verified = Number(params.get("verified"));
+    const already = Number(params.get("already"));
 
-  if (verified === 1) {
-    setPopupMessage(
-      "Your email has been successfully verified. You can now sign in to your account."
-    );
-    setShowVerifiedPopup(true);
-  }
+    if (verified === 1) {
+      setPopupMessage(
+        "Your email has been successfully verified. You can now sign in to your account."
+      );
+      setShowVerifiedPopup(true);
+    }
 
-  if (already === 1) {
-    setPopupMessage(
-      "Your email is already verified. You can sign in to your account."
-    );
-    setShowVerifiedPopup(true);
-  }
+    if (already === 1) {
+      setPopupMessage(
+        "Your email is already verified. You can sign in to your account."
+      );
+      setShowVerifiedPopup(true);
+    }
 
-  if (verified === 1 || already === 1) {
-    window.history.replaceState({}, document.title, "/signin");
-  }
+    if (verified === 1 || already === 1) {
+      window.history.replaceState({}, document.title, "/signin");
+    }
 
-}, [location]);
+  }, [location]);
   /* This useeffect is used for the getting roles from the dropdown
      Set the role tenenet admin
   */
@@ -257,6 +257,10 @@ useEffect(() => {
       !confirmPassword
     ) {
       toast.error("Please fill all the fields");
+      return;
+    }
+    if (validationErrors.signupEmail) {
+      toast.error("Please enter a valid email");
       return;
     }
     if (!isPasswordValid) {
@@ -428,8 +432,6 @@ useEffect(() => {
                   validationType="MOBILE"
                   max={10}
                   disabled={otpVerified}
-                  validationErrors={validationErrors}
-                  setValidationErrors={setValidationErrors}
                 />
               </div>
               <div className="otp-btn-col">
@@ -455,6 +457,8 @@ useEffect(() => {
               name="signupEmail"
               validationType="EMAIL"
               max={50}
+              validationErrors={validationErrors}
+              setValidationErrors={setValidationErrors}
             />
             <div className="position-relative signup-pass-container">
               <PaswordInputBox
@@ -526,20 +530,20 @@ useEffect(() => {
       >
         <p>{popupMessage}</p>
       </PopUp>
-    {/* Verified email popup */}
-    <PopUp
-    isOpen={showVerifiedPopup}
-    onClose={() => setShowVerifiedPopup(false)}
-    size="small"
-    >
-    <p>{popupMessage}</p>
-    <button
-    className="btn btn-primary"
-    onClick={() => setShowVerifiedPopup(false)}
-    >
-    OK
-   </button>
-   </PopUp>
+      {/* Verified email popup */}
+      <PopUp
+        isOpen={showVerifiedPopup}
+        onClose={() => setShowVerifiedPopup(false)}
+        size="small"
+      >
+        <p>{popupMessage}</p>
+        <button
+          className="btn btn-primary"
+          onClick={() => setShowVerifiedPopup(false)}
+        >
+          OK
+        </button>
+      </PopUp>
 
     </div >
   );

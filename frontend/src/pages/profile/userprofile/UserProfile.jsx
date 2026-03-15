@@ -68,11 +68,18 @@ const UserProfile = () => {
   const [vendorData, setVendorData] = useState({
     vendorId: "",
     vendorType: "",
+    companyName: "",
+    email: "",
+    mobile: "",
     gstNo: "",
     cinNo: "",
     panNo: "",
     tanNo: "",
-    vendorDiscountId: ""
+    vendorDiscountId: "",
+    panDocument: "",
+    gstDocument: "",
+    msmeDocument: "",
+    msmeRegister: false,
   });
 
   // CA Specific Details State
@@ -145,6 +152,8 @@ const UserProfile = () => {
             vendorId: data.vendorId ?? "",
             vendorType: data.vendorType ?? "",
             companyName: data.vendorName ?? "", // Map vendorName to companyName
+            email: data.userEmail ?? "",
+            mobile: data.userPhone ?? "",
             gstNo: data.gstNo ?? "",
             cinNo: data.cinNo ?? "",
             panNo: data.panNo ?? "",
@@ -162,6 +171,8 @@ const UserProfile = () => {
           const caBasicDetails = {
             vendorType: data.caType ?? "",
             companyName: data.firmName ?? "", // Map firmName to companyName
+            email: data.userEmail ?? "",
+            mobile: data.userPhone ?? "",
             gstNo: data.caGstNo ?? "",
             cinNo: data.caCinNo ?? "",
             panNo: data.caPanNo ?? "",
@@ -258,8 +269,8 @@ const UserProfile = () => {
     try {
       const payload = {
         name: personalData.userName,
-        email: personalData.userEmail,
-        phone: personalData.userPhone,
+        email: vendorData.email || personalData.userEmail,
+        phone: vendorData.mobile || personalData.userPhone,
         isActive: isActive,
         houseBuildingNo: addressData.houseNo,
         houseBuildingName: addressData.buildingName,
@@ -364,11 +375,7 @@ const UserProfile = () => {
         ) : (
           <div className="profile-sections-container">
 
-            <PersonalDetails
-              personalData={personalData}
-              setPersonalData={setPersonalData}
-              disabled={isDisabled}
-            />
+            {/* PersonalDetails removed as per request */}
 
 
             {(role === "VENDOR" || role === "CA") && (
