@@ -20,6 +20,7 @@ services:
       - mysql
     environment:
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      JAVA_OPTS: "-Xms2g -Xmx2g -XX:+UseG1GC"
     networks:
       - appnet
 
